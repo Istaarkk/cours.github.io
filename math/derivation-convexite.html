@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dérivation &amp; convexité — Terminale · le cahier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&family=Caveat:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf4e9; --paper2:#f3ead8; --card:#fffdf8; --card2:#fbf6ec;
+    --ink:#3b342c; --ink2:#5b5045; --muted:#9a8d7b; --line:#e6dac4;
+    --coral:#e07a5f; --mustard:#e3a02b; --sage:#5a9e7a; --teal:#2f9c8f;
+    --plum:#9a6a9e; --blue:#6d92c4; --rose:#d96c7a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);
+    font-family:'Nunito',system-ui,sans-serif;line-height:1.75;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(900px 600px at 85% -8%,rgba(224,122,95,.10),transparent 60%),
+      radial-gradient(800px 700px at -5% 25%,rgba(90,158,122,.08),transparent 55%),
+      var(--paper);}
+  body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(160,140,110,.07) 1px,transparent 1px);
+    background-size:100% 32px;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;line-height:1.12;font-weight:600}
+  .hand{font-family:'Caveat',cursive}
+  code,.mono{font-family:'JetBrains Mono',monospace;font-size:.92em;
+    background:rgba(160,140,110,.14);padding:1px 6px;border-radius:5px;color:var(--ink2)}
+  #prog{position:fixed;top:0;left:0;height:4px;width:0;
+    background:linear-gradient(90deg,var(--coral),var(--mustard));z-index:50;border-radius:0 4px 4px 0}
+  header.hero{min-height:96vh;display:flex;flex-direction:column;
+    justify-content:center;position:relative;padding:80px 0}
+  #heroCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;opacity:.85}
+  .kicker{font-family:'Caveat',cursive;font-size:26px;color:var(--coral);
+    transform:rotate(-2deg);margin-bottom:8px}
+  header.hero h1{font-size:clamp(44px,8vw,88px);font-weight:600;color:var(--ink);letter-spacing:-.01em}
+  header.hero h1 .grad{color:var(--coral);position:relative}
+  header.hero h1 .grad::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:12px;
+    background:rgba(227,160,43,.40);z-index:-1;transform:rotate(-1deg);border-radius:8px}
+  header.hero p.lead{font-size:clamp(17px,2vw,21px);color:var(--ink2);max-width:680px;margin-top:26px}
+  .scrolldown{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+    color:var(--muted);font-family:'Caveat',cursive;font-size:20px;
+    display:flex;flex-direction:column;align-items:center;gap:6px}
+  .scrolldown span{width:2px;height:42px;border-radius:2px;
+    background:linear-gradient(var(--coral),transparent);animation:drop 1.8s infinite}
+  @keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}
+    55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  section{padding:74px 0;position:relative}
+  .step{font-family:'Caveat',cursive;font-size:24px;color:var(--coral);
+    transform:rotate(-1.5deg);display:inline-block;margin-bottom:6px}
+  section h2{font-size:clamp(28px,4.4vw,46px);margin-bottom:10px;color:var(--ink)}
+  section .sub{color:var(--ink2);font-size:17.5px;max-width:740px;margin-bottom:30px}
+  p.body{color:var(--ink2);max-width:760px;margin:16px 0;font-size:16.5px}
+  p.body b{color:var(--ink);font-weight:700}
+  ul.body{color:var(--ink2);max-width:760px;margin:14px 0 14px 6px;font-size:16.5px;list-style:none}
+  ul.body li{margin:9px 0;padding-left:24px;position:relative}
+  ul.body li::before{content:"—";position:absolute;left:0;top:0;color:var(--coral);font-weight:700}
+  ul.body b{color:var(--ink);font-weight:700}
+  .hl-cy{color:var(--teal);font-weight:700}.hl-vi{color:var(--plum);font-weight:700}
+  .hl-am{color:var(--mustard);font-weight:700}.hl-pk{color:var(--coral);font-weight:700}
+  .hl-gr{color:var(--sage);font-weight:700}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:26px;box-shadow:0 18px 40px -24px rgba(120,90,50,.45),0 2px 0 rgba(0,0,0,.02);
+    position:relative}
+  .card::before{content:"";position:absolute;top:-11px;left:38px;width:88px;height:24px;
+    background:rgba(227,160,43,.28);border:1px solid rgba(227,160,43,.30);
+    transform:rotate(-3deg);border-radius:2px}
+  .card + .card{margin-top:26px}
+  canvas.viz{display:block;width:100%;border-radius:12px;
+    background:#fdf8ee;border:1px solid var(--line)}
+  .controls{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:20px;align-items:flex-end}
+  .ctrl{display:flex;flex-direction:column;gap:7px;min-width:170px;flex:1}
+  .ctrl label{font-size:13px;color:var(--ink2);font-weight:600;
+    display:flex;justify-content:space-between;align-items:baseline}
+  .ctrl label .val{color:var(--coral);font-family:'JetBrains Mono',monospace;font-size:12px}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;
+    background:var(--paper2);outline:none;width:100%;border:1px solid var(--line)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;
+    border-radius:50%;background:var(--coral);cursor:pointer;border:3px solid var(--card);
+    box-shadow:0 2px 6px rgba(224,122,95,.5)}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border:3px solid var(--card);
+    border-radius:50%;background:var(--coral);cursor:pointer}
+  button.btn{font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;
+    color:#fff;background:var(--coral);border:0;padding:10px 18px;border-radius:999px;
+    cursor:pointer;transition:.14s;box-shadow:0 6px 14px -6px var(--coral)}
+  button.btn:hover{transform:translateY(-2px) rotate(-1deg)}
+  button.btn.ghost{background:transparent;color:var(--ink2);border:2px solid var(--line);box-shadow:none}
+  button.btn.ghost:hover{border-color:var(--coral);color:var(--coral)}
+  .reveal{opacity:0;transform:translateY(30px) rotate(-.4deg);
+    transition:.85s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+  .legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}
+  .legend div{background:var(--card2);border:1px solid var(--line);border-left:4px solid var(--sage);
+    padding:12px 15px;border-radius:10px;font-size:14.5px;color:var(--ink2)}
+  .legend div b{color:var(--ink)}
+  .formula{background:var(--card2);border:1px dashed var(--line);border-radius:14px;
+    padding:20px 22px;text-align:center;margin:18px 0;overflow-x:auto;
+    font-family:'JetBrains Mono',monospace;font-size:clamp(14px,2.1vw,19px);color:var(--ink)}
+  .formula .v{color:var(--plum)}.formula .c{color:var(--teal)}
+  .formula .a{color:var(--mustard)}.formula .p{color:var(--coral)}.formula .g{color:var(--sage)}
+  .formula .mut{color:var(--muted)}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;line-height:1.05}
+  .frac .num{border-bottom:1.5px solid var(--ink2);padding:0 6px}
+  .frac .den{padding:0 6px}
+  .exbox{margin-top:18px;padding:16px 18px;border-radius:12px;
+    background:rgba(154,106,158,.10);border:1px solid rgba(154,106,158,.25)}
+  .exbox h4{font-family:'Caveat',cursive;font-size:21px;color:var(--plum);margin-bottom:4px;transform:rotate(-1deg)}
+  .exbox p{color:var(--ink2);font-size:15px;margin:4px 0}
+  .exbox.gr{background:rgba(90,158,122,.10);border-color:rgba(90,158,122,.28)}
+  .exbox.gr h4{color:var(--sage)}
+  .exbox.am{background:rgba(227,160,43,.12);border-color:rgba(227,160,43,.30)}
+  .exbox.am h4{color:var(--mustard)}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--card2);
+    border:1px solid var(--line);padding:6px 13px;border-radius:999px;font-size:13px;
+    font-family:'JetBrains Mono',monospace;color:var(--ink2);margin:6px 6px 0 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .stat{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+  .stat .box{flex:1;min-width:120px;background:var(--card2);border:1px solid var(--line);
+    border-radius:12px;padding:13px 15px}
+  .stat .box .lbl{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--muted)}
+  .stat .box .num{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--teal);margin-top:2px}
+  .exo{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;
+    box-shadow:0 18px 40px -24px rgba(120,90,50,.4);margin-top:22px}
+  .exo .diff{font-family:'Caveat',cursive;font-size:19px;color:var(--mustard);margin-bottom:0}
+  .exo h3{font-family:'Fraunces',serif;font-size:22px;color:var(--ink);margin:2px 0 10px}
+  .exo .enonce{color:var(--ink2);font-size:16px}
+  .exo .enonce ol{margin:10px 0 0 20px}
+  .exo .enonce li{margin:6px 0}
+  details.corr{margin-top:16px;border:1px solid var(--line);border-radius:12px;
+    background:var(--card2);overflow:hidden}
+  details.corr>summary{cursor:pointer;list-style:none;padding:12px 16px;font-weight:700;
+    color:var(--coral);font-size:15px;display:flex;align-items:center;gap:9px;user-select:none}
+  details.corr>summary::-webkit-details-marker{display:none}
+  details.corr>summary::before{content:"▸";transition:.2s;color:var(--coral)}
+  details.corr[open]>summary::before{transform:rotate(90deg)}
+  details.corr .cbody{padding:6px 18px 16px;color:var(--ink2);font-size:15.5px;border-top:1px solid var(--line)}
+  details.corr .cbody p{margin:8px 0}
+  details.corr .cbody .calc{font-family:'JetBrains Mono',monospace;font-size:13.5px;
+    background:var(--paper2);border:1px solid var(--line);border-radius:8px;
+    padding:8px 12px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+  details.corr .cbody .res{background:rgba(90,158,122,.15);border-left:4px solid var(--sage);
+    padding:9px 13px;border-radius:8px;margin:10px 0;color:var(--ink);font-weight:600}
+  .note{font-family:'Caveat',cursive;font-size:21px;color:var(--coral);
+    transform:rotate(-1deg);margin:14px 0;display:block}
+  .note::before{content:"➜ ";}
+  .topnav{position:fixed;top:14px;left:16px;z-index:60;font-family:'Caveat',cursive;
+    font-size:19px;color:var(--coral);text-decoration:none;background:var(--card);
+    border:1px solid var(--line);padding:4px 14px;border-radius:999px;box-shadow:0 4px 10px -6px rgba(0,0,0,.3)}
+  footer{padding:56px 0 90px;text-align:center;color:var(--ink2);font-size:15px;
+    border-top:2px dashed var(--line);margin-top:30px}
+  footer .big{font-family:'Fraunces',serif;font-size:26px;color:var(--ink);margin-bottom:8px}
+  footer .tag{font-family:'Caveat',cursive;font-size:20px;color:var(--coral)}
+  ::selection{background:rgba(227,160,43,.35)}
+  nav.toc{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:40;
+    display:flex;flex-direction:column;gap:10px}
+  nav.toc a{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);
+    background:var(--card);transition:.2s;position:relative}
+  nav.toc a:hover,nav.toc a.act{background:var(--coral);border-color:var(--coral)}
+  nav.toc a span{position:absolute;right:22px;top:50%;transform:translateY(-50%);
+    white-space:nowrap;font-family:'Caveat',cursive;font-size:17px;color:var(--ink2);
+    opacity:0;pointer-events:none;transition:.2s;background:var(--card);padding:2px 10px;
+    border-radius:8px;border:1px solid var(--line);box-shadow:0 4px 10px -6px rgba(0,0,0,.3)}
+  nav.toc a:hover span{opacity:1}
+  @media(max-width:900px){nav.toc{display:none}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<a class="topnav" href="../index.html">← tous les cours</a>
+<nav class="toc" id="toc"></nav>
+
+<header class="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="wrap">
+    <div class="kicker">Maths · Terminale · Analyse</div>
+    <h1>Dérivation<br>& <span class="grad">convexité</span></h1>
+    <p class="lead">La dérivée, c'est la pente de la tangente — donc la vitesse de variation
+      d'une fonction. Tangentes, dérivées des composées, lien entre le signe de f′ et le
+      sens de variation, puis la convexité (f″) et les points d'inflexion. Tout illustré
+      par des courbes que tu peux régler.</p>
+  </div>
+  <div class="scrolldown"><span></span>fais défiler</div>
+</header>
+
+<!-- 1 -->
+<section id="s1">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 1</div>
+    <h2>Le nombre dérivé : pente de la tangente</h2>
+    <p class="sub">Le nombre dérivé f′(a) est la limite de la pente de la <b>sécante</b>
+      (entre deux points proches) quand l'écart h tend vers 0. La sécante se couche alors
+      sur la <b>tangente</b>. Réduis h et regarde la sécante rejoindre la tangente.</p>
+    <div class="card">
+      <div class="formula">f′(a) = lim<sub>h→0</sub>
+        <span class="frac"><span class="num"><span class="p">f(a+h) − f(a)</span></span><span class="den">h</span></span>
+        &nbsp;&nbsp;<span class="mut">tangente :</span>&nbsp;
+        y = <span class="c">f′(a)</span>(x − a) + f(a)</div>
+      <canvas id="cTan" class="viz" height="380"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>point a <span class="val" id="tnAv">0.5</span></label>
+          <input id="tnA" type="range" min="-300" max="300" value="50"></div>
+        <div class="ctrl"><label>écart h <span class="val" id="tnHv">1.50</span></label>
+          <input id="tnH" type="range" min="4" max="250" value="150"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">pente sécante</div><div class="num hl-pk" id="tnSec">—</div></div>
+        <div class="box"><div class="lbl">nombre dérivé f′(a)</div><div class="num hl-cy" id="tnDer">—</div></div>
+        <div class="box"><div class="lbl">écart des pentes</div><div class="num" id="tnDiff">—</div></div>
+      </div>
+      <p class="body">La <span class="hl-pk">sécante</span> passe par (a, f(a)) et
+        (a+h, f(a+h)). Quand h diminue, sa pente se rapproche du <span class="hl-cy">nombre
+        dérivé</span> : c'est la définition même de la dérivée. Géométriquement, la tangente
+        est la « meilleure approximation droite » de la courbe au point a.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section id="s2">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 2</div>
+    <h2>Les dérivées à connaître par cœur</h2>
+    <p class="sub">Le cœur du chapitre : un petit catalogue de dérivées, trois règles
+      d'opérations, et la dérivée d'une composée. À mémoriser absolument.</p>
+    <div class="card">
+      <div class="grid2">
+        <div class="exbox gr">
+          <h4>Fonctions usuelles</h4>
+          <p>(xⁿ)′ = n·xⁿ⁻¹ &nbsp;·&nbsp; (1/x)′ = −1/x²</p>
+          <p>(√x)′ = 1/(2√x) &nbsp;·&nbsp; (eˣ)′ = eˣ</p>
+          <p>(ln x)′ = 1/x</p>
+          <p>(sin x)′ = cos x &nbsp;·&nbsp; (cos x)′ = −sin x</p>
+        </div>
+        <div class="exbox am">
+          <h4>Opérations</h4>
+          <p>(u + v)′ = u′ + v′ &nbsp;·&nbsp; (k·u)′ = k·u′</p>
+          <p>(u·v)′ = u′v + uv′</p>
+          <p>(u/v)′ = (u′v − uv′)/v²</p>
+        </div>
+      </div>
+      <div class="exbox">
+        <h4>Dérivée d'une composée — la règle de la chaîne</h4>
+        <p>(v ∘ u)′ = u′ × (v′ ∘ u). En pratique, les cas du Bac :</p>
+        <p>(uⁿ)′ = n·u′·uⁿ⁻¹ &nbsp;·&nbsp; (eᵘ)′ = u′·eᵘ &nbsp;·&nbsp;
+          (ln u)′ = u′/u &nbsp;·&nbsp; (√u)′ = u′/(2√u)</p>
+      </div>
+      <span class="note">Mémo : « dérivée de l'extérieur, évaluée en l'intérieur, fois
+        dérivée de l'intérieur ». L'oubli du facteur u′ est l'erreur n°1.</span>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section id="s3">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 3</div>
+    <h2>Le signe de f′ donne le sens de variation</h2>
+    <p class="sub">C'est l'outil-roi pour étudier une fonction : là où f′ &gt; 0, f
+      <b>monte</b> ; là où f′ &lt; 0, f <b>descend</b> ; là où f′ s'annule en changeant de
+      signe, f a un <b>extremum</b>. Choisis une fonction et observe.</p>
+    <div class="card">
+      <canvas id="cVar" class="viz" height="380"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Choisis la fonction <span class="val" id="vrSelv">1</span></label>
+          <input id="vrSel" type="range" min="1" max="3" value="1"></div>
+      </div>
+      <div class="formula" id="vrForm">…</div>
+      <div class="legend">
+        <div><b style="color:var(--sage)">Portion verte</b> — f′ &gt; 0, f est croissante.</div>
+        <div><b style="color:var(--coral)">Portion corail</b> — f′ &lt; 0, f est décroissante.</div>
+        <div><b>Points noirs ●</b> — f′ s'annule : extremums locaux.</div>
+        <div><b>Courbe pointillée</b> — la fonction dérivée f′ elle-même.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="s4">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 4</div>
+    <h2>Convexité & point d'inflexion</h2>
+    <p class="sub">Une fonction est <b>convexe</b> (en forme de bol ∪) si sa courbe est
+      <b>au-dessus de toutes ses tangentes</b> ; <b>concave</b> (en dôme ∩) si elle est
+      en dessous. Le test : le signe de la dérivée seconde f″. Là où f″ change de signe,
+      c'est un <b>point d'inflexion</b>.</p>
+    <div class="card">
+      <div class="formula"><span class="c">f″ ≥ 0</span> sur I &nbsp;⇔&nbsp; f convexe sur I
+        &nbsp;&nbsp;|&nbsp;&nbsp; <span class="p">f″ ≤ 0</span> &nbsp;⇔&nbsp; f concave
+        &nbsp;&nbsp;|&nbsp;&nbsp; f″ s'annule en changeant de signe ⇒ inflexion</div>
+      <canvas id="cCvx" class="viz" height="380"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>point de tangence a <span class="val" id="cxAv">-1.0</span></label>
+          <input id="cxA" type="range" min="-280" max="480" value="-100"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">f″(a)</div><div class="num" id="cxF2">—</div></div>
+        <div class="box"><div class="lbl">verdict en a</div><div class="num" id="cxVerd">—</div></div>
+        <div class="box"><div class="lbl">point d'inflexion</div><div class="num hl-vi">x = 1</div></div>
+      </div>
+      <p class="body">La tangente <span class="hl-am">orange</span> passe sous la courbe
+        quand f est convexe, au-dessus quand f est concave. Au point d'inflexion
+        (<span class="hl-vi">x = 1</span> ici), elle <b>traverse</b> la courbe : c'est là que
+        la concavité bascule. Le fond est teinté selon le signe de f″.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EXOS -->
+<section id="sExos">
+  <div class="wrap reveal">
+    <div class="step">À toi de jouer</div>
+    <h2>Exercices type Bac</h2>
+    <p class="sub">Cherche, puis déplie la correction.</p>
+
+    <div class="exo">
+      <div class="diff">★ ☆ ☆ — quotient</div>
+      <h3>1. Dériver un quotient</h3>
+      <div class="enonce">Dérive f(x) = (2x + 1)/(x² + 1) sur ℝ.</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>On pose u = 2x + 1 (u′ = 2) et v = x² + 1 (v′ = 2x). Formule (u/v)′ = (u′v − uv′)/v² :</p>
+          <div class="calc">f′(x) = [2(x²+1) − (2x+1)(2x)] / (x²+1)²
+       = [2x² + 2 − 4x² − 2x] / (x²+1)²</div>
+          <div class="res">f′(x) = (−2x² − 2x + 2) / (x² + 1)².</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="exo">
+      <div class="diff">★ ★ ☆ — composée</div>
+      <h3>2. Dériver une exponentielle composée</h3>
+      <div class="enonce">Dérive f(x) = e^(x² − 3x).</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>Forme eᵘ avec u = x² − 3x, donc u′ = 2x − 3. Or (eᵘ)′ = u′·eᵘ :</p>
+          <div class="res">f′(x) = (2x − 3)·e^(x² − 3x).</div>
+          <p>Au passage : f′(x) = 0 ⇔ 2x − 3 = 0 (car eᵘ &gt; 0) ⇔ x = 3/2, qui est donc
+            l'abscisse de l'extremum de f.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="exo">
+      <div class="diff">★ ★ ☆ — tangente</div>
+      <h3>3. Équation d'une tangente</h3>
+      <div class="enonce">Soit f(x) = x³ − 3x + 1. Détermine l'équation de la tangente à
+        la courbe au point d'abscisse a = 2.</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>Formule de la tangente : y = f′(a)(x − a) + f(a).</p>
+          <div class="calc">f(2) = 8 − 6 + 1 = 3
+f′(x) = 3x² − 3,  donc f′(2) = 12 − 3 = 9</div>
+          <div class="res">Tangente : y = 9(x − 2) + 3 = 9x − 15.</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="exo">
+      <div class="diff">★ ★ ★ — convexité</div>
+      <h3>4. Étude de convexité</h3>
+      <div class="enonce">Soit f(x) = x⁴ − 6x². Étudie la convexité de f et précise ses
+        points d'inflexion.</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>On dérive deux fois :</p>
+          <div class="calc">f′(x) = 4x³ − 12x
+f″(x) = 12x² − 12 = 12(x² − 1) = 12(x − 1)(x + 1)</div>
+          <p>Signe de f″ : positif pour x ≤ −1 et x ≥ 1, négatif sur [−1 ; 1].</p>
+          <div class="res">f est convexe sur ]−∞ ; −1] et sur [1 ; +∞[, concave sur [−1 ; 1].
+            f″ change de signe en x = −1 et x = 1 : ce sont deux points d'inflexion.</div>
+        </div>
+      </details>
+    </div>
+    <span class="note">Pour une dérivée de composée, repère toujours l'« intérieur » u,
+      calcule u′, puis applique le modèle (eᵘ, uⁿ, ln u, √u).</span>
+  </div>
+</section>
+
+<!-- RECAP -->
+<section id="sRecap">
+  <div class="wrap reveal">
+    <div class="step">Avant de fermer le cahier</div>
+    <h2>Les réflexes à retenir</h2>
+    <div class="card">
+      <ul class="body">
+        <li><b>Nombre dérivé</b> — f′(a) = pente de la tangente en a. Tangente : y = f′(a)(x−a)+f(a).</li>
+        <li><b>Catalogue</b> — (xⁿ)′=n xⁿ⁻¹, (eˣ)′=eˣ, (ln x)′=1/x, (√x)′=1/(2√x).</li>
+        <li><b>Produit / quotient</b> — (uv)′=u′v+uv′ ; (u/v)′=(u′v−uv′)/v².</li>
+        <li><b>Composée</b> — (eᵘ)′=u′eᵘ, (uⁿ)′=n u′ uⁿ⁻¹, (ln u)′=u′/u. Ne jamais oublier u′.</li>
+        <li><b>Variations</b> — signe de f′ : f′&gt;0 ⇒ croît, f′&lt;0 ⇒ décroît ; f′ s'annule en changeant de signe ⇒ extremum.</li>
+        <li><b>Convexité</b> — f″≥0 ⇒ convexe (au-dessus des tangentes) ; f″≤0 ⇒ concave.</li>
+        <li><b>Inflexion</b> — f″ s'annule en changeant de signe ⇒ point d'inflexion.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="big">Chapitre Dérivation & convexité terminé.</div>
+    <p class="tag">Au programme ensuite : la fonction logarithme.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const TAU=Math.PI*2, PI=Math.PI;
+const COL={cy:'#2f9c8f',vi:'#9a6a9e',am:'#e3a02b',pk:'#e07a5f',gr:'#5a9e7a',
+  mut:'#9a8d7b',line:'#e0d4bd',ink:'#3b342c',bg:'#fdf8ee'};
+function setupCanvas(c){const dpr=Math.min(window.devicePixelRatio||1,2);
+  const r=c.getBoundingClientRect();c.width=r.width*dpr;c.height=(+c.getAttribute('height')||300)*dpr;
+  c.style.height=(+c.getAttribute('height')||300)+'px';
+  const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
+  c._w=r.width;c._h=+(c.getAttribute('height')||300);return x;}
+const prog=document.getElementById('prog');
+addEventListener('scroll',()=>{const s=scrollY/(document.body.scrollHeight-innerHeight);
+  prog.style.width=(s*100)+'%';},{passive:true});
+const ioR=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>ioR.observe(el));
+const tocNames={s1:'Tangente',s2:'Catalogue',s3:'Variations',s4:'Convexité',
+  sExos:'Exercices',sRecap:'Récap'};
+const toc=document.getElementById('toc');
+Object.keys(tocNames).forEach(id=>{const a=document.createElement('a');a.href='#'+id;
+  a.innerHTML='<span>'+tocNames[id]+'</span>';a.dataset.t=id;toc.appendChild(a);});
+const tocLinks=[...toc.querySelectorAll('a')];
+const ioToc=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){
+  tocLinks.forEach(l=>l.classList.toggle('act',l.dataset.t===e.target.id));}}),{threshold:.4});
+Object.keys(tocNames).forEach(id=>{const s=document.getElementById(id);if(s)ioToc.observe(s);});
+const animators=[];
+function register(canvas,drawFn){const a={canvas,draw:drawFn,on:false,t:0};animators.push(a);
+  new IntersectionObserver(es=>{a.on=es[0].isIntersecting;},{threshold:.04}).observe(canvas);return a;}
+let last=performance.now();
+(function tick(now){const dt=Math.min((now-last)/1000,.05);last=now;
+  for(const a of animators){if(a.on){a.t+=dt;a.draw(a.t,dt);}}requestAnimationFrame(tick);})(performance.now());
+function hex(c,al){const n=parseInt(c.slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+al+')';}
+function cartesian(x,c,xmin,xmax,ymin,ymax){
+  const W=c._w,H=c._h,x0=36,x1=W-12,y0=12,y1=H-22;
+  const sx=X=>x0+(x1-x0)*(X-xmin)/(xmax-xmin);
+  const sy=Y=>y1-(y1-y0)*(Y-ymin)/(ymax-ymin);
+  x.strokeStyle=COL.line;x.lineWidth=1;
+  for(let g=Math.ceil(xmin);g<=xmax;g++){x.beginPath();x.moveTo(sx(g),y0);x.lineTo(sx(g),y1);x.stroke();}
+  for(let g=Math.ceil(ymin);g<=ymax;g++){x.beginPath();x.moveTo(x0,sy(g));x.lineTo(x1,sy(g));x.stroke();}
+  x.strokeStyle=hex(COL.mut,0.75);x.lineWidth=1.4;
+  if(ymin<=0&&ymax>=0){x.beginPath();x.moveTo(x0,sy(0));x.lineTo(x1,sy(0));x.stroke();}
+  if(xmin<=0&&xmax>=0){x.beginPath();x.moveTo(sx(0),y0);x.lineTo(sx(0),y1);x.stroke();}
+  return {sx,sy,x0,x1,y0,y1,xmin,xmax,ymin,ymax};
+}
+function plot(x,fr,f,col,lw){
+  x.strokeStyle=col;x.lineWidth=lw||2.4;x.beginPath();
+  const N=400;let started=false,prevY=null;
+  for(let i=0;i<=N;i++){const X=fr.xmin+(fr.xmax-fr.xmin)*i/N;let Y=f(X);
+    if(!isFinite(Y)){started=false;continue;}
+    const yc=Math.max(fr.ymin-2,Math.min(fr.ymax+2,Y));
+    if(started&&Math.abs(Y-prevY)>(fr.ymax-fr.ymin)*1.4){started=false;}
+    const px=fr.sx(X),py=fr.sy(yc);
+    if(!started){x.moveTo(px,py);started=true;}else x.lineTo(px,py);
+    prevY=Y;}
+  x.stroke();
+}
+
+/* HERO : rolling tangent */
+(function(){const c=document.getElementById('heroCanvas');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  function f(v){return 90*Math.sin(v*0.012)+0;}
+  register(c,(t)=>{const W=c._w,H=c._h;x.clearRect(0,0,W,H);const baseY=H*0.5;
+    x.strokeStyle=hex(COL.pk,0.5);x.lineWidth=2.4;x.beginPath();
+    for(let px=30;px<W-30;px+=4){const py=baseY - f(px) ;px===30?x.moveTo(px,py):x.lineTo(px,py);}x.stroke();
+    const a=30+((t*60)%(W-60));const slope=-0.012*90*Math.cos(a*0.012);
+    const ya=baseY-f(a);x.strokeStyle=hex(COL.cy,0.8);x.lineWidth=2;
+    x.beginPath();x.moveTo(a-120,ya-slope*-120);x.lineTo(a+120,ya-slope*120);x.stroke();
+    x.fillStyle=COL.am;x.beginPath();x.arc(a,ya,4.5,0,TAU);x.fill();
+  });})();
+
+/* 1. TANGENTE / SÉCANTE */
+(function(){const c=document.getElementById('cTan');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const aR=document.getElementById('tnA'),aV=document.getElementById('tnAv');
+  const hR=document.getElementById('tnH'),hV=document.getElementById('tnHv');
+  const secE=document.getElementById('tnSec'),derE=document.getElementById('tnDer'),diffE=document.getElementById('tnDiff');
+  function f(v){return 0.15*v*v*v-0.5*v+2;}
+  function df(v){return 0.45*v*v-0.5;}
+  function a(){return +aR.value/100;}function h(){return +hR.value/100;}
+  function upd(){aV.textContent=a().toFixed(1);hV.textContent=h().toFixed(2);
+    const sec=(f(a()+h())-f(a()))/h();secE.textContent=sec.toFixed(3);
+    derE.textContent=df(a()).toFixed(3);diffE.textContent=Math.abs(sec-df(a())).toFixed(3);}
+  [aR,hR].forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{x.clearRect(0,0,c._w,c._h);
+    const fr=cartesian(x,c,-3.2,3.2,-1.5,5.5);
+    plot(x,fr,f,COL.ink,2.6);
+    const A=a(),H2=h(),fa=f(A),fb=f(A+H2),d=df(A);
+    // tangent
+    x.strokeStyle=COL.cy;x.lineWidth=2;x.beginPath();
+    x.moveTo(fr.sx(fr.xmin),fr.sy(d*(fr.xmin-A)+fa));x.lineTo(fr.sx(fr.xmax),fr.sy(d*(fr.xmax-A)+fa));x.stroke();
+    // secant
+    const sl=(fb-fa)/H2;x.strokeStyle=COL.pk;x.setLineDash([6,4]);x.lineWidth=2;x.beginPath();
+    x.moveTo(fr.sx(fr.xmin),fr.sy(sl*(fr.xmin-A)+fa));x.lineTo(fr.sx(fr.xmax),fr.sy(sl*(fr.xmax-A)+fa));x.stroke();x.setLineDash([]);
+    // points
+    x.fillStyle=COL.am;x.beginPath();x.arc(fr.sx(A),fr.sy(fa),4.5,0,TAU);x.fill();
+    x.fillStyle=COL.pk;x.beginPath();x.arc(fr.sx(A+H2),fr.sy(fb),4,0,TAU);x.fill();
+    x.fillStyle=COL.mut;x.font="11px 'JetBrains Mono'";x.textAlign='center';
+    x.fillText('a',fr.sx(A),fr.sy(0)+14);x.fillText('a+h',fr.sx(A+H2),fr.sy(0)+14);
+    x.fillStyle=COL.cy;x.textAlign='left';x.fillText('tangente',fr.x0+6,fr.y0+14);
+    x.fillStyle=COL.pk;x.fillText('sécante',fr.x0+6,fr.y0+30);
+  });})();
+
+/* 3. VARIATIONS */
+(function(){const c=document.getElementById('cVar');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const sel=document.getElementById('vrSel'),selV=document.getElementById('vrSelv');
+  const form=document.getElementById('vrForm');
+  const defs=[
+    {f:v=>0.2*v*v*v-0.9*v+1, d:v=>0.6*v*v-0.9, t:'f(x) = 0,2x³ − 0,9x + 1', y:[-3,5]},
+    {f:v=>0.45*v*v-1.2,       d:v=>0.9*v,       t:'f(x) = 0,45x² − 1,2', y:[-3,5]},
+    {f:v=>-0.15*v*v*v+0.2*v*v+0.9*v+1, d:v=>-0.45*v*v+0.4*v+0.9, t:'f(x) = −0,15x³ + 0,2x² + 0,9x + 1', y:[-3,5]},
+  ];
+  function cur(){return defs[(+sel.value)-1];}
+  function upd(){selV.textContent=sel.value;form.innerHTML=cur().t;}
+  sel.oninput=upd;upd();
+  register(c,()=>{x.clearRect(0,0,c._w,c._h);const d=cur();
+    const fr=cartesian(x,c,-3.2,3.2,d.y[0],d.y[1]);
+    // f' dashed
+    x.strokeStyle=hex(COL.am,0.8);x.setLineDash([5,4]);x.lineWidth=1.6;x.beginPath();
+    {let st=false;for(let i=0;i<=300;i++){const X=fr.xmin+(fr.xmax-fr.xmin)*i/300;const Y=d.d(X);
+      if(Y<fr.ymin-2||Y>fr.ymax+2){st=false;continue;}const px=fr.sx(X),py=fr.sy(Y);
+      st?x.lineTo(px,py):(x.moveTo(px,py),st=true);}}x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.am;x.font="11px 'JetBrains Mono'";x.textAlign='left';x.fillText("f ′",fr.x0+6,fr.y0+14);
+    // f colored by sign of f'
+    x.lineWidth=2.8;let px0=null,py0=null;
+    for(let i=0;i<=300;i++){const X=fr.xmin+(fr.xmax-fr.xmin)*i/300;const Y=d.f(X);
+      const px=fr.sx(X),py=fr.sy(Y);
+      if(px0!==null){x.strokeStyle=d.d(X)>=0?COL.gr:COL.pk;x.beginPath();x.moveTo(px0,py0);x.lineTo(px,py);x.stroke();}
+      px0=px;py0=py;}
+    // extrema: where d changes sign
+    for(let i=1;i<=300;i++){const X1=fr.xmin+(fr.xmax-fr.xmin)*(i-1)/300,X2=fr.xmin+(fr.xmax-fr.xmin)*i/300;
+      if(d.d(X1)*d.d(X2)<0){const xc=(X1+X2)/2;x.fillStyle=COL.ink;
+        x.beginPath();x.arc(fr.sx(xc),fr.sy(d.f(xc)),4.5,0,TAU);x.fill();}}
+  });})();
+
+/* 4. CONVEXITÉ */
+(function(){const c=document.getElementById('cCvx');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const aR=document.getElementById('cxA'),aV=document.getElementById('cxAv');
+  const f2E=document.getElementById('cxF2'),verdE=document.getElementById('cxVerd');
+  function f(v){return 0.1*v*v*v-0.3*v*v-0.3*v+2.5;}
+  function df(v){return 0.3*v*v-0.6*v-0.3;}
+  function d2(v){return 0.6*v-0.6;}
+  function a(){return +aR.value/100;}
+  function upd(){aV.textContent=a().toFixed(1);f2E.textContent=d2(a()).toFixed(2);
+    const cv=d2(a());verdE.textContent=cv>0.02?'convexe (∪)':(cv<-0.02?'concave (∩)':'inflexion');
+    verdE.className='num '+(cv>0.02?'hl-cy':(cv<-0.02?'hl-pk':'hl-vi'));}
+  aR.oninput=upd;upd();
+  register(c,()=>{x.clearRect(0,0,c._w,c._h);
+    const fr=cartesian(x,c,-3,5,-3,7);
+    // shade concavity regions (inflection at x=1)
+    x.fillStyle=hex(COL.pk,0.08);x.fillRect(fr.x0,fr.y0,fr.sx(1)-fr.x0,fr.y1-fr.y0);
+    x.fillStyle=hex(COL.cy,0.08);x.fillRect(fr.sx(1),fr.y0,fr.x1-fr.sx(1),fr.y1-fr.y0);
+    x.fillStyle=hex(COL.pk,0.5);x.font="12px 'Caveat'";x.textAlign='center';x.fillText('concave',fr.sx(-1),fr.y0+16);
+    x.fillStyle=hex(COL.cy,0.6);x.fillText('convexe',fr.sx(3),fr.y0+16);
+    plot(x,fr,f,COL.ink,2.6);
+    // tangent at a
+    const A=a(),fa=f(A),d=df(A);x.strokeStyle=COL.am;x.lineWidth=2;x.beginPath();
+    x.moveTo(fr.sx(fr.xmin),fr.sy(d*(fr.xmin-A)+fa));x.lineTo(fr.sx(fr.xmax),fr.sy(d*(fr.xmax-A)+fa));x.stroke();
+    x.fillStyle=COL.am;x.beginPath();x.arc(fr.sx(A),fr.sy(fa),4.5,0,TAU);x.fill();
+    // inflection point
+    x.fillStyle=COL.vi;x.beginPath();x.arc(fr.sx(1),fr.sy(f(1)),5,0,TAU);x.fill();
+    x.fillStyle=COL.vi;x.font="11px 'JetBrains Mono'";x.textAlign='center';x.fillText('inflexion',fr.sx(1),fr.sy(f(1))-10);
+  });})();
+</script>
+</body>
+</html>
