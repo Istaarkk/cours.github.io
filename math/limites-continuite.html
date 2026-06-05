@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Limites & continuité — Terminale · le cahier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&family=Caveat:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf4e9; --paper2:#f3ead8; --card:#fffdf8; --card2:#fbf6ec;
+    --ink:#3b342c; --ink2:#5b5045; --muted:#9a8d7b; --line:#e6dac4;
+    --coral:#e07a5f; --mustard:#e3a02b; --sage:#5a9e7a; --teal:#2f9c8f;
+    --plum:#9a6a9e; --blue:#6d92c4; --rose:#d96c7a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);
+    font-family:'Nunito',system-ui,sans-serif;line-height:1.75;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(900px 600px at 85% -8%,rgba(224,122,95,.10),transparent 60%),
+      radial-gradient(800px 700px at -5% 25%,rgba(90,158,122,.08),transparent 55%),
+      var(--paper);}
+  body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(160,140,110,.07) 1px,transparent 1px);
+    background-size:100% 32px;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;line-height:1.12;font-weight:600}
+  .hand{font-family:'Caveat',cursive}
+  code,.mono{font-family:'JetBrains Mono',monospace;font-size:.92em;
+    background:rgba(160,140,110,.14);padding:1px 6px;border-radius:5px;color:var(--ink2)}
+  #prog{position:fixed;top:0;left:0;height:4px;width:0;
+    background:linear-gradient(90deg,var(--coral),var(--mustard));z-index:50;border-radius:0 4px 4px 0}
+  header.hero{min-height:96vh;display:flex;flex-direction:column;
+    justify-content:center;position:relative;padding:80px 0}
+  #heroCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;opacity:.85}
+  .kicker{font-family:'Caveat',cursive;font-size:26px;color:var(--coral);
+    transform:rotate(-2deg);margin-bottom:8px}
+  header.hero h1{font-size:clamp(44px,8vw,88px);font-weight:600;color:var(--ink);letter-spacing:-.01em}
+  header.hero h1 .grad{color:var(--coral);position:relative}
+  header.hero h1 .grad::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:12px;
+    background:rgba(227,160,43,.40);z-index:-1;transform:rotate(-1deg);border-radius:8px}
+  header.hero p.lead{font-size:clamp(17px,2vw,21px);color:var(--ink2);max-width:680px;margin-top:26px}
+  .scrolldown{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+    color:var(--muted);font-family:'Caveat',cursive;font-size:20px;
+    display:flex;flex-direction:column;align-items:center;gap:6px}
+  .scrolldown span{width:2px;height:42px;border-radius:2px;
+    background:linear-gradient(var(--coral),transparent);animation:drop 1.8s infinite}
+  @keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}
+    55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  section{padding:74px 0;position:relative}
+  .step{font-family:'Caveat',cursive;font-size:24px;color:var(--coral);
+    transform:rotate(-1.5deg);display:inline-block;margin-bottom:6px}
+  section h2{font-size:clamp(28px,4.4vw,46px);margin-bottom:10px;color:var(--ink)}
+  section .sub{color:var(--ink2);font-size:17.5px;max-width:740px;margin-bottom:30px}
+  p.body{color:var(--ink2);max-width:760px;margin:16px 0;font-size:16.5px}
+  p.body b{color:var(--ink);font-weight:700}
+  ul.body{color:var(--ink2);max-width:760px;margin:14px 0 14px 6px;font-size:16.5px;list-style:none}
+  ul.body li{margin:9px 0;padding-left:24px;position:relative}
+  ul.body li::before{content:"—";position:absolute;left:0;top:0;color:var(--coral);font-weight:700}
+  ul.body b{color:var(--ink);font-weight:700}
+  .hl-cy{color:var(--teal);font-weight:700}.hl-vi{color:var(--plum);font-weight:700}
+  .hl-am{color:var(--mustard);font-weight:700}.hl-pk{color:var(--coral);font-weight:700}
+  .hl-gr{color:var(--sage);font-weight:700}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:26px;box-shadow:0 18px 40px -24px rgba(120,90,50,.45),0 2px 0 rgba(0,0,0,.02);
+    position:relative}
+  .card::before{content:"";position:absolute;top:-11px;left:38px;width:88px;height:24px;
+    background:rgba(227,160,43,.28);border:1px solid rgba(227,160,43,.30);
+    transform:rotate(-3deg);border-radius:2px}
+  .card + .card{margin-top:26px}
+  canvas.viz{display:block;width:100%;border-radius:12px;
+    background:#fdf8ee;border:1px solid var(--line)}
+  .controls{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:20px;align-items:flex-end}
+  .ctrl{display:flex;flex-direction:column;gap:7px;min-width:170px;flex:1}
+  .ctrl label{font-size:13px;color:var(--ink2);font-weight:600;
+    display:flex;justify-content:space-between;align-items:baseline}
+  .ctrl label .val{color:var(--coral);font-family:'JetBrains Mono',monospace;font-size:12px}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;
+    background:var(--paper2);outline:none;width:100%;border:1px solid var(--line)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;
+    border-radius:50%;background:var(--coral);cursor:pointer;border:3px solid var(--card);
+    box-shadow:0 2px 6px rgba(224,122,95,.5)}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border:3px solid var(--card);
+    border-radius:50%;background:var(--coral);cursor:pointer}
+  button.btn{font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;
+    color:#fff;background:var(--coral);border:0;padding:10px 18px;border-radius:999px;
+    cursor:pointer;transition:.14s;box-shadow:0 6px 14px -6px var(--coral)}
+  button.btn:hover{transform:translateY(-2px) rotate(-1deg)}
+  button.btn.ghost{background:transparent;color:var(--ink2);border:2px solid var(--line);box-shadow:none}
+  button.btn.ghost:hover{border-color:var(--coral);color:var(--coral)}
+  .reveal{opacity:0;transform:translateY(30px) rotate(-.4deg);
+    transition:.85s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+  .legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}
+  .legend div{background:var(--card2);border:1px solid var(--line);border-left:4px solid var(--sage);
+    padding:12px 15px;border-radius:10px;font-size:14.5px;color:var(--ink2)}
+  .legend div b{color:var(--ink)}
+  .formula{background:var(--card2);border:1px dashed var(--line);border-radius:14px;
+    padding:20px 22px;text-align:center;margin:18px 0;overflow-x:auto;
+    font-family:'JetBrains Mono',monospace;font-size:clamp(14px,2.1vw,19px);color:var(--ink)}
+  .formula .v{color:var(--plum)}.formula .c{color:var(--teal)}
+  .formula .a{color:var(--mustard)}.formula .p{color:var(--coral)}.formula .g{color:var(--sage)}
+  .formula .mut{color:var(--muted)}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;line-height:1.05}
+  .frac .num{border-bottom:1.5px solid var(--ink2);padding:0 6px}
+  .frac .den{padding:0 6px}
+  .exbox{margin-top:18px;padding:16px 18px;border-radius:12px;
+    background:rgba(154,106,158,.10);border:1px solid rgba(154,106,158,.25)}
+  .exbox h4{font-family:'Caveat',cursive;font-size:21px;color:var(--plum);margin-bottom:4px;transform:rotate(-1deg)}
+  .exbox p{color:var(--ink2);font-size:15px;margin:4px 0}
+  .exbox.gr{background:rgba(90,158,122,.10);border-color:rgba(90,158,122,.28)}
+  .exbox.gr h4{color:var(--sage)}
+  .exbox.am{background:rgba(227,160,43,.12);border-color:rgba(227,160,43,.30)}
+  .exbox.am h4{color:var(--mustard)}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--card2);
+    border:1px solid var(--line);padding:6px 13px;border-radius:999px;font-size:13px;
+    font-family:'JetBrains Mono',monospace;color:var(--ink2);margin:6px 6px 0 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .stat{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+  .stat .box{flex:1;min-width:120px;background:var(--card2);border:1px solid var(--line);
+    border-radius:12px;padding:13px 15px}
+  .stat .box .lbl{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--muted)}
+  .stat .box .num{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--teal);margin-top:2px}
+  .exo{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;
+    box-shadow:0 18px 40px -24px rgba(120,90,50,.4);margin-top:22px}
+  .exo .diff{font-family:'Caveat',cursive;font-size:19px;color:var(--mustard);margin-bottom:0}
+  .exo h3{font-family:'Fraunces',serif;font-size:22px;color:var(--ink);margin:2px 0 10px}
+  .exo .enonce{color:var(--ink2);font-size:16px}
+  .exo .enonce ol{margin:10px 0 0 20px}
+  .exo .enonce li{margin:6px 0}
+  details.corr{margin-top:16px;border:1px solid var(--line);border-radius:12px;
+    background:var(--card2);overflow:hidden}
+  details.corr>summary{cursor:pointer;list-style:none;padding:12px 16px;font-weight:700;
+    color:var(--coral);font-size:15px;display:flex;align-items:center;gap:9px;user-select:none}
+  details.corr>summary::-webkit-details-marker{display:none}
+  details.corr>summary::before{content:"▸";transition:.2s;color:var(--coral)}
+  details.corr[open]>summary::before{transform:rotate(90deg)}
+  details.corr .cbody{padding:6px 18px 16px;color:var(--ink2);font-size:15.5px;border-top:1px solid var(--line)}
+  details.corr .cbody p{margin:8px 0}
+  details.corr .cbody .calc{font-family:'JetBrains Mono',monospace;font-size:13.5px;
+    background:var(--paper2);border:1px solid var(--line);border-radius:8px;
+    padding:8px 12px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+  details.corr .cbody .res{background:rgba(90,158,122,.15);border-left:4px solid var(--sage);
+    padding:9px 13px;border-radius:8px;margin:10px 0;color:var(--ink);font-weight:600}
+  .note{font-family:'Caveat',cursive;font-size:21px;color:var(--coral);
+    transform:rotate(-1deg);margin:14px 0;display:block}
+  .note::before{content:"➜ ";}
+  .topnav{position:fixed;top:14px;left:16px;z-index:60;font-family:'Caveat',cursive;
+    font-size:19px;color:var(--coral);text-decoration:none;background:var(--card);
+    border:1px solid var(--line);padding:4px 14px;border-radius:999px;box-shadow:0 4px 10px -6px rgba(0,0,0,.3)}
+  footer{padding:56px 0 90px;text-align:center;color:var(--ink2);font-size:15px;
+    border-top:2px dashed var(--line);margin-top:30px}
+  footer .big{font-family:'Fraunces',serif;font-size:26px;color:var(--ink);margin-bottom:8px}
+  footer .tag{font-family:'Caveat',cursive;font-size:20px;color:var(--coral)}
+  ::selection{background:rgba(227,160,43,.35)}
+  nav.toc{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:40;
+    display:flex;flex-direction:column;gap:10px}
+  nav.toc a{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);
+    background:var(--card);transition:.2s;position:relative}
+  nav.toc a:hover,nav.toc a.act{background:var(--coral);border-color:var(--coral)}
+  nav.toc a span{position:absolute;right:22px;top:50%;transform:translateY(-50%);
+    white-space:nowrap;font-family:'Caveat',cursive;font-size:17px;color:var(--ink2);
+    opacity:0;pointer-events:none;transition:.2s;background:var(--card);padding:2px 10px;
+    border-radius:8px;border:1px solid var(--line);box-shadow:0 4px 10px -6px rgba(0,0,0,.3)}
+  nav.toc a:hover span{opacity:1}
+  @media(max-width:900px){nav.toc{display:none}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<a class="topnav" href="../index.html">← tous les cours</a>
+<nav class="toc" id="toc"></nav>
+
+<header class="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="wrap">
+    <div class="kicker">Maths · Terminale · Analyse</div>
+    <h1>Limites<br>& <span class="grad">continuité</span></h1>
+    <p class="lead">Que devient une fonction quand x s'envole vers l'infini, ou s'approche
+      d'une valeur interdite ? Asymptotes, formes indéterminées, continuité, théorème des
+      valeurs intermédiaires et méthode de dichotomie. Chaque idée illustrée par une courbe
+      que tu peux explorer.</p>
+  </div>
+  <div class="scrolldown"><span></span>fais défiler</div>
+</header>
+
+<!-- 1 -->
+<section id="s1">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 1</div>
+    <h2>Asymptotes : limites en l'infini et en un point</h2>
+    <p class="sub">Une <b>asymptote</b> est une droite dont la courbe se rapproche
+      infiniment. Horizontale quand x → ±∞ (la limite est un nombre), verticale quand x
+      s'approche d'une valeur interdite (la limite est ±∞). L'exemple ci-dessous a les deux.</p>
+    <div class="card">
+      <div class="formula">f(x) = <span class="frac"><span class="num">2x + 1</span><span class="den">x − 1</span></span>
+        = 2 + <span class="frac"><span class="num">3</span><span class="den">x − 1</span></span>
+        &nbsp;&nbsp;<span class="mut">→</span>&nbsp; <span class="c">asymptote horizontale y = 2</span>,
+        <span class="p">asymptote verticale x = 1</span></div>
+      <canvas id="cAsym" class="viz" height="380"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>position du point x₀ <span class="val" id="asXv">4.0</span></label>
+          <input id="asX" type="range" min="120" max="900" value="400"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">f(x₀)</div><div class="num hl-cy" id="asFx">—</div></div>
+        <div class="box"><div class="lbl">écart |f(x₀) − 2|</div><div class="num hl-pk" id="asGap">—</div></div>
+      </div>
+      <p class="body">Pousse x₀ vers la droite : f(x₀) se colle à <span class="hl-cy">2</span>
+        (l'écart fond vers 0) — c'est l'asymptote horizontale. À l'inverse, approche x₀ de
+        <span class="hl-pk">1</span> : f explose vers l'infini — c'est l'asymptote
+        verticale. On note lim<sub>x→+∞</sub> f(x) = 2 et lim<sub>x→1⁺</sub> f(x) = +∞.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section id="s2">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 2</div>
+    <h2>Opérations & formes indéterminées</h2>
+    <p class="sub">Souvent on combine des limites connues. Mais quatre situations ne se
+      décident pas directement : ce sont les <b>formes indéterminées (FI)</b>. La parade
+      la plus fréquente : <b>factoriser par le terme dominant</b>.</p>
+    <div class="card">
+      <div class="grid2">
+        <div>
+          <div class="formula" style="font-size:16px">
+            Les 4 FI :<br>
+            <span class="p">∞ − ∞</span> &nbsp; <span class="p">0 × ∞</span><br>
+            <span class="p"><span class="frac"><span class="num">∞</span><span class="den">∞</span></span></span>
+            &nbsp;&nbsp; <span class="p"><span class="frac"><span class="num">0</span><span class="den">0</span></span></span>
+          </div>
+        </div>
+        <div>
+          <p class="body" style="margin-top:0">À l'infini, un <b>polynôme</b> a la même
+            limite que son <b>terme de plus haut degré</b>. Un <b>quotient</b> de polynômes
+            a la même limite que le <b>quotient des termes dominants</b>.</p>
+        </div>
+      </div>
+      <canvas id="cDom" class="viz" height="320"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>coefficient a de a·x³ <span class="val" id="dmAv">1.0</span></label>
+          <input id="dmA" type="range" min="-20" max="20" value="10"></div>
+      </div>
+      <div class="formula" id="dmVerdict">…</div>
+      <p class="body">P(x) = <span class="hl-am">a·x³</span> − 2x² + 1. Quand x → +∞, c'est
+        le terme <span class="hl-am">a·x³</span> qui « gagne » : la limite ne dépend que de
+        son signe. Change a et regarde la branche de droite basculer.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section id="s3">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 3</div>
+    <h2>La continuité : tracer sans lever le crayon</h2>
+    <p class="sub">Une fonction est <b>continue</b> sur un intervalle si on peut tracer sa
+      courbe d'un seul trait, sans saut. Formellement : lim<sub>x→a</sub> f(x) = f(a) en
+      tout point a. Règle la hauteur du saut et observe.</p>
+    <div class="card">
+      <canvas id="cCont" class="viz" height="340"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>hauteur du saut en x = 1 <span class="val" id="coSv">0.0</span></label>
+          <input id="coS" type="range" min="0" max="350" value="0"></div>
+      </div>
+      <div class="formula" id="coVerdict">…</div>
+      <div class="legend">
+        <div><b>Continue</b> — la courbe se referme : pas de saut, on trace d'un trait.</div>
+        <div><b>Point fermé ●</b> — la valeur f(a) prise par la fonction.</div>
+        <div><b>Point ouvert ○</b> — la valeur « approchée » mais non atteinte.</div>
+        <div><b>À retenir</b> — toute fonction dérivable est continue (la réciproque est fausse).</div>
+      </div>
+      <p class="body">Au Bac, on admet que les fonctions usuelles (polynômes, exp, ln,
+        racine, fonctions rationnelles sur leur domaine…) sont continues. La continuité
+        est l'hypothèse indispensable du théorème qui suit.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="s4">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 4</div>
+    <h2>Le théorème des valeurs intermédiaires</h2>
+    <p class="sub">Si f est <b>continue</b> sur [a, b], alors elle prend <b>toutes</b> les
+      valeurs comprises entre f(a) et f(b). Si en plus f est <b>strictement monotone</b>,
+      cette valeur est atteinte une <b>seule</b> fois.</p>
+    <div class="card">
+      <div class="formula">f continue sur [a,b] &nbsp;<span class="mut">et</span>&nbsp;
+        <span class="c">k</span> entre f(a) et f(b)
+        &nbsp;<span class="mut">⇒</span>&nbsp; <span class="g">∃ c ∈ [a,b], f(c) = k</span></div>
+      <canvas id="cTVI" class="viz" height="380"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>valeur cible k <span class="val" id="tvKv">0.0</span></label>
+          <input id="tvK" type="range" min="-100" max="100" value="20"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">f(−2)</div><div class="num" id="tvFa">—</div></div>
+        <div class="box"><div class="lbl">f(2)</div><div class="num" id="tvFb">—</div></div>
+        <div class="box"><div class="lbl">solution c</div><div class="num hl-gr" id="tvC">—</div></div>
+      </div>
+      <p class="body">Ici f(x) = x³ + x est continue et strictement croissante : pour
+        chaque hauteur <span class="hl-cy">k</span>, la droite horizontale coupe la courbe
+        en un <b>unique</b> point <span class="hl-gr">c</span>. C'est ce qui justifie qu'une
+        équation f(x) = k admet une solution unique — sans pour autant savoir la calculer.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section id="s5">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 5</div>
+    <h2>La dichotomie : encadrer la solution</h2>
+    <p class="sub">Le TVI dit qu'une solution existe, mais pas sa valeur. Pour l'approcher,
+      on <b>coupe l'intervalle en deux</b> à chaque étape et on garde la moitié qui contient
+      la solution. La précision double à chaque coup.</p>
+    <div class="card">
+      <div class="formula">Résoudre <span class="c">x³ + x = 5</span> sur [1 ; 2]
+        &nbsp;<span class="mut">(solution ≈ 1,5156…)</span></div>
+      <canvas id="cDicho" class="viz" height="360"></canvas>
+      <div class="controls">
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <button class="btn" id="diStep">Couper en deux</button>
+          <button class="btn ghost" id="diReset">Recommencer</button>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">étape</div><div class="num" id="diN">0</div></div>
+        <div class="box"><div class="lbl">intervalle [a ; b]</div><div class="num" id="diInt" style="font-size:16px">[1 ; 2]</div></div>
+        <div class="box"><div class="lbl">milieu m</div><div class="num hl-pk" id="diM">—</div></div>
+        <div class="box"><div class="lbl">largeur</div><div class="num" id="diW">1</div></div>
+      </div>
+      <p class="body">À chaque étape, on calcule le signe de f au milieu m : s'il est de
+        même signe que f(a), la solution est à droite (a ← m), sinon à gauche (b ← m).
+        Après n coupes, la solution est connue à <span class="hl-pk">(b−a)/2ⁿ</span> près —
+        c'est l'algorithme qu'on programme en Python au Bac.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EXOS -->
+<section id="sExos">
+  <div class="wrap reveal">
+    <div class="step">À toi de jouer</div>
+    <h2>Exercices type Bac</h2>
+    <p class="sub">Cherche, puis déplie la correction.</p>
+
+    <div class="exo">
+      <div class="diff">★ ☆ ☆ — limite en l'infini</div>
+      <h3>1. Limite d'un quotient</h3>
+      <div class="enonce">Détermine lim<sub>x→+∞</sub> de f(x) = (3x² − x + 2)/(x² + 5).</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>On factorise haut et bas par le terme dominant x² :</p>
+          <div class="calc">f(x) = x²(3 − 1/x + 2/x²) / [x²(1 + 5/x²)]
+       = (3 − 1/x + 2/x²) / (1 + 5/x²)</div>
+          <p>Quand x → +∞ : 1/x → 0, 2/x² → 0, 5/x² → 0.</p>
+          <div class="res">lim<sub>x→+∞</sub> f(x) = 3/1 = 3 (asymptote horizontale y = 3).</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="exo">
+      <div class="diff">★ ★ ☆ — forme indéterminée</div>
+      <h3>2. Lever une indétermination « ∞ − ∞ »</h3>
+      <div class="enonce">Calcule lim<sub>x→+∞</sub> (√(x² + x) − x).</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>Forme « ∞ − ∞ ». On multiplie par la quantité conjuguée :</p>
+          <div class="calc">√(x²+x) − x = [(√(x²+x) − x)(√(x²+x) + x)] / (√(x²+x) + x)
+            = (x² + x − x²) / (√(x²+x) + x) = x / (√(x²+x) + x)</div>
+          <p>On factorise par x (avec x &gt; 0, √(x²+x) = x·√(1 + 1/x)) :</p>
+          <div class="calc">= x / [x(√(1+1/x) + 1)] = 1 / (√(1+1/x) + 1) → 1/(1+1) </div>
+          <div class="res">lim<sub>x→+∞</sub> (√(x²+x) − x) = 1/2.</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="exo">
+      <div class="diff">★ ★ ☆ — TVI</div>
+      <h3>3. Existence et unicité d'une solution</h3>
+      <div class="enonce">Soit f(x) = x³ + 3x − 1 sur ℝ. Montre que l'équation f(x) = 0
+        admet une unique solution α, puis donne un encadrement de α à 0,1 près.</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>f est un polynôme, donc <b>continue</b> sur ℝ. Sa dérivée f′(x) = 3x² + 3 &gt; 0,
+            donc f est <b>strictement croissante</b> sur ℝ.</p>
+          <p>f(0) = −1 &lt; 0 et f(1) = 1 + 3 − 1 = 3 &gt; 0 : 0 est compris entre f(0) et f(1).</p>
+          <div class="res">Par le TVI (version stricte monotonie), f(x) = 0 admet une solution
+            unique α, et α ∈ ]0 ; 1[.</div>
+          <p>On affine : f(0,3) = 0,027 + 0,9 − 1 = −0,073 &lt; 0 ; f(0,4) = 0,064 + 1,2 − 1 = 0,264 &gt; 0.</p>
+          <div class="res">Donc 0,3 &lt; α &lt; 0,4 : encadrement à 0,1 près.</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="exo">
+      <div class="diff">★ ★ ★ — dichotomie / Python</div>
+      <h3>4. L'algorithme de dichotomie</h3>
+      <div class="enonce">On cherche la solution de x³ + x = 5 sur [1 ; 2] à 0,01 près.
+        Combien d'étapes de dichotomie faut-il au minimum ? Écris l'idée de l'algorithme.</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>Après n coupes, la largeur de l'intervalle est (2−1)/2ⁿ = 1/2ⁿ. On veut
+            1/2ⁿ ≤ 0,01, soit 2ⁿ ≥ 100.</p>
+          <div class="calc">2⁶ = 64 &lt; 100,  2⁷ = 128 ≥ 100</div>
+          <div class="res">Il faut au minimum 7 étapes.</div>
+          <p>Algorithme (principe) :</p>
+          <div class="calc">a, b = 1, 2
+tant que b - a > 0.01 :
+    m = (a + b)/2
+    si (m**3 + m - 5)*(a**3 + a - 5) <= 0 :
+        b = m        # la solution est dans [a, m]
+    sinon :
+        a = m        # la solution est dans [m, b]</div>
+          <div class="res">On renvoie m comme valeur approchée de la solution.</div>
+        </div>
+      </details>
+    </div>
+    <span class="note">Pour appliquer le TVI : énonce continuité, monotonie, puis compare
+      la valeur cible aux bornes. Les trois, toujours.</span>
+  </div>
+</section>
+
+<!-- RECAP -->
+<section id="sRecap">
+  <div class="wrap reveal">
+    <div class="step">Avant de fermer le cahier</div>
+    <h2>Les réflexes à retenir</h2>
+    <div class="card">
+      <ul class="body">
+        <li><b>Asymptote horizontale</b> — lim en ±∞ finie = ℓ ⇒ droite y = ℓ.</li>
+        <li><b>Asymptote verticale</b> — lim infinie en a ⇒ droite x = a.</li>
+        <li><b>Terme dominant</b> — limite d'un polynôme/quotient en ±∞ = celle des termes de plus haut degré.</li>
+        <li><b>4 formes indéterminées</b> — ∞−∞, 0×∞, ∞/∞, 0/0. On factorise (ou conjugue).</li>
+        <li><b>Continue</b> — tracé d'un trait ; lim<sub>x→a</sub> f = f(a). Dérivable ⇒ continue.</li>
+        <li><b>TVI</b> — continue + k entre f(a) et f(b) ⇒ solution existe ; + stricte monotonie ⇒ unique.</li>
+        <li><b>Dichotomie</b> — on coupe en deux, précision (b−a)/2ⁿ.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="big">Chapitre Limites & continuité terminé.</div>
+    <p class="tag">Au programme ensuite : dérivation & convexité.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const TAU=Math.PI*2, PI=Math.PI;
+const COL={cy:'#2f9c8f',vi:'#9a6a9e',am:'#e3a02b',pk:'#e07a5f',gr:'#5a9e7a',
+  mut:'#9a8d7b',line:'#e0d4bd',ink:'#3b342c',bg:'#fdf8ee'};
+function setupCanvas(c){const dpr=Math.min(window.devicePixelRatio||1,2);
+  const r=c.getBoundingClientRect();c.width=r.width*dpr;c.height=(+c.getAttribute('height')||300)*dpr;
+  c.style.height=(+c.getAttribute('height')||300)+'px';
+  const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
+  c._w=r.width;c._h=+(c.getAttribute('height')||300);return x;}
+const prog=document.getElementById('prog');
+addEventListener('scroll',()=>{const s=scrollY/(document.body.scrollHeight-innerHeight);
+  prog.style.width=(s*100)+'%';},{passive:true});
+const ioR=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>ioR.observe(el));
+const tocNames={s1:'Asymptotes',s2:'Formes indét.',s3:'Continuité',s4:'TVI',
+  s5:'Dichotomie',sExos:'Exercices',sRecap:'Récap'};
+const toc=document.getElementById('toc');
+Object.keys(tocNames).forEach(id=>{const a=document.createElement('a');a.href='#'+id;
+  a.innerHTML='<span>'+tocNames[id]+'</span>';a.dataset.t=id;toc.appendChild(a);});
+const tocLinks=[...toc.querySelectorAll('a')];
+const ioToc=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){
+  tocLinks.forEach(l=>l.classList.toggle('act',l.dataset.t===e.target.id));}}),{threshold:.4});
+Object.keys(tocNames).forEach(id=>{const s=document.getElementById(id);if(s)ioToc.observe(s);});
+const animators=[];
+function register(canvas,drawFn){const a={canvas,draw:drawFn,on:false,t:0};animators.push(a);
+  new IntersectionObserver(es=>{a.on=es[0].isIntersecting;},{threshold:.04}).observe(canvas);return a;}
+let last=performance.now();
+(function tick(now){const dt=Math.min((now-last)/1000,.05);last=now;
+  for(const a of animators){if(a.on){a.t+=dt;a.draw(a.t,dt);}}requestAnimationFrame(tick);})(performance.now());
+function hex(c,al){const n=parseInt(c.slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+al+')';}
+
+/* cartesian frame with axes through origin */
+function cartesian(x,c,xmin,xmax,ymin,ymax){
+  const W=c._w,H=c._h,m=18,x0=m+18,x1=W-12,y0=12,y1=H-22;
+  const sx=X=>x0+(x1-x0)*(X-xmin)/(xmax-xmin);
+  const sy=Y=>y1-(y1-y0)*(Y-ymin)/(ymax-ymin);
+  x.strokeStyle=COL.line;x.lineWidth=1;
+  for(let g=Math.ceil(xmin);g<=xmax;g++){x.beginPath();x.moveTo(sx(g),y0);x.lineTo(sx(g),y1);x.stroke();}
+  for(let g=Math.ceil(ymin);g<=ymax;g++){x.beginPath();x.moveTo(x0,sy(g));x.lineTo(x1,sy(g));x.stroke();}
+  x.strokeStyle=hex(COL.mut,0.75);x.lineWidth=1.4;
+  if(ymin<=0&&ymax>=0){x.beginPath();x.moveTo(x0,sy(0));x.lineTo(x1,sy(0));x.stroke();}
+  if(xmin<=0&&xmax>=0){x.beginPath();x.moveTo(sx(0),y0);x.lineTo(sx(0),y1);x.stroke();}
+  return {sx,sy,x0,x1,y0,y1,xmin,xmax,ymin,ymax};
+}
+/* plot f with auto-break on big vertical jumps (asymptotes) */
+function plot(x,fr,f,col,lw){
+  x.strokeStyle=col;x.lineWidth=lw||2.4;x.beginPath();
+  const N=400;let started=false,prevY=null;
+  for(let i=0;i<=N;i++){const X=fr.xmin+(fr.xmax-fr.xmin)*i/N;let Y=f(X);
+    if(!isFinite(Y)){started=false;continue;}
+    const yc=Math.max(fr.ymin-2,Math.min(fr.ymax+2,Y));
+    if(started&&Math.abs(Y-prevY)>(fr.ymax-fr.ymin)*1.4){started=false;}
+    const px=fr.sx(X),py=fr.sy(yc);
+    if(!started){x.moveTo(px,py);started=true;}else x.lineTo(px,py);
+    prevY=Y;}
+  x.stroke();
+}
+
+/* HERO : curve approaching asymptote */
+(function(){const c=document.getElementById('heroCanvas');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  register(c,(t)=>{const W=c._w,H=c._h;x.clearRect(0,0,W,H);
+    const asy=H*0.42;
+    x.strokeStyle=hex(COL.mut,0.3);x.setLineDash([7,7]);x.lineWidth=1.4;
+    x.beginPath();x.moveTo(40,asy);x.lineTo(W-40,asy);x.stroke();x.setLineDash([]);
+    x.strokeStyle=hex(COL.pk,0.5);x.lineWidth=2.4;x.beginPath();
+    const wob=1+0.12*Math.sin(t*0.8);
+    for(let px=50;px<W-40;px+=4){const u=(px-50)/(W-90);
+      const py=asy - 150*Math.exp(-u*5*wob) + 8*Math.sin(u*8+t);
+      px===50?x.moveTo(px,py):x.lineTo(px,py);}x.stroke();
+  });})();
+
+/* 1. ASYMPTOTES f=(2x+1)/(x-1) */
+(function(){const c=document.getElementById('cAsym');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const xR=document.getElementById('asX'),xV=document.getElementById('asXv');
+  const fxE=document.getElementById('asFx'),gapE=document.getElementById('asGap');
+  function f(v){return (2*v+1)/(v-1);}
+  function x0(){return +xR.value/100;}
+  function upd(){const v=x0();xV.textContent=v.toFixed(1);fxE.textContent=f(v).toFixed(3);
+    gapE.textContent=Math.abs(f(v)-2).toFixed(3);}
+  xR.oninput=upd;upd();
+  register(c,()=>{x.clearRect(0,0,c._w,c._h);
+    const fr=cartesian(x,c,-7,9,-6,10);
+    // asymptotes
+    x.strokeStyle=hex(COL.cy,0.85);x.setLineDash([6,5]);x.lineWidth=1.5;
+    x.beginPath();x.moveTo(fr.x0,fr.sy(2));x.lineTo(fr.x1,fr.sy(2));x.stroke();
+    x.strokeStyle=hex(COL.pk,0.85);x.beginPath();x.moveTo(fr.sx(1),fr.y0);x.lineTo(fr.sx(1),fr.y1);x.stroke();
+    x.setLineDash([]);
+    x.fillStyle=COL.cy;x.font="12px 'JetBrains Mono'";x.textAlign='left';x.fillText('y = 2',fr.x1-44,fr.sy(2)-6);
+    x.fillStyle=COL.pk;x.fillText('x = 1',fr.sx(1)+6,fr.y0+14);
+    plot(x,fr,f,COL.ink,2.4);
+    // moving point
+    const v=x0(),py=fr.sy(f(v)),px=fr.sx(v);
+    x.strokeStyle=hex(COL.am,0.7);x.setLineDash([3,3]);x.lineWidth=1.2;
+    x.beginPath();x.moveTo(px,py);x.lineTo(px,fr.sy(2));x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.am;x.beginPath();x.arc(px,py,4.5,0,TAU);x.fill();
+    x.fillStyle=COL.mut;x.textAlign='center';x.fillText('x₀',px,fr.sy(0)+14);
+  });})();
+
+/* 2. TERME DOMINANT P=a x^3 -2x^2 +1 */
+(function(){const c=document.getElementById('cDom');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const aR=document.getElementById('dmA'),aV=document.getElementById('dmAv');
+  const verd=document.getElementById('dmVerdict');
+  function a(){return +aR.value/10;}
+  function f(v){return a()*v*v*v-2*v*v+1;}
+  function upd(){const A=a();aV.textContent=A.toFixed(1);
+    let r;if(A>0)r='<span class="g">+∞</span>';else if(A<0)r='<span class="p">−∞</span>';else r='limite finie (degré 2)';
+    verd.innerHTML='lim<sub>x→+∞</sub> P(x) = '+r+' &nbsp;<span class="mut">(signe de a·x³)</span>';}
+  aR.oninput=upd;upd();
+  register(c,()=>{x.clearRect(0,0,c._w,c._h);
+    const fr=cartesian(x,c,-4,4,-12,12);
+    plot(x,fr,f,COL.am,2.6);
+    // highlight right branch direction
+    const xe=3.6,ye=Math.max(fr.ymin,Math.min(fr.ymax,f(xe)));
+    x.fillStyle=a()>=0?COL.gr:COL.pk;x.font="13px 'JetBrains Mono'";x.textAlign='right';
+    x.fillText(a()>0?'↗ +∞':(a()<0?'↘ −∞':''),fr.x1-6,a()>0?fr.y0+16:fr.y1-8);
+  });})();
+
+/* 3. CONTINUITÉ jump */
+(function(){const c=document.getElementById('cCont');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const sR=document.getElementById('coS'),sV=document.getElementById('coSv');
+  const verd=document.getElementById('coVerdict');
+  function jump(){return +sR.value/100;}
+  function upd(){const j=jump();sV.textContent=j.toFixed(1);
+    verd.innerHTML=j<0.05?'<span class="g">saut nul → fonction continue en x = 1</span>'
+      :'<span class="p">saut de '+j.toFixed(1)+' → discontinuité en x = 1</span>';}
+  sR.oninput=upd;upd();
+  function g1(v){return 0.6*v+1.2;}         // x<1
+  function g2(v){return 0.6*v+1.2+jump();}   // x>=1
+  register(c,()=>{x.clearRect(0,0,c._w,c._h);
+    const fr=cartesian(x,c,-3,5,-1,7);
+    // left piece
+    x.strokeStyle=COL.ink;x.lineWidth=2.6;x.beginPath();
+    for(let X=-3;X<=1;X+=0.05){const px=fr.sx(X),py=fr.sy(g1(X));X===-3?x.moveTo(px,py):x.lineTo(px,py);}x.stroke();
+    // right piece
+    x.beginPath();for(let X=1;X<=5;X+=0.05){const px=fr.sx(X),py=fr.sy(g2(X));X===1?x.moveTo(px,py):x.lineTo(px,py);}x.stroke();
+    // endpoints at x=1
+    const yL=fr.sy(g1(1)),yR=fr.sy(g2(1)),px=fr.sx(1);
+    if(jump()>=0.05){
+      x.fillStyle=COL.bg;x.strokeStyle=COL.ink;x.lineWidth=2;
+      x.beginPath();x.arc(px,yL,4.5,0,TAU);x.fill();x.stroke(); // open
+      x.fillStyle=COL.pk;x.beginPath();x.arc(px,yR,4.5,0,TAU);x.fill(); // closed
+      x.strokeStyle=hex(COL.pk,0.5);x.setLineDash([3,3]);x.beginPath();x.moveTo(px,yL);x.lineTo(px,yR);x.stroke();x.setLineDash([]);
+    } else {
+      x.fillStyle=COL.gr;x.beginPath();x.arc(px,yR,4.5,0,TAU);x.fill();
+    }
+    x.fillStyle=COL.mut;x.font="11px 'JetBrains Mono'";x.textAlign='center';x.fillText('x = 1',px,fr.y1-4);
+  });})();
+
+/* 4. TVI f=x^3+x */
+function bisectSolve(g,a,b){for(let i=0;i<60;i++){const m=(a+b)/2;
+  if(g(a)*g(m)<=0)b=m;else a=m;}return (a+b)/2;}
+(function(){const c=document.getElementById('cTVI');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const kR=document.getElementById('tvK'),kV=document.getElementById('tvKv');
+  const faE=document.getElementById('tvFa'),fbE=document.getElementById('tvFb'),cE=document.getElementById('tvC');
+  function f(v){return v*v*v+v;}
+  function k(){return +kR.value/10;}
+  function upd(){kV.textContent=k().toFixed(1);faE.textContent=f(-2).toFixed(0);
+    fbE.textContent=f(2).toFixed(0);
+    const sol=bisectSolve(v=>f(v)-k(),-2,2);cE.textContent=sol.toFixed(3);}
+  kR.oninput=upd;upd();
+  register(c,()=>{x.clearRect(0,0,c._w,c._h);
+    const fr=cartesian(x,c,-2.2,2.2,-11,11);
+    plot(x,fr,f,COL.ink,2.6);
+    // k line
+    const K=k();x.strokeStyle=hex(COL.cy,0.9);x.setLineDash([6,4]);x.lineWidth=1.6;
+    x.beginPath();x.moveTo(fr.x0,fr.sy(K));x.lineTo(fr.x1,fr.sy(K));x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.cy;x.font="12px 'JetBrains Mono'";x.textAlign='left';x.fillText('y = k',fr.x1-42,fr.sy(K)-6);
+    // solution c
+    const sol=bisectSolve(v=>f(v)-K,-2,2);const px=fr.sx(sol),py=fr.sy(K);
+    x.strokeStyle=hex(COL.gr,0.7);x.setLineDash([3,3]);x.lineWidth=1.2;
+    x.beginPath();x.moveTo(px,py);x.lineTo(px,fr.sy(0));x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.gr;x.beginPath();x.arc(px,py,5,0,TAU);x.fill();
+    x.fillStyle=COL.gr;x.textAlign='center';x.fillText('c',px,fr.sy(0)+15);
+    // endpoints a,b
+    x.fillStyle=COL.pk;[-2,2].forEach(v=>{x.beginPath();x.arc(fr.sx(v),fr.sy(f(v)),3.5,0,TAU);x.fill();});
+  });})();
+
+/* 5. DICHOTOMIE solve x^3+x=5 on [1,2] */
+(function(){const c=document.getElementById('cDicho');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const nE=document.getElementById('diN'),intE=document.getElementById('diInt'),
+        mE=document.getElementById('diM'),wE=document.getElementById('diW');
+  function g(v){return v*v*v+v-5;}
+  let a=1,b=2,n=0;
+  function reset(){a=1;b=2;n=0;upd();}
+  function step(){const m=(a+b)/2;if(g(a)*g(m)<=0)b=m;else a=m;n++;upd();}
+  function upd(){nE.textContent=n;intE.textContent='['+a.toFixed(3)+' ; '+b.toFixed(3)+']';
+    mE.textContent=((a+b)/2).toFixed(3);wE.textContent=(b-a).toFixed(4);}
+  document.getElementById('diStep').onclick=step;
+  document.getElementById('diReset').onclick=reset;reset();
+  register(c,()=>{x.clearRect(0,0,c._w,c._h);
+    const fr=cartesian(x,c,0.9,2.1,-3,6);
+    plot(x,fr,g,COL.ink,2.4);
+    x.fillStyle=COL.mut;x.font="11px 'JetBrains Mono'";x.textAlign='center';
+    x.fillText('y = x³+x−5',fr.sx(1.8),fr.sy(g(1.8))-8);
+    // current bracket
+    x.fillStyle=hex(COL.am,0.16);x.fillRect(fr.sx(a),fr.y0,fr.sx(b)-fr.sx(a),fr.y1-fr.y0);
+    [['a',a,COL.cy],['b',b,COL.cy]].forEach(([t,v,col])=>{
+      x.strokeStyle=col;x.lineWidth=1.6;x.beginPath();x.moveTo(fr.sx(v),fr.y0);x.lineTo(fr.sx(v),fr.y1);x.stroke();
+      x.fillStyle=col;x.fillText(t,fr.sx(v),fr.y1-4);});
+    const m=(a+b)/2;x.strokeStyle=COL.pk;x.setLineDash([4,3]);x.lineWidth=1.6;
+    x.beginPath();x.moveTo(fr.sx(m),fr.y0);x.lineTo(fr.sx(m),fr.y1);x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.pk;x.fillText('m',fr.sx(m),fr.y0+12);
+    // true solution dot
+    const sol=bisectSolve(g,1,2);x.fillStyle=COL.gr;x.beginPath();x.arc(fr.sx(sol),fr.sy(0),4,0,TAU);x.fill();
+  });})();
+</script>
+</body>
+</html>

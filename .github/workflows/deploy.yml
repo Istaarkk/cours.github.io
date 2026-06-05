@@ -35,6 +35,7 @@ jobs:
           cp index.html _site/
           cp math/probabilites-terminale-cahier.html _site/math/
           cp math/suites.html _site/math/
+          cp math/limites-continuite.html _site/math/
 
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
