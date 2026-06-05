@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probabilités — Terminale · La masterclass du Bac</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070a14;--bg2:#0c1122;--panel:#111831;--panel2:#161f3d;
+    --ink:#e8ecf8;--muted:#8b96b8;--line:#243056;
+    --cyan:#34e1d8;--violet:#9b7bff;--amber:#ffc24b;--pink:#ff6b9d;--green:#4be3a0;
+    --glow:0 0 40px -8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;
+    line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(800px 500px at 80% -5%,rgba(155,123,255,.18),transparent 60%),
+      radial-gradient(700px 600px at 0% 30%,rgba(52,225,216,.10),transparent 55%),
+      linear-gradient(180deg,#070a14,#070a14);}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;line-height:1.15;letter-spacing:-.02em}
+  code,.mono{font-family:'JetBrains Mono',monospace}
+  #prog{position:fixed;top:0;left:0;height:3px;width:0;
+    background:linear-gradient(90deg,var(--cyan),var(--violet));z-index:50;
+    box-shadow:var(--glow) var(--violet)}
+  header.hero{min-height:100vh;display:flex;flex-direction:column;
+    justify-content:center;position:relative;padding:80px 0}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.35em;
+    text-transform:uppercase;color:var(--cyan);margin-bottom:22px}
+  header.hero h1{font-size:clamp(40px,7vw,82px);font-weight:700}
+  header.hero h1 .grad{background:linear-gradient(120deg,var(--cyan),var(--violet) 60%,var(--pink));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  header.hero p.lead{font-size:clamp(17px,2vw,21px);color:var(--muted);max-width:700px;margin-top:24px}
+  #heroCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;opacity:.6}
+  .scrolldown{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
+    color:var(--muted);font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+    display:flex;flex-direction:column;align-items:center;gap:10px}
+  .scrolldown span{width:1px;height:46px;background:linear-gradient(var(--cyan),transparent);
+    animation:drop 1.8s infinite}
+  @keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}
+    55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  section{padding:88px 0;position:relative}
+  .step{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--violet);
+    letter-spacing:.25em;text-transform:uppercase;margin-bottom:14px}
+  section h2{font-size:clamp(26px,4vw,42px);font-weight:700;margin-bottom:8px}
+  section .sub{color:var(--muted);font-size:17px;max-width:760px;margin-bottom:34px}
+  p.body{color:#c4ccea;max-width:780px;margin:18px 0;font-size:16.5px}
+  p.body b{color:var(--ink)}
+  ul.body{color:#c4ccea;max-width:780px;margin:14px 0 14px 22px;font-size:16px}
+  ul.body li{margin:7px 0}
+  ul.body b{color:var(--ink)}
+  .hl-cy{color:var(--cyan)}.hl-vi{color:var(--violet)}.hl-am{color:var(--amber)}
+  .hl-pk{color:var(--pink)}.hl-gr{color:var(--green)}
+  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));
+    border:1px solid var(--line);border-radius:18px;padding:24px;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
+  .card + .card{margin-top:22px}
+  canvas.viz{display:block;width:100%;border-radius:12px;background:#070b18;border:1px solid var(--line)}
+  .controls{display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:18px;align-items:center}
+  .ctrl{display:flex;flex-direction:column;gap:6px;min-width:170px;flex:1}
+  .ctrl label{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;
+    letter-spacing:.08em;display:flex;justify-content:space-between}
+  .ctrl label .val{color:var(--cyan)}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:5px;border-radius:5px;
+    background:#22305c;outline:none;width:100%}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;
+    border-radius:50%;background:var(--cyan);cursor:pointer;box-shadow:0 0 0 4px rgba(52,225,216,.18)}
+  input[type=range]::-moz-range-thumb{width:17px;height:17px;border:0;border-radius:50%;background:var(--cyan);cursor:pointer}
+  button.btn{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:13px;
+    color:#06121f;background:linear-gradient(120deg,var(--cyan),#76f0e6);
+    border:0;padding:9px 14px;border-radius:8px;cursor:pointer;transition:.12s;
+    box-shadow:0 6px 18px -10px var(--cyan)}
+  button.btn:hover{transform:translateY(-2px)}
+  button.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+  button.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+  .reveal{opacity:0;transform:translateY(36px);transition:.9s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+  .legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:12px;margin-top:18px}
+  .legend div{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--cyan);
+    padding:11px 14px;border-radius:8px;font-size:13.5px;color:var(--muted)}
+  .legend div b{color:var(--ink);font-family:'JetBrains Mono',monospace}
+  .formula{background:#060a16;border:1px solid var(--line);border-radius:14px;
+    padding:20px 22px;text-align:center;margin:18px 0;overflow-x:auto;
+    font-family:'JetBrains Mono',monospace;font-size:clamp(14px,2.2vw,20px);color:var(--ink)}
+  .formula .v{color:var(--violet)}.formula .c{color:var(--cyan)}
+  .formula .a{color:var(--amber)}.formula .p{color:var(--pink)}.formula .g{color:var(--green)}
+  .formula .mut{color:var(--muted)}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;
+    margin:0 4px;line-height:1.05}
+  .frac .num{border-bottom:1px solid var(--muted);padding:0 6px}
+  .frac .den{padding:0 6px}
+  .exbox{margin-top:18px;padding:14px 16px;border-radius:12px;
+    background:rgba(155,123,255,.07);border:1px dashed var(--violet)}
+  .exbox h4{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--violet);margin-bottom:6px}
+  .exbox p{color:#c4ccea;font-size:14.5px;margin:4px 0}
+  .exbox.gr{background:rgba(75,227,160,.07);border-color:var(--green)}
+  .exbox.gr h4{color:var(--green)}
+  .exbox.am{background:rgba(255,194,75,.07);border-color:var(--amber)}
+  .exbox.am h4{color:var(--amber)}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--panel2);
+    border:1px solid var(--line);padding:6px 12px;border-radius:999px;font-size:13px;
+    font-family:'JetBrains Mono',monospace;color:var(--muted);margin:6px 6px 0 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .stat{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .stat .box{flex:1;min-width:120px;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px}
+  .stat .box .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted)}
+  .stat .box .num{font-family:'Space Grotesk';font-size:22px;font-weight:700;color:var(--cyan);margin-top:3px}
+  footer{padding:60px 0 90px;text-align:center;color:var(--muted);font-size:14px;
+    border-top:1px solid var(--line);margin-top:36px}
+  footer .big{font-family:'Space Grotesk',sans-serif;font-size:22px;color:var(--ink);margin-bottom:10px}
+  .tag{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--cyan)}
+  ::selection{background:rgba(155,123,255,.35)}
+  /* mini table of contents */
+  nav.toc{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:40;
+    display:flex;flex-direction:column;gap:9px}
+  nav.toc a{width:11px;height:11px;border-radius:50%;border:1px solid var(--line);
+    background:transparent;transition:.2s;position:relative}
+  nav.toc a:hover,nav.toc a.act{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+  nav.toc a span{position:absolute;right:20px;top:50%;transform:translateY(-50%);
+    white-space:nowrap;font-size:11px;font-family:'JetBrains Mono';color:var(--muted);
+    opacity:0;pointer-events:none;transition:.2s;background:var(--panel);padding:3px 8px;
+    border-radius:6px;border:1px solid var(--line)}
+  nav.toc a:hover span{opacity:1}
+  @media(max-width:900px){nav.toc{display:none}}
+  .num-line{font-family:'JetBrains Mono',monospace}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<nav class="toc" id="toc"></nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="wrap">
+    <div class="kicker">Mathématiques · Terminale · Spécialité · Bac</div>
+    <h1><span class="grad">Probabilités</span><br>du hasard maîtrisé<br>au jour du Bac</h1>
+    <p class="lead">Tout le chapitre de Terminale, expliqué pas à pas avec des choses
+      que tu peux régler, lancer, observer. Probabilités conditionnelles, arbres, indépendance,
+      variables aléatoires, espérance, et la grande star de l'épreuve : la
+      <b>loi binomiale</b>. Aucun prérequis sauf savoir ce qu'est une fraction.
+      À la fin, tu lis n'importe quel exercice de proba sans trembler.</p>
+  </div>
+  <div class="scrolldown"><span></span>défile</div>
+</header>
+
+<!-- ============ 0. INTRO ============ -->
+<section id="s0">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 00 — La boussole</div>
+    <h2>Une probabilité, c'est juste un nombre entre 0 et 1</h2>
+    <p class="sub">Avant les formules : une probabilité mesure la <b>chance</b> qu'un
+      événement se réalise. 0 = impossible, 1 = certain, 0,5 = une fois sur deux.
+      Tout le reste du chapitre n'est qu'une boîte à outils pour calculer ces nombres
+      proprement.</p>
+    <div class="card">
+      <div class="formula">0 <span class="mut">≤</span> <span class="c">P(A)</span> <span class="mut">≤</span> 1
+        &nbsp;&nbsp;&nbsp; <span class="mut">P(impossible) =</span> 0
+        &nbsp;&nbsp;&nbsp; <span class="mut">P(certain) =</span> 1</div>
+      <div class="legend">
+        <div><b>Univers Ω</b> : l'ensemble de tous les résultats possibles d'une expérience.</div>
+        <div><b>Événement A</b> : une partie de Ω (« obtenir un nombre pair »).</div>
+        <div><b>Équiprobabilité</b> : si tous les résultats ont la même chance, P(A) = (cas favorables)/(cas possibles).</div>
+        <div><b>Contraire Ā</b> : « A ne se réalise pas ». Toujours P(Ā) = 1 − P(A).</div>
+      </div>
+      <p class="body">La règle qui sauve la moitié des copies au Bac : quand un calcul
+        direct est pénible (« au moins un… »), passe par le <b class="hl-pk">contraire</b>.
+        « Au moins un succès » = 1 − « aucun succès ». On y reviendra avec la loi binomiale.</p>
+      <div class="formula"><span class="c">P(A ∪ B)</span> = P(A) + P(B) − <span class="a">P(A ∩ B)</span>
+        &nbsp;&nbsp;<span class="mut">(formule du « ou »)</span></div>
+      <p class="body"><b>∪ = OU</b> (l'un, l'autre, ou les deux). <b>∩ = ET</b> (les deux
+        en même temps). On retire P(A ∩ B) parce que sinon on compte deux fois la zone
+        commune. Si A et B sont <b>incompatibles</b> (A ∩ B = ∅), alors P(A ∪ B) = P(A) + P(B).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 1. LOI DES GRANDS NOMBRES ============ -->
+<section id="s1">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 01 — D'où vient une probabilité</div>
+    <h2>La fréquence se stabilise vers la probabilité</h2>
+    <p class="sub">Lance une pièce 10 fois : tu peux tomber sur 7 « pile ». Lance-la 10 000
+      fois : la proportion de pile se colle à 0,5. C'est la <b>loi des grands nombres</b>,
+      l'intuition derrière toute la théorie.</p>
+    <div class="card">
+      <canvas id="cLGN" class="viz" height="340"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Probabilité réelle p <span class="val" id="lgnPv">0.50</span></label>
+          <input id="lgnP" type="range" min="5" max="95" value="50"></div>
+        <div class="ctrl"><label>Vitesse <span class="val" id="lgnSv">×8</span></label>
+          <input id="lgnS" type="range" min="1" max="40" value="8"></div>
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <button class="btn" id="lgnGo">Lancer / Pause</button>
+          <button class="btn ghost" id="lgnReset">Recommencer</button>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">Lancers</div><div class="num" id="lgnN">0</div></div>
+        <div class="box"><div class="lbl">Succès</div><div class="num" id="lgnK">0</div></div>
+        <div class="box"><div class="lbl">Fréquence observée</div><div class="num" id="lgnF">—</div></div>
+        <div class="box"><div class="lbl">Écart à p</div><div class="num" id="lgnE">—</div></div>
+      </div>
+      <p class="body">La courbe oscille beaucoup au début (peu de lancers, le hasard
+        domine) puis se calme et converge vers la ligne <span class="hl-am">p</span>.
+        Moralité : une probabilité, c'est la <b>fréquence limite</b> quand on répète
+        énormément. Mais attention — sur un <i>petit</i> nombre de lancers, tout écart
+        reste normal. C'est pour ça qu'on a besoin de maths exactes plutôt que de
+        « au feeling ».</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. CONDITIONNELLES ============ -->
+<section id="s2">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 02 — Probabilités conditionnelles</div>
+    <h2>« Sachant que… » rétrécit l'univers</h2>
+    <p class="sub">Dès qu'on a une information, l'univers des possibles se réduit.
+      P<sub>A</sub>(B), lu « probabilité de B sachant A », c'est la chance de B
+      <i>quand on sait déjà</i> que A est réalisé.</p>
+    <div class="card">
+      <div class="formula">
+        <span class="c">P<sub>A</sub>(B)</span> =
+        <span class="frac"><span class="num"><span class="a">P(A ∩ B)</span></span><span class="den">P(A)</span></span>
+        &nbsp;&nbsp;<span class="mut">donc</span>&nbsp;&nbsp;
+        <span class="a">P(A ∩ B)</span> = P(A) × <span class="c">P<sub>A</sub>(B)</span>
+      </div>
+      <p class="body">Tout est dans la deuxième forme : la proba d'un <b>chemin</b>
+        (A puis B) = on <b>multiplie</b> les probabilités le long du chemin. C'est
+        exactement ce que fait un arbre pondéré, qu'on construit juste en dessous.
+        Visualise ci-dessous : la barre entière, c'est Ω. Quand on « sait A »,
+        on zoome dans la zone A et on regarde quelle proportion contient aussi B.</p>
+      <canvas id="cCond" class="viz" height="300"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>P(A) <span class="val" id="cdAv">0.50</span></label>
+          <input id="cdA" type="range" min="10" max="90" value="50"></div>
+        <div class="ctrl"><label>P<sub>A</sub>(B) — B sachant A <span class="val" id="cdBav">0.60</span></label>
+          <input id="cdBa" type="range" min="0" max="100" value="60"></div>
+        <div class="ctrl"><label>P<sub>Ā</sub>(B) — B sachant Ā <span class="val" id="cdBnv">0.20</span></label>
+          <input id="cdBn" type="range" min="0" max="100" value="20"></div>
+      </div>
+      <div class="exbox">
+        <h4>Lecture</h4>
+        <p>La hauteur <span class="hl-vi">violette</span> = P(A). Dans chaque colonne, la part
+          <span class="hl-cy">cyan</span> = la proba de B sachant qu'on est dans cette colonne.
+          Les deux rectangles cyan, additionnés, donnent <b>P(B)</b> tout court — c'est la
+          formule des probabilités totales du chapitre suivant.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. ARBRE PONDÉRÉ ============ -->
+<section id="s3">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 03 — Arbre pondéré & probabilités totales</div>
+    <h2>L'arbre : ton meilleur ami au Bac</h2>
+    <p class="sub">Un arbre pondéré transforme un énoncé compliqué en règles mécaniques.
+      Trois lois suffisent — règle-les sur les curseurs et regarde l'arbre se recalculer.</p>
+    <div class="card">
+      <canvas id="cTree" class="viz" height="380"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>P(A) <span class="val" id="trAv">0.40</span></label>
+          <input id="trA" type="range" min="0" max="100" value="40"></div>
+        <div class="ctrl"><label>P<sub>A</sub>(B) <span class="val" id="trBav">0.70</span></label>
+          <input id="trBa" type="range" min="0" max="100" value="70"></div>
+        <div class="ctrl"><label>P<sub>Ā</sub>(B) <span class="val" id="trBnv">0.25</span></label>
+          <input id="trBn" type="range" min="0" max="100" value="25"></div>
+      </div>
+      <div class="legend">
+        <div><b>Règle 1</b> — La somme des branches qui partent d'un même nœud fait <b>1</b>.</div>
+        <div><b>Règle 2</b> — Proba d'un chemin = on <b>multiplie</b> les branches (A puis B).</div>
+        <div><b>Règle 3</b> — Proba d'une feuille atteinte par plusieurs chemins = on <b>additionne</b> les chemins.</div>
+      </div>
+      <div class="formula">
+        <span class="g">P(B)</span> = <span class="mut">P(A ∩ B) + P(Ā ∩ B)</span> =
+        P(A)·P<sub>A</sub>(B) + P(Ā)·P<sub>Ā</sub>(B) = <span class="g" id="trPB">…</span>
+      </div>
+      <p class="body"><b>Formule des probabilités totales :</b> pour atteindre B, il faut
+        passer soit par A, soit par Ā. On somme donc les deux chemins qui mènent à B.
+        C'est la règle 3 écrite proprement. Et si l'énoncé demande
+        « <i>sachant que B est réalisé, proba que ce soit via A ?</i> », on
+        <b>remonte</b> l'arbre : c'est la formule de Bayes du chapitre suivant.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. BAYES ============ -->
+<section id="s4">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 04 — Remonter l'arbre (Bayes)</div>
+    <h2>Le piège du test médical</h2>
+    <p class="sub">Un test fiable à 99 % qui sonne positif… et pourtant tu as de bonnes
+      chances d'être sain. Contre-intuitif ? Non : c'est juste l'arbre lu à l'envers.
+      Joue avec une population de 1000 personnes.</p>
+    <div class="card">
+      <canvas id="cBayes" class="viz" height="300"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Prévalence — P(malade) <span class="val" id="byPv">1.0%</span></label>
+          <input id="byP" type="range" min="1" max="500" value="10"></div>
+        <div class="ctrl"><label>Sensibilité — P<sub>M</sub>(+) <span class="val" id="bySev">99%</span></label>
+          <input id="bySe" type="range" min="50" max="100" value="99"></div>
+        <div class="ctrl"><label>Spécificité — P<sub>M̄</sub>(−) <span class="val" id="bySpv">95%</span></label>
+          <input id="bySp" type="range" min="50" max="100" value="95"></div>
+      </div>
+      <div class="formula">
+        <span class="c">P<sub>+</sub>(M)</span> =
+        <span class="frac"><span class="num"><span class="a">P(M)·P<sub>M</sub>(+)</span></span>
+          <span class="den">P(M)·P<sub>M</sub>(+) + P(M̄)·P<sub>M̄</sub>(+)</span></span>
+        = <span class="c" id="byRes">…</span>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">Vrais positifs</div><div class="num hl-gr" id="byVP">—</div></div>
+        <div class="box"><div class="lbl">Faux positifs</div><div class="num hl-pk" id="byFP">—</div></div>
+        <div class="box"><div class="lbl">Total positifs</div><div class="num" id="byTP">—</div></div>
+        <div class="box"><div class="lbl">P(malade | test +)</div><div class="num" id="byPM">—</div></div>
+      </div>
+      <p class="body">Quand la maladie est <b>rare</b>, les nombreux bien-portants
+        produisent une masse de <span class="hl-pk">faux positifs</span> qui noie les
+        vrais malades. Le numérateur (un chemin), divisé par le total des positifs (tous
+        les chemins vers +) : c'est <b>Bayes</b>, et c'est exactement « remonter l'arbre ».</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. INDÉPENDANCE ============ -->
+<section id="s5">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 05 — Indépendance</div>
+    <h2>Quand savoir A ne change rien à B</h2>
+    <p class="sub">Deux événements sont indépendants si la réalisation de l'un n'apporte
+      aucune information sur l'autre. Le test officiel tient en une ligne.</p>
+    <div class="card">
+      <div class="formula">A et B indépendants <span class="mut">⇔</span>
+        <span class="a">P(A ∩ B)</span> = <span class="c">P(A) × P(B)</span>
+        &nbsp;&nbsp;<span class="mut">⇔</span>&nbsp;&nbsp; P<sub>A</sub>(B) = P(B)</div>
+      <p class="body">Sur deux dés, choisis un événement par dé. Les cases
+        <span class="hl-vi">A</span> (lignes) et <span class="hl-cy">B</span> (colonnes)
+        se croisent : l'intersection est le carré <span class="hl-am">A ∩ B</span>.
+        Compte les cases et vérifie que le produit des proportions tombe pile sur la
+        proportion de l'intersection — toujours vrai pour deux dés, car ils sont
+        physiquement indépendants.</p>
+      <canvas id="cIndep" class="viz" height="360"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Événement A (dé n°1 ≤ k) <span class="val" id="inAv">3</span></label>
+          <input id="inA" type="range" min="1" max="6" value="3"></div>
+        <div class="ctrl"><label>Événement B (dé n°2 ≥ k) <span class="val" id="inBv">5</span></label>
+          <input id="inB" type="range" min="1" max="6" value="5"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">P(A)</div><div class="num hl-vi" id="inPA">—</div></div>
+        <div class="box"><div class="lbl">P(B)</div><div class="num hl-cy" id="inPB">—</div></div>
+        <div class="box"><div class="lbl">P(A)×P(B)</div><div class="num" id="inProd">—</div></div>
+        <div class="box"><div class="lbl">P(A ∩ B) compté</div><div class="num hl-am" id="inInter">—</div></div>
+      </div>
+      <p class="body"><b>Ne pas confondre</b> incompatibles et indépendants !
+        Incompatibles = ne peuvent pas arriver ensemble (P(A ∩ B) = 0). Indépendants =
+        n'ont pas d'influence l'un sur l'autre. Deux événements incompatibles de probas
+        non nulles ne sont <i>jamais</i> indépendants.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. VARIABLE ALÉATOIRE & ESPÉRANCE ============ -->
+<section id="s6">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 06 — Variable aléatoire, espérance, écart-type</div>
+    <h2>Mettre un nombre sur le hasard</h2>
+    <p class="sub">Une <b>variable aléatoire</b> X attribue un nombre à chaque résultat
+      (le gain à un jeu, le nombre de pile…). Sa <b>loi</b> liste les valeurs et leurs
+      probabilités. L'<b>espérance</b> E(X) est la moyenne que l'on obtient « à long terme ».</p>
+    <div class="card">
+      <div class="formula">
+        <span class="c">E(X)</span> = Σ xᵢ·P(X=xᵢ) &nbsp;&nbsp;&nbsp;
+        <span class="a">V(X)</span> = Σ (xᵢ−E(X))²·P(X=xᵢ) &nbsp;&nbsp;&nbsp;
+        <span class="p">σ(X)</span> = √V(X)
+      </div>
+      <p class="body">Pense à E(X) comme au <b>point d'équilibre</b> de la distribution :
+        si tu poses les probabilités comme des poids sur une règle, E(X) est l'endroit
+        où ça tient en équilibre (le triangle ▲). L'écart-type σ mesure l'étalement :
+        petit σ = valeurs serrées autour de la moyenne, grand σ = jeu très dispersé.
+        Règle les poids des 4 secteurs de la roue ci-dessous.</p>
+      <canvas id="cEsp" class="viz" height="340"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Poids valeur −5 <span class="val" id="e0v">1</span></label>
+          <input id="e0" type="range" min="0" max="10" value="1"></div>
+        <div class="ctrl"><label>Poids valeur 0 <span class="val" id="e1v">4</span></label>
+          <input id="e1" type="range" min="0" max="10" value="4"></div>
+        <div class="ctrl"><label>Poids valeur 2 <span class="val" id="e2v">3</span></label>
+          <input id="e2" type="range" min="0" max="10" value="3"></div>
+        <div class="ctrl"><label>Poids valeur 10 <span class="val" id="e3v">1</span></label>
+          <input id="e3" type="range" min="0" max="10" value="1"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">Espérance E(X)</div><div class="num hl-cy" id="espE">—</div></div>
+        <div class="box"><div class="lbl">Variance V(X)</div><div class="num hl-am" id="espV">—</div></div>
+        <div class="box"><div class="lbl">Écart-type σ</div><div class="num hl-pk" id="espS">—</div></div>
+        <div class="box"><div class="lbl">Verdict du jeu</div><div class="num" id="espJ">—</div></div>
+      </div>
+      <div class="exbox am">
+        <h4>Le réflexe « jeu équitable »</h4>
+        <p>Un jeu est <b>favorable</b> si E(gain) &gt; 0, <b>équitable</b> si E = 0,
+          <b>défavorable</b> si E &lt; 0. À la roulette, au loto, à tous les jeux d'argent,
+          E &lt; 0 pour le joueur — c'est mathématiquement garanti que la maison gagne.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. BERNOULLI ============ -->
+<section id="s7">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 07 — L'épreuve de Bernoulli</div>
+    <h2>La brique élémentaire : succès ou échec</h2>
+    <p class="sub">Une <b>épreuve de Bernoulli</b> n'a que deux issues : succès (proba p)
+      ou échec (proba q = 1 − p). C'est le LEGO de la loi binomiale.</p>
+    <div class="card">
+      <div class="grid2">
+        <div>
+          <div class="formula" style="font-size:16px">
+            X ∈ {0, 1}<br>
+            <span class="c">P(X=1)</span> = p &nbsp;&nbsp; <span class="p">P(X=0)</span> = 1−p
+          </div>
+          <p class="body" style="margin-top:10px">Pour une seule épreuve :</p>
+          <div class="formula" style="font-size:16px">
+            <span class="c">E(X)</span> = p &nbsp;&nbsp;&nbsp;
+            <span class="a">V(X)</span> = p(1−p)
+          </div>
+        </div>
+        <div>
+          <ul class="body">
+            <li><b>Succès</b> = l'issue qu'on a <i>choisi</i> d'appeler succès (pas forcément « gagner »).</li>
+            <li>« Pile », « la pièce est défectueuse », « le client achète »… tout peut être un succès.</li>
+            <li><b>Schéma de Bernoulli</b> : on répète <b>n fois</b>, de façon <b>indépendante</b>, la <b>même</b> épreuve. C'est la porte d'entrée de la binomiale.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="exbox gr">
+        <h4>Conditions à vérifier (toujours citées au Bac)</h4>
+        <p>① n épreuves <b>identiques</b> &nbsp; ② <b>deux issues</b> (succès/échec) &nbsp;
+          ③ épreuves <b>indépendantes</b> &nbsp; ④ même probabilité <b>p</b> à chaque fois.
+          Si les 4 sont réunies, alors X = « nombre de succès » suit une loi binomiale 𝓑(n, p).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. LOI BINOMIALE ============ -->
+<section id="s8">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 08 — La loi binomiale 𝓑(n, p)</div>
+    <h2>La star de l'épreuve du Bac</h2>
+    <p class="sub">On répète n fois une épreuve de Bernoulli. X compte les succès. La proba
+      d'avoir exactement k succès combine <b>combien de chemins</b> (le coefficient binomial)
+      et <b>la proba d'un chemin</b>. Règle n, p et k et regarde le diagramme respirer.</p>
+    <div class="card">
+      <div class="formula">
+        <span class="c">P(X = k)</span> =
+        <span class="v">(<sup>n</sup><sub>k</sub>)</span>
+        <span class="a">p</span><sup>k</sup>
+        <span class="p">(1−p)</span><sup>n−k</sup>
+        &nbsp;&nbsp;<span class="mut">avec</span>&nbsp;
+        <span class="v">(<sup>n</sup><sub>k</sub>)</span> =
+        <span class="frac"><span class="num">n!</span><span class="den">k!(n−k)!</span></span>
+      </div>
+      <canvas id="cBino" class="viz" height="360"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>n (nombre d'épreuves) <span class="val" id="biNv">20</span></label>
+          <input id="biN" type="range" min="1" max="40" value="20"></div>
+        <div class="ctrl"><label>p (proba de succès) <span class="val" id="biPv">0.50</span></label>
+          <input id="biP" type="range" min="0" max="100" value="50"></div>
+        <div class="ctrl"><label>k mis en évidence <span class="val" id="biKv">10</span></label>
+          <input id="biK" type="range" min="0" max="40" value="10"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">P(X = k)</div><div class="num hl-cy" id="biPk">—</div></div>
+        <div class="box"><div class="lbl">P(X ≤ k)</div><div class="num" id="biCum">—</div></div>
+        <div class="box"><div class="lbl">P(X ≥ 1) « au moins un »</div><div class="num hl-gr" id="biAtl">—</div></div>
+        <div class="box"><div class="lbl">Coefficient (ⁿₖ)</div><div class="num hl-vi" id="biCoef">—</div></div>
+      </div>
+      <p class="body"><b>Le coefficient binomial</b> <span class="hl-vi">(ⁿₖ)</span>, c'est
+        le nombre de façons d'ordonner k succès parmi n places — exactement le nombre de
+        chemins de l'arbre qui mènent à k succès. À la calculatrice : touche
+        <code>binompdf(n, p, k)</code> pour P(X = k) et <code>binomcdf(n, p, k)</code>
+        pour P(X ≤ k). Le piège classique « au moins un » se résout par le contraire :
+        <span class="hl-gr">P(X ≥ 1) = 1 − P(X = 0) = 1 − (1−p)ⁿ</span>.</p>
+    </div>
+    <div class="card">
+      <h3 style="font-size:20px;margin-bottom:8px">Espérance & écart-type — à connaître par cœur</h3>
+      <div class="formula">
+        <span class="c">E(X)</span> = <span class="a">n p</span> &nbsp;&nbsp;&nbsp;&nbsp;
+        <span class="g">V(X)</span> = n p (1−p) &nbsp;&nbsp;&nbsp;&nbsp;
+        <span class="p">σ(X)</span> = √(n p (1−p))
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">E(X) = np</div><div class="num hl-cy" id="biE">—</div></div>
+        <div class="box"><div class="lbl">V(X) = np(1−p)</div><div class="num hl-gr" id="biV">—</div></div>
+        <div class="box"><div class="lbl">σ(X)</div><div class="num hl-pk" id="biS">—</div></div>
+      </div>
+      <p class="body">La barre <span class="hl-am">orange</span> sur le diagramme marque
+        E(X) = np : c'est le « centre de gravité », le nombre de succès le plus attendu.
+        Logique — si p = 0,5 sur 20 lancers, on attend environ 10 succès.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9. GALTON ============ -->
+<section id="s9">
+  <div class="wrap reveal">
+    <div class="step">Bac à sable — La planche de Galton</div>
+    <h2>Voir la binomiale naître devant toi</h2>
+    <p class="sub">Chaque bille rebondit à gauche ou à droite (épreuve de Bernoulli) à
+      chaque rangée de clous. Sa colonne d'arrivée = son nombre de « droite » = une loi
+      binomiale. Lâche des centaines de billes et regarde l'histogramme épouser la courbe
+      théorique.</p>
+    <div class="card">
+      <canvas id="cGalton" class="viz" height="440"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Rangées n <span class="val" id="gaNv">10</span></label>
+          <input id="gaN" type="range" min="4" max="14" value="10"></div>
+        <div class="ctrl"><label>Biais p (proba d'aller à droite) <span class="val" id="gaPv">0.50</span></label>
+          <input id="gaP" type="range" min="10" max="90" value="50"></div>
+        <div class="ctrl"><label>Débit <span class="val" id="gaRv">moyen</span></label>
+          <input id="gaR" type="range" min="1" max="20" value="6"></div>
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <button class="btn" id="gaGo">Lâcher les billes</button>
+          <button class="btn ghost" id="gaReset">Vider</button>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">Billes tombées</div><div class="num" id="gaCount">0</div></div>
+        <div class="box"><div class="lbl">Moyenne observée</div><div class="num hl-cy" id="gaMean">—</div></div>
+        <div class="box"><div class="lbl">E(X) = np théorique</div><div class="num hl-am" id="gaTheo">—</div></div>
+      </div>
+      <p class="body">Avec p = 0,5 la pile est symétrique : c'est la fameuse « courbe en
+        cloche ». Décale p et tout l'histogramme glisse vers np. C'est la même loi
+        binomiale que le chapitre 08 — sauf qu'ici tu la fabriques bille par bille.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10. RECAP ============ -->
+<section id="s10">
+  <div class="wrap reveal">
+    <div class="step">Récapitulatif</div>
+    <h2>Les 8 réflexes à dégainer en épreuve</h2>
+    <div class="card">
+      <ul class="body">
+        <li><b>① Le contraire</b> — « au moins un » ⇒ 1 − « aucun ». P(Ā) = 1 − P(A).</li>
+        <li><b>② Un arbre, toujours</b> — multiplier le long d'un chemin, additionner les chemins.</li>
+        <li><b>③ Probabilités totales</b> — P(B) = P(A)·P<sub>A</sub>(B) + P(Ā)·P<sub>Ā</sub>(B).</li>
+        <li><b>④ Conditionnelle</b> — P<sub>A</sub>(B) = P(A ∩ B)/P(A). Remonter l'arbre = Bayes.</li>
+        <li><b>⑤ Indépendance</b> — test : P(A ∩ B) = P(A)·P(B). Ne pas confondre avec incompatible.</li>
+        <li><b>⑥ Espérance</b> — E(X) = Σ xᵢ P(X=xᵢ). Jeu équitable ⇔ E = 0.</li>
+        <li><b>⑦ Reconnaître une binomiale</b> — n épreuves identiques, indépendantes, 2 issues, même p ⇒ 𝓑(n, p).</li>
+        <li><b>⑧ Binomiale par cœur</b> — P(X=k) = (ⁿₖ) pᵏ(1−p)ⁿ⁻ᵏ, E = np, V = np(1−p), σ = √(np(1−p)).</li>
+      </ul>
+      <div class="formula" style="margin-top:24px">
+        <span class="mut">Si tu ne devais retenir qu'une formule :</span><br><br>
+        <span class="c">P(X = k)</span> =
+        <span class="v">(<sup>n</sup><sub>k</sub>)</span>
+        <span class="a">p</span><sup>k</sup>
+        <span class="p">(1−p)</span><sup>n−k</sup>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="big">Tu as maintenant tout le chapitre Probabilités du Bac.</div>
+    <p class="tag">Mathématiques · Terminale · Spécialité &nbsp;·&nbsp; Conditionnelles · Indépendance · Loi binomiale</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const TAU=Math.PI*2, PI=Math.PI;
+const COL={cy:'#34e1d8',vi:'#9b7bff',am:'#ffc24b',pk:'#ff6b9d',gr:'#4be3a0',mut:'#8b96b8',line:'#243056',ink:'#e8ecf8',panel:'#11183a',bg:'#070b18'};
+
+function setupCanvas(c){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const r=c.getBoundingClientRect();
+  c.width=r.width*dpr; c.height=(+c.getAttribute('height')||300)*dpr;
+  c.style.height=(+c.getAttribute('height')||300)+'px';
+  const x=c.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0);
+  c._w=r.width; c._h=+(c.getAttribute('height')||300);
+  return x;
+}
+
+/* --- scroll reveal + progress + toc --- */
+const prog=document.getElementById('prog');
+addEventListener('scroll',()=>{const s=scrollY/(document.body.scrollHeight-innerHeight);
+  prog.style.width=(s*100)+'%';},{passive:true});
+const ioR=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>ioR.observe(el));
+
+/* table of contents dots */
+const tocNames={s0:'Bases',s1:'Loi grands nombres',s2:'Conditionnelles',s3:'Arbre pondéré',
+  s4:'Bayes',s5:'Indépendance',s6:'Espérance',s7:'Bernoulli',s8:'Loi binomiale',s9:'Galton',s10:'Récap'};
+const toc=document.getElementById('toc');
+Object.keys(tocNames).forEach(id=>{
+  const a=document.createElement('a'); a.href='#'+id;
+  a.innerHTML='<span>'+tocNames[id]+'</span>'; a.dataset.t=id; toc.appendChild(a);
+});
+const tocLinks=[...toc.querySelectorAll('a')];
+const ioToc=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){
+  tocLinks.forEach(l=>l.classList.toggle('act',l.dataset.t===e.target.id));}}),{threshold:.4});
+Object.keys(tocNames).forEach(id=>{const s=document.getElementById(id);if(s)ioToc.observe(s);});
+
+/* --- animation registry --- */
+const animators=[];
+function register(canvas,drawFn){
+  const a={canvas,draw:drawFn,on:false,t:0};
+  animators.push(a);
+  new IntersectionObserver(es=>{a.on=es[0].isIntersecting;},{threshold:.04}).observe(canvas);
+  return a;
+}
+let last=performance.now();
+(function tick(now){
+  const dt=Math.min((now-last)/1000,.05); last=now;
+  for(const a of animators){if(a.on){a.t+=dt;a.draw(a.t,dt);}}
+  requestAnimationFrame(tick);
+})(performance.now());
+
+/* --- small drawing helpers --- */
+function roundRect(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);
+  x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
+function hex(c,al){const n=parseInt(c.slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+al+')';}
+function fmtPct(x){return (x*100).toFixed(1).replace('.',',')+' %';}
+
+/* ============ HERO : pluie de billes vers des bacs ============ */
+(function(){
+  const c=document.getElementById('heroCanvas'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  let drops=[];
+  function spawn(W){const n=14;const k=(()=>{let s=0;for(let i=0;i<n;i++)s+=Math.random()<0.5?1:0;return s;})();
+    return {x:W*0.5+(Math.random()-0.5)*40, y:-10, vy:30+Math.random()*40,
+      tx:W*(0.12+0.76*k/n), col:Math.random()<.5?COL.cy:COL.vi, a:0.7};}
+  register(c,(t,dt)=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    if(Math.random()<0.4) drops.push(spawn(W));
+    // bell curve guide
+    x.strokeStyle=hex(COL.vi,0.10);x.lineWidth=1.5;x.beginPath();
+    for(let i=0;i<=W;i+=6){const u=(i/W-0.5)*6;const y=H*0.86-110*Math.exp(-u*u/2);
+      i===0?x.moveTo(i,y):x.lineTo(i,y);} x.stroke();
+    for(const d of drops){
+      d.y+=d.vy*dt; d.vy+=60*dt;
+      d.x+=(d.tx-d.x)*Math.min(1,dt*1.5*(d.y/H+0.2));
+      const yy=Math.min(d.y,H*0.86);
+      x.fillStyle=hex(d.col,0.55);x.beginPath();x.arc(d.x,yy,2.6,0,TAU);x.fill();
+    }
+    drops=drops.filter(d=>d.y<H*0.9); if(drops.length>260)drops.splice(0,drops.length-260);
+    x.strokeStyle=hex(COL.cy,0.18);x.lineWidth=1;x.beginPath();x.moveTo(0,H*0.86);x.lineTo(W,H*0.86);x.stroke();
+  });
+})();
+
+/* ============ 1. LOI DES GRANDS NOMBRES ============ */
+(function(){
+  const c=document.getElementById('cLGN'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const pR=document.getElementById('lgnP'),pV=document.getElementById('lgnPv');
+  const sR=document.getElementById('lgnS'),sV=document.getElementById('lgnSv');
+  const eN=document.getElementById('lgnN'),eK=document.getElementById('lgnK'),
+        eF=document.getElementById('lgnF'),eE=document.getElementById('lgnE');
+  let n=0,k=0,running=false,acc=0,hist=[];
+  function p(){return +pR.value/100;}
+  function reset(){n=0;k=0;hist=[];upd();}
+  function upd(){
+    pV.textContent=p().toFixed(2);sV.textContent='×'+sR.value;
+    eN.textContent=n;eK.textContent=k;
+    eF.textContent=n?(k/n).toFixed(3):'—';
+    eE.textContent=n?((k/n-p())>=0?'+':'')+(k/n-p()).toFixed(3):'—';
+  }
+  pR.oninput=upd;sR.oninput=upd;
+  document.getElementById('lgnGo').onclick=()=>running=!running;
+  document.getElementById('lgnReset').onclick=()=>{running=false;reset();};
+  pR.addEventListener('input',()=>{if(n>0)reset();});
+  reset();
+  register(c,(t,dt)=>{
+    if(running){acc+=dt*(+sR.value);
+      while(acc>=1){acc-=1;n++;if(Math.random()<p())k++;hist.push(k/n);
+        if(hist.length>2000)hist.shift();}
+      upd();
+    }
+    const W=c._w,H=c._h,pad=40; x.clearRect(0,0,W,H);
+    const x0=pad,x1=W-12,y0=14,y1=H-26;
+    // grid
+    x.strokeStyle=COL.line;x.lineWidth=1;x.fillStyle=COL.mut;x.font="11px 'JetBrains Mono'";
+    x.textAlign='right';
+    for(let g=0;g<=4;g++){const yy=y0+(y1-y0)*g/4;x.beginPath();x.moveTo(x0,yy);x.lineTo(x1,yy);x.stroke();
+      x.fillText((1-g/4).toFixed(2),x0-6,yy+4);}
+    // target line p
+    const py=y1-(y1-y0)*p();
+    x.strokeStyle=hex(COL.am,0.9);x.lineWidth=1.5;x.setLineDash([6,5]);
+    x.beginPath();x.moveTo(x0,py);x.lineTo(x1,py);x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.am;x.textAlign='left';x.fillText('p = '+p().toFixed(2),x0+6,py-6);
+    // frequency curve
+    if(hist.length>1){
+      x.strokeStyle=COL.cy;x.lineWidth=2;x.beginPath();
+      for(let i=0;i<hist.length;i++){const xx=x0+(x1-x0)*i/(hist.length-1);
+        const yy=y1-(y1-y0)*hist[i];i===0?x.moveTo(xx,yy):x.lineTo(xx,yy);}x.stroke();
+      const lx=x1,ly=y1-(y1-y0)*hist[hist.length-1];
+      x.fillStyle=COL.cy;x.beginPath();x.arc(lx,ly,3.5,0,TAU);x.fill();
+    } else {
+      x.fillStyle=COL.mut;x.textAlign='center';x.font="13px 'JetBrains Mono'";
+      x.fillText('Appuie sur « Lancer » ↓',(x0+x1)/2,(y0+y1)/2);
+    }
+  });
+})();
+
+/* ============ 2. CONDITIONNELLES (barres empilées) ============ */
+(function(){
+  const c=document.getElementById('cCond'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const aR=document.getElementById('cdA'),aV=document.getElementById('cdAv');
+  const baR=document.getElementById('cdBa'),baV=document.getElementById('cdBav');
+  const bnR=document.getElementById('cdBn'),bnV=document.getElementById('cdBnv');
+  function upd(){aV.textContent=(+aR.value/100).toFixed(2);baV.textContent=(+baR.value/100).toFixed(2);
+    bnV.textContent=(+bnR.value/100).toFixed(2);}
+  [aR,baR,bnR].forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{
+    const W=c._w,H=c._h,pad=20; x.clearRect(0,0,W,H);
+    const pa=+aR.value/100, pba=+baR.value/100, pbn=+bnR.value/100;
+    const x0=pad+30,x1=W-pad,y0=24,y1=H-30;
+    const Wb=x1-x0, Hb=y1-y0;
+    const wA=Wb*pa;
+    // colonne A
+    x.fillStyle=hex(COL.vi,0.16);x.fillRect(x0,y0,wA,Hb);
+    x.fillStyle=hex(COL.cy,0.85);x.fillRect(x0,y1-Hb*pba,wA,Hb*pba);
+    // colonne Ā
+    x.fillStyle=hex(COL.mut,0.10);x.fillRect(x0+wA,y0,Wb-wA,Hb);
+    x.fillStyle=hex(COL.cy,0.45);x.fillRect(x0+wA,y1-Hb*pbn,Wb-wA,Hb*pbn);
+    // bordures
+    x.strokeStyle=COL.line;x.strokeRect(x0,y0,wA,Hb);x.strokeRect(x0+wA,y0,Wb-wA,Hb);
+    // labels
+    x.fillStyle=COL.ink;x.font="12px 'JetBrains Mono'";x.textAlign='center';
+    x.fillText('A',x0+wA/2,y1+18);x.fillText('Ā',x0+wA+(Wb-wA)/2,y1+18);
+    x.fillStyle=COL.cy;x.textAlign='left';
+    x.fillText('B sachant A : '+pba.toFixed(2),x0+4,y1-Hb*pba-6);
+    if(Wb-wA>70)x.fillText('B sachant Ā : '+pbn.toFixed(2),x0+wA+4,y1-Hb*pbn-6);
+    // axis Ω
+    x.fillStyle=COL.mut;x.textAlign='right';x.fillText('Ω',x0-8,y0+10);
+    const pb=pa*pba+(1-pa)*pbn;
+    x.fillStyle=COL.gr;x.textAlign='center';x.font="13px 'JetBrains Mono'";
+    x.fillText('P(B) = '+pb.toFixed(3)+'  (les deux zones cyan)',(x0+x1)/2,16);
+  });
+})();
+
+/* ============ 3. ARBRE PONDÉRÉ ============ */
+(function(){
+  const c=document.getElementById('cTree'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const aR=document.getElementById('trA'),aV=document.getElementById('trAv');
+  const baR=document.getElementById('trBa'),baV=document.getElementById('trBav');
+  const bnR=document.getElementById('trBn'),bnV=document.getElementById('trBnv');
+  const pbEl=document.getElementById('trPB');
+  function upd(){aV.textContent=(+aR.value/100).toFixed(2);baV.textContent=(+baR.value/100).toFixed(2);
+    bnV.textContent=(+bnR.value/100).toFixed(2);
+    const pb=(+aR.value/100)*(+baR.value/100)+(1-+aR.value/100)*(+bnR.value/100);
+    pbEl.textContent=pb.toFixed(3);}
+  [aR,baR,bnR].forEach(r=>r.oninput=upd);upd();
+  function branch(x1,y1,x2,y2,label,prob,col){
+    x.strokeStyle=col;x.lineWidth=1.6+prob*2.5;x.globalAlpha=0.4+prob*0.6;
+    x.beginPath();x.moveTo(x1,y1);x.lineTo(x2,y2);x.stroke();x.globalAlpha=1;
+    x.fillStyle=col;x.font="12px 'JetBrains Mono'";x.textAlign='center';
+    x.fillText(label,(x1+x2)/2,(y1+y2)/2-6);
+  }
+  function node(cx,cy,txt,col){
+    x.fillStyle=COL.bg;x.strokeStyle=col;x.lineWidth=1.5;
+    x.beginPath();x.arc(cx,cy,16,0,TAU);x.fill();x.stroke();
+    x.fillStyle=col;x.font="13px 'JetBrains Mono'";x.textAlign='center';x.textBaseline='middle';
+    x.fillText(txt,cx,cy);x.textBaseline='alphabetic';
+  }
+  register(c,()=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const pa=+aR.value/100,pba=+baR.value/100,pbn=+bnR.value/100;
+    const ox=60, m=W*0.4, lx=W-150;
+    const yA=H*0.27,yAn=H*0.73;
+    const yAB=H*0.13,yABn=H*0.40,yAnB=H*0.60,yAnBn=H*0.87;
+    // root -> A / Ā
+    branch(ox,H/2,m,yA,'P(A)='+pa.toFixed(2),pa,COL.vi);
+    branch(ox,H/2,m,yAn,'P(Ā)='+(1-pa).toFixed(2),1-pa,COL.vi);
+    // A -> B / B̄
+    branch(m,yA,lx,yAB,pba.toFixed(2),pba,COL.cy);
+    branch(m,yA,lx,yABn,(1-pba).toFixed(2),1-pba,COL.cy);
+    // Ā -> B / B̄
+    branch(m,yAn,lx,yAnB,pbn.toFixed(2),pbn,COL.cy);
+    branch(m,yAn,lx,yAnBn,(1-pbn).toFixed(2),1-pbn,COL.cy);
+    node(ox,H/2,'Ω',COL.mut);
+    node(m,yA,'A',COL.vi);node(m,yAn,'Ā',COL.vi);
+    // leaves with path probabilities
+    const leaves=[[yAB,'B',pa*pba,COL.gr],[yABn,'B̄',pa*(1-pba),COL.mut],
+                  [yAnB,'B',(1-pa)*pbn,COL.gr],[yAnBn,'B̄',(1-pa)*(1-pbn),COL.mut]];
+    for(const [yy,t,pr,col] of leaves){
+      node(lx,yy,t,col);
+      x.fillStyle=COL.ink;x.font="12px 'JetBrains Mono'";x.textAlign='left';
+      x.fillText('= '+pr.toFixed(3),lx+24,yy+4);
+    }
+    x.fillStyle=COL.gr;x.font="11px 'JetBrains Mono'";x.textAlign='left';
+    x.fillText('chemins vers B (à additionner)',lx-30,H-6);
+  });
+})();
+
+/* ============ 4. BAYES (population 1000) ============ */
+(function(){
+  const c=document.getElementById('cBayes'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const pR=document.getElementById('byP'),pV=document.getElementById('byPv');
+  const seR=document.getElementById('bySe'),seV=document.getElementById('bySev');
+  const spR=document.getElementById('bySp'),spV=document.getElementById('bySpv');
+  const res=document.getElementById('byRes'),vp=document.getElementById('byVP'),
+        fp=document.getElementById('byFP'),tp=document.getElementById('byTP'),pm=document.getElementById('byPM');
+  function vals(){return {p:+pR.value/1000,se:+seR.value/100,sp:+spR.value/100};}
+  function upd(){const v=vals();pV.textContent=(v.p*100).toFixed(1).replace('.',',')+'%';
+    seV.textContent=seR.value+'%';spV.textContent=spR.value+'%';
+    const N=1000,mal=v.p,sain=1-v.p;
+    const VP=N*mal*v.se,FN=N*mal*(1-v.se),FP=N*sain*(1-v.sp),VN=N*sain*v.sp;
+    const totPos=VP+FP;const post=totPos?VP/totPos:0;
+    res.textContent=fmtPct(post);
+    vp.textContent=Math.round(VP);fp.textContent=Math.round(FP);
+    tp.textContent=Math.round(totPos);pm.textContent=fmtPct(post);
+  }
+  [pR,seR,spR].forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const v=vals();const N=1000;
+    const VP=N*v.p*v.se,FN=N*v.p*(1-v.se),FP=N*(1-v.p)*(1-v.sp),VN=N*(1-v.p)*v.sp;
+    // grid 40 x 25 = 1000 dots
+    const cols=40,rows=25,pad=14;
+    const cw=(W-2*pad)/cols, ch=(H-2*pad)/rows;
+    const r=Math.min(cw,ch)*0.34;
+    // category per index: malade+ (VP), malade- (FN), sain+ (FP), sain- (VN)
+    const cVP=Math.round(VP),cFN=Math.round(FN),cFP=Math.round(FP);
+    for(let i=0;i<N;i++){
+      const col=i%cols, row=(i/cols|0);
+      const cx=pad+cw*(col+0.5), cy=pad+ch*(row+0.5);
+      let color;
+      if(i<cVP)color=COL.gr;            // vrai positif
+      else if(i<cVP+cFN)color=hex(COL.gr,0.28); // malade non détecté
+      else if(i<cVP+cFN+cFP)color=COL.pk;       // faux positif
+      else color=hex(COL.mut,0.30);              // vrai négatif
+      x.fillStyle=color;x.beginPath();x.arc(cx,cy,r,0,TAU);x.fill();
+    }
+    // legend
+    x.font="11px 'JetBrains Mono'";x.textAlign='left';
+    const lg=[['● vrais positifs',COL.gr],['● faux positifs',COL.pk],['● sains négatifs',COL.mut]];
+    let lx=pad;lg.forEach(([t,cc])=>{x.fillStyle=cc;x.fillText(t,lx,H-2);lx+=x.measureText(t).width+16;});
+  });
+})();
+
+/* ============ 5. INDÉPENDANCE (grille 6x6) ============ */
+(function(){
+  const c=document.getElementById('cIndep'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const aR=document.getElementById('inA'),aV=document.getElementById('inAv');
+  const bR=document.getElementById('inB'),bV=document.getElementById('inBv');
+  const pa=document.getElementById('inPA'),pb=document.getElementById('inPB'),
+        prod=document.getElementById('inProd'),inter=document.getElementById('inInter');
+  function upd(){aV.textContent=aR.value;bV.textContent=bR.value;
+    const ka=+aR.value,kb=+bR.value;
+    const PA=ka/6,PB=(7-kb)/6;            // A: dé1<=ka ; B: dé2>=kb
+    const cntInter=ka*(7-kb);
+    pa.textContent=ka+'/6';pb.textContent=(7-kb)+'/6';
+    prod.textContent=(ka*(7-kb))+'/36';
+    inter.textContent=cntInter+'/36';}
+  [aR,bR].forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const ka=+aR.value,kb=+bR.value;
+    const pad=34, size=Math.min(W-2*pad,H-2*pad), cell=size/6;
+    const ox=(W-size)/2, oy=(H-size)/2+6;
+    for(let i=0;i<6;i++)for(let j=0;j<6;j++){
+      const d1=i+1,d2=j+1; // i column = dé1, j row = dé2
+      const inA=d1<=ka, inB=d2>=kb;
+      const cx=ox+i*cell, cy=oy+(5-j)*cell;
+      let fill=COL.bg;
+      if(inA&&inB)fill=hex(COL.am,0.85);
+      else if(inA)fill=hex(COL.vi,0.30);
+      else if(inB)fill=hex(COL.cy,0.30);
+      x.fillStyle=fill;x.fillRect(cx+1,cy+1,cell-2,cell-2);
+      x.strokeStyle=COL.line;x.strokeRect(cx+1,cy+1,cell-2,cell-2);
+      x.fillStyle=(inA&&inB)?'#06121f':COL.mut;x.font="11px 'JetBrains Mono'";
+      x.textAlign='center';x.fillText(d1+','+d2,cx+cell/2,cy+cell/2+4);
+    }
+    x.fillStyle=COL.mut;x.font="12px 'JetBrains Mono'";x.textAlign='center';
+    x.fillText('dé n°1  →',ox+size/2,oy-12);
+    x.save();x.translate(ox-16,oy+size/2);x.rotate(-PI/2);
+    x.fillText('dé n°2  →',0,0);x.restore();
+  });
+})();
+
+/* ============ 6. ESPÉRANCE (poids -> point d'équilibre) ============ */
+(function(){
+  const c=document.getElementById('cEsp'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const vals=[-5,0,2,10];
+  const rs=[0,1,2,3].map(i=>document.getElementById('e'+i));
+  const vs=[0,1,2,3].map(i=>document.getElementById('e'+i+'v'));
+  const eE=document.getElementById('espE'),eV=document.getElementById('espV'),
+        eS=document.getElementById('espS'),eJ=document.getElementById('espJ');
+  function stats(){
+    const w=rs.map(r=>+r.value);let tot=w.reduce((a,b)=>a+b,0);
+    if(tot===0){w[1]=1;tot=1;}
+    const p=w.map(v=>v/tot);
+    const E=vals.reduce((a,v,i)=>a+v*p[i],0);
+    const V=vals.reduce((a,v,i)=>a+(v-E)*(v-E)*p[i],0);
+    return {p,E,V,S:Math.sqrt(V)};
+  }
+  function upd(){const s=stats();vs.forEach((el,i)=>el.textContent=rs[i].value);
+    eE.textContent=s.E.toFixed(2);eV.textContent=s.V.toFixed(2);eS.textContent=s.S.toFixed(2);
+    eJ.textContent=s.E>0.05?'favorable':(s.E<-0.05?'défavorable':'équitable');
+    eJ.className='num '+(s.E>0.05?'hl-gr':(s.E<-0.05?'hl-pk':'hl-am'));}
+  rs.forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const s=stats();
+    const pad=46,x0=pad,x1=W-pad,axy=H-64;
+    const vmin=-6,vmax=11;
+    const sx=v=>x0+(x1-x0)*(v-vmin)/(vmax-vmin);
+    // number line
+    x.strokeStyle=COL.line;x.lineWidth=2;x.beginPath();x.moveTo(x0,axy);x.lineTo(x1,axy);x.stroke();
+    for(let v=-6;v<=11;v++){const xx=sx(v);x.strokeStyle=hex(COL.mut,0.4);
+      x.beginPath();x.moveTo(xx,axy-4);x.lineTo(xx,axy+4);x.stroke();}
+    // bars (probabilities) above the value points
+    const maxP=Math.max(...s.p,0.0001);
+    vals.forEach((v,i)=>{
+      const xx=sx(v);const h=(axy-40)*s.p[i]/Math.max(maxP,0.4);
+      x.fillStyle=hex(COL.cy,0.8);roundRect(x,xx-16,axy-h,32,h,5);x.fill();
+      x.fillStyle=COL.ink;x.font="13px 'JetBrains Mono'";x.textAlign='center';
+      x.fillText(v,xx,axy+20);
+      x.fillStyle=COL.cy;x.font="11px 'JetBrains Mono'";
+      x.fillText((s.p[i]*100).toFixed(0)+'%',xx,axy-h-7);
+    });
+    // E(X) balance triangle
+    const ex=sx(s.E);
+    x.fillStyle=COL.am;x.beginPath();x.moveTo(ex,axy+8);x.lineTo(ex-9,axy+26);x.lineTo(ex+9,axy+26);x.closePath();x.fill();
+    x.strokeStyle=hex(COL.am,0.6);x.lineWidth=1;x.setLineDash([4,4]);
+    x.beginPath();x.moveTo(ex,40);x.lineTo(ex,axy+8);x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.am;x.font="12px 'JetBrains Mono'";x.textAlign='center';
+    x.fillText('E(X) = '+s.E.toFixed(2),ex,32);
+    // sigma span
+    const s1=sx(s.E-s.S),s2=sx(s.E+s.S);
+    x.strokeStyle=hex(COL.pk,0.8);x.lineWidth=2;
+    x.beginPath();x.moveTo(s1,axy+40);x.lineTo(s2,axy+40);x.stroke();
+    x.beginPath();x.moveTo(s1,axy+36);x.lineTo(s1,axy+44);x.moveTo(s2,axy+36);x.lineTo(s2,axy+44);x.stroke();
+    x.fillStyle=COL.pk;x.fillText('± σ',ex,axy+56);
+  });
+})();
+
+/* ============ 8. LOI BINOMIALE ============ */
+function logFact(n){let s=0;for(let i=2;i<=n;i++)s+=Math.log(i);return s;}
+function binom(n,k){if(k<0||k>n)return 0;return Math.round(Math.exp(logFact(n)-logFact(k)-logFact(n-k)));}
+function binomP(n,k,p){if(k<0||k>n)return 0;
+  return Math.exp(logFact(n)-logFact(k)-logFact(n-k)+k*Math.log(p||1e-12)+(n-k)*Math.log(1-p||1e-12));}
+(function(){
+  const c=document.getElementById('cBino'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const nR=document.getElementById('biN'),nV=document.getElementById('biNv');
+  const pR=document.getElementById('biP'),pV=document.getElementById('biPv');
+  const kR=document.getElementById('biK'),kV=document.getElementById('biKv');
+  const elPk=document.getElementById('biPk'),elCum=document.getElementById('biCum'),
+        elAtl=document.getElementById('biAtl'),elCoef=document.getElementById('biCoef'),
+        elE=document.getElementById('biE'),elV=document.getElementById('biV'),elS=document.getElementById('biS');
+  function upd(){
+    const n=+nR.value,p=+pR.value/100;
+    kR.max=n; if(+kR.value>n)kR.value=n;
+    const k=+kR.value;
+    nV.textContent=n;pV.textContent=p.toFixed(2);kV.textContent=k;
+    let cum=0;for(let i=0;i<=k;i++)cum+=binomP(n,i,p);
+    elPk.textContent=binomP(n,k,p).toFixed(4);
+    elCum.textContent=cum.toFixed(4);
+    elAtl.textContent=(1-binomP(n,0,p)).toFixed(4);
+    elCoef.textContent=binom(n,k).toLocaleString('fr-FR');
+    elE.textContent=(n*p).toFixed(2);elV.textContent=(n*p*(1-p)).toFixed(2);
+    elS.textContent=Math.sqrt(n*p*(1-p)).toFixed(2);
+  }
+  [nR,pR,kR].forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const n=+nR.value,p=+pR.value/100,k=+kR.value;
+    const pad=40,x0=pad,x1=W-12,y0=18,y1=H-30;
+    let maxP=0;const ps=[];for(let i=0;i<=n;i++){const pp=binomP(n,i,p);ps.push(pp);if(pp>maxP)maxP=pp;}
+    const bw=(x1-x0)/(n+1);
+    // axis
+    x.strokeStyle=COL.line;x.beginPath();x.moveTo(x0,y1);x.lineTo(x1,y1);x.stroke();
+    for(let i=0;i<=n;i++){
+      const h=(y1-y0)*ps[i]/(maxP*1.08);
+      const bx=x0+bw*i+bw*0.12,bwid=bw*0.76;
+      let col=hex(COL.vi,0.55);
+      if(i===k)col=COL.cy; else if(i<k)col=hex(COL.cy,0.30);
+      x.fillStyle=col;roundRect(x,bx,y1-h,bwid,h,3);x.fill();
+      if(n<=24||i%2===0){x.fillStyle=COL.mut;x.font="10px 'JetBrains Mono'";x.textAlign='center';
+        x.fillText(i,bx+bwid/2,y1+14);}
+    }
+    // E = np marker
+    const ex=x0+bw*(n*p)+bw*0.5;
+    x.strokeStyle=hex(COL.am,0.9);x.setLineDash([5,4]);x.lineWidth=1.5;
+    x.beginPath();x.moveTo(ex,y0-4);x.lineTo(ex,y1);x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.am;x.font="11px 'JetBrains Mono'";x.textAlign='center';
+    x.fillText('E=np='+(n*p).toFixed(1),ex,y0+4);
+    // k label
+    x.fillStyle=COL.cy;x.textAlign='center';x.font="12px 'JetBrains Mono'";
+    x.fillText('P(X='+k+') = '+binomP(n,k,p).toFixed(3),Math.min(Math.max(x0+bw*k+bw*0.5,60),W-60),Math.max(y1-(y1-y0)*ps[k]/(maxP*1.08)-8,y0+14));
+  });
+})();
+
+/* ============ 9. PLANCHE DE GALTON ============ */
+(function(){
+  const c=document.getElementById('cGalton'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const nR=document.getElementById('gaN'),nV=document.getElementById('gaNv');
+  const pR=document.getElementById('gaP'),pV=document.getElementById('gaPv');
+  const rR=document.getElementById('gaR'),rV=document.getElementById('gaRv');
+  const cnt=document.getElementById('gaCount'),mean=document.getElementById('gaMean'),theo=document.getElementById('gaTheo');
+  let balls=[],bins=[],total=0,sumK=0,running=false,acc=0;
+  function n(){return +nR.value;}function p(){return +pR.value/100;}
+  function reset(){balls=[];bins=new Array(n()+1).fill(0);total=0;sumK=0;upd();}
+  function upd(){nV.textContent=n();pV.textContent=p().toFixed(2);
+    rV.textContent=(+rR.value<7?'lent':(+rR.value<14?'moyen':'rapide'));
+    cnt.textContent=total;mean.textContent=total?(sumK/total).toFixed(2):'—';
+    theo.textContent=(n()*p()).toFixed(2);}
+  nR.oninput=()=>{reset();};pR.oninput=upd;rR.oninput=upd;
+  document.getElementById('gaGo').onclick=()=>{running=!running;};
+  document.getElementById('gaReset').onclick=()=>{running=false;reset();};
+  reset();
+  function spawn(){balls.push({row:0,col:0,t:0,done:false});}
+  register(c,(t,dt)=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const N=n();
+    const topY=30,pegBot=H*0.62,binTop=pegBot+10,binBot=H-22;
+    const cx=W/2,spread=Math.min(W*0.8,(N+2)*26);
+    const dx=spread/(N+1);
+    // draw pegs
+    x.fillStyle=hex(COL.mut,0.5);
+    for(let r=0;r<N;r++){const y=topY+ (pegBot-topY)*(r+1)/(N+1);
+      for(let i=0;i<=r;i++){const px=cx+(i-r/2)*dx;
+        x.beginPath();x.arc(px,y,2,0,TAU);x.fill();}}
+    // bins histogram
+    const binW=spread/(N+1);
+    let maxBin=Math.max(1,...bins);
+    for(let b=0;b<=N;b++){
+      const bx=cx+(b-N/2)*binW;
+      const h=(binBot-binTop)*bins[b]/maxBin;
+      x.fillStyle=hex(COL.cy,0.55);
+      x.fillRect(bx-binW*0.42,binBot-h,binW*0.84,h);
+    }
+    // theoretical curve overlay
+    let maxP=0;const ps=[];for(let b=0;b<=N;b++){const pp=binomP(N,b,p());ps.push(pp);if(pp>maxP)maxP=pp;}
+    x.strokeStyle=COL.am;x.lineWidth=2;x.beginPath();
+    for(let b=0;b<=N;b++){const bx=cx+(b-N/2)*binW;
+      const yy=binBot-(binBot-binTop)*(ps[b]/maxP);
+      b===0?x.moveTo(bx,yy):x.lineTo(bx,yy);}x.stroke();
+    x.fillStyle=COL.am;x.font="11px 'JetBrains Mono'";x.textAlign='left';
+    x.fillText('— loi binomiale 𝓑('+N+', '+p().toFixed(2)+')',12,H-6);
+    // spawn + animate balls
+    if(running){acc+=dt*(+rR.value);while(acc>=1){acc-=1;if(balls.length<140)spawn();}}
+    x.fillStyle=COL.pk;
+    for(const ball of balls){
+      ball.t+=dt*3.4;
+      // current column before/after this row's bounce, interpolated
+      const colStart=ball.col;
+      let colEnd=ball.col;
+      if(ball.t>=1){
+        ball.t-=1;ball.row++;
+        if(Math.random()<p())ball.col+=0.5;else ball.col-=0.5;
+        if(ball.row>=N){const b=Math.round(ball.col+N/2);
+          bins[b]=(bins[b]||0)+1;total++;sumK+=b;upd();ball.done=true;continue;}
+        continue;
+      }
+      const r=ball.row;
+      const yA=topY+(pegBot-topY)*(r)/(N+1);
+      const yB=topY+(pegBot-topY)*(r+1)/(N+1);
+      const y=yA+(yB-yA)*ball.t;
+      const px=cx+ball.col*dx;
+      x.beginPath();x.arc(px,y,3.2,0,TAU);x.fill();
+    }
+    balls=balls.filter(b=>!b.done);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probabilités — Terminale · le cahier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&family=Caveat:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf4e9; --paper2:#f3ead8; --card:#fffdf8; --card2:#fbf6ec;
+    --ink:#3b342c; --ink2:#5b5045; --muted:#9a8d7b; --line:#e6dac4;
+    --coral:#e07a5f; --mustard:#e3a02b; --sage:#5a9e7a; --teal:#2f9c8f;
+    --plum:#9a6a9e; --blue:#6d92c4; --rose:#d96c7a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);
+    font-family:'Nunito',system-ui,sans-serif;line-height:1.75;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  /* subtle paper texture + soft warm light */
+  body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(900px 600px at 85% -8%,rgba(224,122,95,.10),transparent 60%),
+      radial-gradient(800px 700px at -5% 25%,rgba(90,158,122,.08),transparent 55%),
+      var(--paper);}
+  /* faint ruled lines, like a notebook */
+  body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(160,140,110,.07) 1px,transparent 1px);
+    background-size:100% 32px;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;line-height:1.12;font-weight:600}
+  .hand{font-family:'Caveat',cursive}
+  code,.mono{font-family:'JetBrains Mono',monospace;font-size:.92em;
+    background:rgba(160,140,110,.14);padding:1px 6px;border-radius:5px;color:var(--ink2)}
+  #prog{position:fixed;top:0;left:0;height:4px;width:0;
+    background:linear-gradient(90deg,var(--coral),var(--mustard));z-index:50;border-radius:0 4px 4px 0}
+
+  /* ---- HERO ---- */
+  header.hero{min-height:96vh;display:flex;flex-direction:column;
+    justify-content:center;position:relative;padding:80px 0}
+  #heroCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;opacity:.85}
+  .kicker{font-family:'Caveat',cursive;font-size:26px;color:var(--coral);
+    transform:rotate(-2deg);margin-bottom:8px}
+  header.hero h1{font-size:clamp(44px,8vw,88px);font-weight:600;color:var(--ink);letter-spacing:-.01em}
+  header.hero h1 .grad{color:var(--coral);position:relative}
+  header.hero h1 .grad::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:12px;
+    background:rgba(227,160,43,.40);z-index:-1;transform:rotate(-1deg);border-radius:8px}
+  header.hero p.lead{font-size:clamp(17px,2vw,21px);color:var(--ink2);max-width:680px;margin-top:26px}
+  .scrolldown{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+    color:var(--muted);font-family:'Caveat',cursive;font-size:20px;
+    display:flex;flex-direction:column;align-items:center;gap:6px}
+  .scrolldown span{width:2px;height:42px;border-radius:2px;
+    background:linear-gradient(var(--coral),transparent);animation:drop 1.8s infinite}
+  @keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}
+    55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+  section{padding:74px 0;position:relative}
+  .step{font-family:'Caveat',cursive;font-size:24px;color:var(--coral);
+    transform:rotate(-1.5deg);display:inline-block;margin-bottom:6px}
+  section h2{font-size:clamp(28px,4.4vw,46px);margin-bottom:10px;color:var(--ink)}
+  section .sub{color:var(--ink2);font-size:17.5px;max-width:740px;margin-bottom:30px}
+  p.body{color:var(--ink2);max-width:760px;margin:16px 0;font-size:16.5px}
+  p.body b{color:var(--ink);font-weight:700}
+  ul.body{color:var(--ink2);max-width:760px;margin:14px 0 14px 6px;font-size:16.5px;list-style:none}
+  ul.body li{margin:9px 0;padding-left:24px;position:relative}
+  ul.body li::before{content:"—";position:absolute;left:0;top:0;color:var(--coral);font-weight:700}
+  ul.body b{color:var(--ink);font-weight:700}
+
+  .hl-cy{color:var(--teal);font-weight:700}.hl-vi{color:var(--plum);font-weight:700}
+  .hl-am{color:var(--mustard);font-weight:700}.hl-pk{color:var(--coral);font-weight:700}
+  .hl-gr{color:var(--sage);font-weight:700}
+
+  /* card = sheet of paper with a bit of tape */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:26px;box-shadow:0 18px 40px -24px rgba(120,90,50,.45),0 2px 0 rgba(0,0,0,.02);
+    position:relative}
+  .card::before{content:"";position:absolute;top:-11px;left:38px;width:88px;height:24px;
+    background:rgba(227,160,43,.28);border:1px solid rgba(227,160,43,.30);
+    transform:rotate(-3deg);border-radius:2px}
+  .card + .card{margin-top:26px}
+
+  canvas.viz{display:block;width:100%;border-radius:12px;
+    background:#fdf8ee;border:1px solid var(--line)}
+  .controls{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:20px;align-items:flex-end}
+  .ctrl{display:flex;flex-direction:column;gap:7px;min-width:170px;flex:1}
+  .ctrl label{font-size:13px;color:var(--ink2);font-weight:600;
+    display:flex;justify-content:space-between;align-items:baseline}
+  .ctrl label .val{color:var(--coral);font-family:'JetBrains Mono',monospace;font-size:12px}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;
+    background:var(--paper2);outline:none;width:100%;border:1px solid var(--line)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;
+    border-radius:50%;background:var(--coral);cursor:pointer;border:3px solid var(--card);
+    box-shadow:0 2px 6px rgba(224,122,95,.5)}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border:3px solid var(--card);
+    border-radius:50%;background:var(--coral);cursor:pointer}
+  button.btn{font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;
+    color:#fff;background:var(--coral);border:0;padding:10px 18px;border-radius:999px;
+    cursor:pointer;transition:.14s;box-shadow:0 6px 14px -6px var(--coral)}
+  button.btn:hover{transform:translateY(-2px) rotate(-1deg)}
+  button.btn.ghost{background:transparent;color:var(--ink2);border:2px solid var(--line);box-shadow:none}
+  button.btn.ghost:hover{border-color:var(--coral);color:var(--coral)}
+
+  .reveal{opacity:0;transform:translateY(30px) rotate(-.4deg);
+    transition:.85s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  .legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}
+  .legend div{background:var(--card2);border:1px solid var(--line);border-left:4px solid var(--sage);
+    padding:12px 15px;border-radius:10px;font-size:14.5px;color:var(--ink2)}
+  .legend div b{color:var(--ink)}
+  .formula{background:var(--card2);border:1px dashed var(--line);border-radius:14px;
+    padding:20px 22px;text-align:center;margin:18px 0;overflow-x:auto;
+    font-family:'JetBrains Mono',monospace;font-size:clamp(14px,2.1vw,19px);color:var(--ink)}
+  .formula .v{color:var(--plum)}.formula .c{color:var(--teal)}
+  .formula .a{color:var(--mustard)}.formula .p{color:var(--coral)}.formula .g{color:var(--sage)}
+  .formula .mut{color:var(--muted)}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;line-height:1.05}
+  .frac .num{border-bottom:1.5px solid var(--ink2);padding:0 6px}
+  .frac .den{padding:0 6px}
+
+  .exbox{margin-top:18px;padding:16px 18px;border-radius:12px;
+    background:rgba(154,106,158,.10);border:1px solid rgba(154,106,158,.25)}
+  .exbox h4{font-family:'Caveat',cursive;font-size:21px;color:var(--plum);margin-bottom:4px;transform:rotate(-1deg)}
+  .exbox p{color:var(--ink2);font-size:15px;margin:4px 0}
+  .exbox.gr{background:rgba(90,158,122,.10);border-color:rgba(90,158,122,.28)}
+  .exbox.gr h4{color:var(--sage)}
+  .exbox.am{background:rgba(227,160,43,.12);border-color:rgba(227,160,43,.30)}
+  .exbox.am h4{color:var(--mustard)}
+
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--card2);
+    border:1px solid var(--line);padding:6px 13px;border-radius:999px;font-size:13px;
+    font-family:'JetBrains Mono',monospace;color:var(--ink2);margin:6px 6px 0 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .stat{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+  .stat .box{flex:1;min-width:120px;background:var(--card2);border:1px solid var(--line);
+    border-radius:12px;padding:13px 15px}
+  .stat .box .lbl{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--muted)}
+  .stat .box .num{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--teal);margin-top:2px}
+
+  /* exercices */
+  .exo{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;
+    box-shadow:0 18px 40px -24px rgba(120,90,50,.4);margin-top:22px}
+  .exo .diff{font-family:'Caveat',cursive;font-size:19px;color:var(--mustard);margin-bottom:0}
+  .exo h3{font-family:'Fraunces',serif;font-size:22px;color:var(--ink);margin:2px 0 10px}
+  .exo .enonce{color:var(--ink2);font-size:16px}
+  .exo .enonce ol{margin:10px 0 0 20px}
+  .exo .enonce li{margin:6px 0}
+  details.corr{margin-top:16px;border:1px solid var(--line);border-radius:12px;
+    background:var(--card2);overflow:hidden}
+  details.corr>summary{cursor:pointer;list-style:none;padding:12px 16px;font-weight:700;
+    color:var(--coral);font-size:15px;display:flex;align-items:center;gap:9px;user-select:none}
+  details.corr>summary::-webkit-details-marker{display:none}
+  details.corr>summary::before{content:"▸";transition:.2s;color:var(--coral)}
+  details.corr[open]>summary::before{transform:rotate(90deg)}
+  details.corr .cbody{padding:6px 18px 16px;color:var(--ink2);font-size:15.5px;border-top:1px solid var(--line)}
+  details.corr .cbody p{margin:8px 0}
+  details.corr .cbody .calc{font-family:'JetBrains Mono',monospace;font-size:13.5px;
+    background:var(--paper2);border:1px solid var(--line);border-radius:8px;
+    padding:8px 12px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+  details.corr .cbody .res{background:rgba(90,158,122,.15);border-left:4px solid var(--sage);
+    padding:9px 13px;border-radius:8px;margin:10px 0;color:var(--ink);font-weight:600}
+
+  /* friendly margin note */
+  .note{font-family:'Caveat',cursive;font-size:21px;color:var(--coral);
+    transform:rotate(-1deg);margin:14px 0;display:block}
+  .note::before{content:"➜ ";}
+
+  footer{padding:56px 0 90px;text-align:center;color:var(--ink2);font-size:15px;
+    border-top:2px dashed var(--line);margin-top:30px}
+  footer .big{font-family:'Fraunces',serif;font-size:26px;color:var(--ink);margin-bottom:8px}
+  footer .tag{font-family:'Caveat',cursive;font-size:20px;color:var(--coral)}
+  ::selection{background:rgba(227,160,43,.35)}
+
+  nav.toc{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:40;
+    display:flex;flex-direction:column;gap:10px}
+  nav.toc a{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);
+    background:var(--card);transition:.2s;position:relative}
+  nav.toc a:hover,nav.toc a.act{background:var(--coral);border-color:var(--coral)}
+  nav.toc a span{position:absolute;right:22px;top:50%;transform:translateY(-50%);
+    white-space:nowrap;font-family:'Caveat',cursive;font-size:17px;color:var(--ink2);
+    opacity:0;pointer-events:none;transition:.2s;background:var(--card);padding:2px 10px;
+    border-radius:8px;border:1px solid var(--line);box-shadow:0 4px 10px -6px rgba(0,0,0,.3)}
+  nav.toc a:hover span{opacity:1}
+  @media(max-width:900px){nav.toc{display:none}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<nav class="toc" id="toc"></nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="wrap">
+    <div class="kicker">Maths · Terminale · le cahier des probas</div>
+    <h1>Apprivoiser<br>le <span class="grad">hasard</span></h1>
+    <p class="lead">Tout le chapitre <b>Probabilités</b> de Terminale, avec des dessins
+      que tu peux régler, lancer et observer. Des idées claires, et les réflexes qui font
+      gagner des points le jour du Bac. Aucun prérequis à part savoir ce qu'est une fraction.</p>
+  </div>
+  <div class="scrolldown"><span></span>fais défiler</div>
+</header>
+
+<!-- ============ 0. INTRO ============ -->
+<section id="s0">
+  <div class="wrap reveal">
+    <div class="step">Pour commencer</div>
+    <h2>Une probabilité, c'est juste un nombre entre 0 et 1</h2>
+    <p class="sub">Avant les formules, l'idée toute simple : une probabilité mesure la
+      <b>chance</b> qu'un événement arrive. 0 = impossible, 1 = sûr et certain, 0,5 = une
+      fois sur deux. Tout le reste, ce ne sont que des outils pour calculer ce nombre
+      sans se tromper.</p>
+    <div class="card">
+      <div class="formula">0 <span class="mut">≤</span> <span class="c">P(A)</span> <span class="mut">≤</span> 1
+        &nbsp;&nbsp;&nbsp; <span class="mut">P(impossible) =</span> 0
+        &nbsp;&nbsp;&nbsp; <span class="mut">P(certain) =</span> 1</div>
+      <div class="legend">
+        <div><b>Univers Ω</b> — tous les résultats possibles de l'expérience.</div>
+        <div><b>Événement A</b> — une partie de Ω (« obtenir un nombre pair »).</div>
+        <div><b>Équiprobabilité</b> — si tout est aussi probable : P(A) = cas favorables / cas possibles.</div>
+        <div><b>Le contraire Ā</b> — « A n'arrive pas ». Toujours P(Ā) = 1 − P(A).</div>
+      </div>
+      <span class="note">Le truc qui sauve la moitié des copies : quand « au moins un… »
+        te bloque, passe par le contraire !</span>
+      <div class="formula"><span class="c">P(A ∪ B)</span> = P(A) + P(B) − <span class="a">P(A ∩ B)</span></div>
+      <p class="body"><b>∪ = OU</b> (l'un, l'autre, ou les deux). <b>∩ = ET</b> (les deux à
+        la fois). On enlève P(A ∩ B) parce que sinon on compterait deux fois la zone
+        commune. Si A et B ne peuvent pas arriver ensemble (<b>incompatibles</b>), alors
+        tout simplement P(A ∪ B) = P(A) + P(B).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 1. LOI DES GRANDS NOMBRES ============ -->
+<section id="s1">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 1</div>
+    <h2>D'où vient une probabilité ?</h2>
+    <p class="sub">Lance une pièce 10 fois : tu peux très bien tomber sur 7 « pile ».
+      Lance-la 10 000 fois : la proportion de pile vient se coller à 0,5. C'est la
+      <b>loi des grands nombres</b> — l'intuition qui se cache derrière toute la théorie.</p>
+    <div class="card">
+      <canvas id="cLGN" class="viz" height="340"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Probabilité réelle p <span class="val" id="lgnPv">0.50</span></label>
+          <input id="lgnP" type="range" min="5" max="95" value="50"></div>
+        <div class="ctrl"><label>Vitesse <span class="val" id="lgnSv">×8</span></label>
+          <input id="lgnS" type="range" min="1" max="40" value="8"></div>
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <button class="btn" id="lgnGo">Lancer / Pause</button>
+          <button class="btn ghost" id="lgnReset">Recommencer</button>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">Lancers</div><div class="num" id="lgnN">0</div></div>
+        <div class="box"><div class="lbl">Succès</div><div class="num" id="lgnK">0</div></div>
+        <div class="box"><div class="lbl">Fréquence observée</div><div class="num" id="lgnF">—</div></div>
+        <div class="box"><div class="lbl">Écart à p</div><div class="num" id="lgnE">—</div></div>
+      </div>
+      <p class="body">Au début la courbe gigote dans tous les sens (peu de lancers, le
+        hasard fait la loi), puis elle se calme et vient se poser sur la ligne
+        <span class="hl-am">p</span>. Moralité : une probabilité, c'est la
+        <b>fréquence vers laquelle on tend</b> quand on répète énormément. Mais sur peu
+        de lancers, un écart reste tout à fait normal — voilà pourquoi on a besoin de
+        maths exactes, pas d'un simple « au feeling ».</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. CONDITIONNELLES ============ -->
+<section id="s2">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 2</div>
+    <h2>« Sachant que… » : on rétrécit l'univers</h2>
+    <p class="sub">Dès qu'on a une info, le champ des possibles se réduit. P<sub>A</sub>(B),
+      qu'on lit « probabilité de B sachant A », c'est la chance de B <i>quand on sait
+      déjà</i> que A est arrivé.</p>
+    <div class="card">
+      <div class="formula">
+        <span class="c">P<sub>A</sub>(B)</span> =
+        <span class="frac"><span class="num"><span class="a">P(A ∩ B)</span></span><span class="den">P(A)</span></span>
+        &nbsp;&nbsp;<span class="mut">donc</span>&nbsp;&nbsp;
+        <span class="a">P(A ∩ B)</span> = P(A) × <span class="c">P<sub>A</sub>(B)</span>
+      </div>
+      <p class="body">Tout est dans la deuxième écriture : la proba d'un <b>chemin</b>
+        (A puis B), c'est le <b>produit</b> des probas le long de ce chemin. C'est
+        exactement ce que fait un arbre, qu'on construit juste après. Sur le dessin :
+        la barre entière, c'est Ω. Quand on « sait A », on zoome dans la zone A et on
+        regarde quelle part contient aussi B.</p>
+      <canvas id="cCond" class="viz" height="300"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>P(A) <span class="val" id="cdAv">0.50</span></label>
+          <input id="cdA" type="range" min="10" max="90" value="50"></div>
+        <div class="ctrl"><label>P<sub>A</sub>(B) — B sachant A <span class="val" id="cdBav">0.60</span></label>
+          <input id="cdBa" type="range" min="0" max="100" value="60"></div>
+        <div class="ctrl"><label>P<sub>Ā</sub>(B) — B sachant Ā <span class="val" id="cdBnv">0.20</span></label>
+          <input id="cdBn" type="range" min="0" max="100" value="20"></div>
+      </div>
+      <div class="exbox">
+        <h4>Comment lire le dessin</h4>
+        <p>La largeur <span class="hl-vi">violette</span> = P(A). Dans chaque colonne, la
+          part <span class="hl-cy">colorée</span> = la proba de B sachant qu'on est dans
+          cette colonne. Les deux parts colorées, mises bout à bout, donnent <b>P(B)</b>
+          tout court — et hop, c'est la formule des probabilités totales du chapitre suivant.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. ARBRE PONDÉRÉ ============ -->
+<section id="s3">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 3</div>
+    <h2>L'arbre pondéré : ton meilleur ami</h2>
+    <p class="sub">Un arbre transforme un énoncé qui fait peur en gestes mécaniques.
+      Trois règles suffisent — bouge les curseurs et regarde l'arbre se recalculer tout seul.</p>
+    <div class="card">
+      <canvas id="cTree" class="viz" height="380"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>P(A) <span class="val" id="trAv">0.40</span></label>
+          <input id="trA" type="range" min="0" max="100" value="40"></div>
+        <div class="ctrl"><label>P<sub>A</sub>(B) <span class="val" id="trBav">0.70</span></label>
+          <input id="trBa" type="range" min="0" max="100" value="70"></div>
+        <div class="ctrl"><label>P<sub>Ā</sub>(B) <span class="val" id="trBnv">0.25</span></label>
+          <input id="trBn" type="range" min="0" max="100" value="25"></div>
+      </div>
+      <div class="legend">
+        <div><b>Règle 1</b> — la somme des branches qui partent d'un même point fait <b>1</b>.</div>
+        <div><b>Règle 2</b> — proba d'un chemin = on <b>multiplie</b> les branches (A puis B).</div>
+        <div><b>Règle 3</b> — une feuille atteinte par plusieurs chemins = on <b>additionne</b> les chemins.</div>
+      </div>
+      <div class="formula">
+        <span class="g">P(B)</span> = <span class="mut">P(A ∩ B) + P(Ā ∩ B)</span> =
+        P(A)·P<sub>A</sub>(B) + P(Ā)·P<sub>Ā</sub>(B) = <span class="g" id="trPB">…</span>
+      </div>
+      <p class="body"><b>La formule des probabilités totales</b>, c'est juste ça : pour
+        arriver à B, on passe soit par A, soit par Ā — donc on additionne les deux chemins
+        qui mènent à B. Et si l'énoncé demande « <i>sachant que B est arrivé, quelle chance
+        que ce soit via A ?</i> », on <b>remonte</b> l'arbre : c'est Bayes, page suivante.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. BAYES ============ -->
+<section id="s4">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 4</div>
+    <h2>Remonter l'arbre — le piège du test médical</h2>
+    <p class="sub">Un test fiable à 99 % qui sonne positif… et pourtant tu as de bonnes
+      chances d'être en pleine santé. Bizarre ? Pas du tout : c'est l'arbre lu à l'envers.
+      Joue avec une population de 1000 personnes.</p>
+    <div class="card">
+      <canvas id="cBayes" class="viz" height="300"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Maladie — P(malade) <span class="val" id="byPv">1.0%</span></label>
+          <input id="byP" type="range" min="1" max="500" value="10"></div>
+        <div class="ctrl"><label>Sensibilité — P<sub>M</sub>(+) <span class="val" id="bySev">99%</span></label>
+          <input id="bySe" type="range" min="50" max="100" value="99"></div>
+        <div class="ctrl"><label>Spécificité — P<sub>M̄</sub>(−) <span class="val" id="bySpv">95%</span></label>
+          <input id="bySp" type="range" min="50" max="100" value="95"></div>
+      </div>
+      <div class="formula">
+        <span class="c">P<sub>+</sub>(M)</span> =
+        <span class="frac"><span class="num"><span class="a">P(M)·P<sub>M</sub>(+)</span></span>
+          <span class="den">P(M)·P<sub>M</sub>(+) + P(M̄)·P<sub>M̄</sub>(+)</span></span>
+        = <span class="c" id="byRes">…</span>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">Vrais positifs</div><div class="num hl-gr" id="byVP">—</div></div>
+        <div class="box"><div class="lbl">Faux positifs</div><div class="num hl-pk" id="byFP">—</div></div>
+        <div class="box"><div class="lbl">Total positifs</div><div class="num" id="byTP">—</div></div>
+        <div class="box"><div class="lbl">P(malade | test +)</div><div class="num" id="byPM">—</div></div>
+      </div>
+      <p class="body">Quand la maladie est <b>rare</b>, les très nombreux bien-portants
+        produisent une foule de <span class="hl-pk">faux positifs</span> qui noie les vrais
+        malades. On divise un seul chemin (le numérateur) par tous les chemins qui mènent
+        à « + » : c'est <b>Bayes</b>, c'est-à-dire « remonter l'arbre ».</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. INDÉPENDANCE ============ -->
+<section id="s5">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 5</div>
+    <h2>L'indépendance : quand savoir A ne change rien à B</h2>
+    <p class="sub">Deux événements sont indépendants si savoir que l'un est arrivé
+      n'apprend rien sur l'autre. Le test officiel tient en une ligne.</p>
+    <div class="card">
+      <div class="formula">A et B indépendants <span class="mut">⇔</span>
+        <span class="a">P(A ∩ B)</span> = <span class="c">P(A) × P(B)</span>
+        &nbsp;&nbsp;<span class="mut">⇔</span>&nbsp;&nbsp; P<sub>A</sub>(B) = P(B)</div>
+      <p class="body">Sur deux dés, choisis un événement par dé. Les cases
+        <span class="hl-vi">A</span> (colonnes) et <span class="hl-cy">B</span> (lignes)
+        se croisent : l'intersection, c'est le carré <span class="hl-am">A ∩ B</span>.
+        Compte les cases et vérifie que le produit des proportions tombe pile sur la
+        proportion de l'intersection — toujours vrai pour deux dés, car ils sont
+        physiquement indépendants.</p>
+      <canvas id="cIndep" class="viz" height="360"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Événement A : dé n°1 ≤ <span class="val" id="inAv">3</span></label>
+          <input id="inA" type="range" min="1" max="6" value="3"></div>
+        <div class="ctrl"><label>Événement B : dé n°2 ≥ <span class="val" id="inBv">5</span></label>
+          <input id="inB" type="range" min="1" max="6" value="5"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">P(A)</div><div class="num hl-vi" id="inPA">—</div></div>
+        <div class="box"><div class="lbl">P(B)</div><div class="num hl-cy" id="inPB">—</div></div>
+        <div class="box"><div class="lbl">P(A)×P(B)</div><div class="num" id="inProd">—</div></div>
+        <div class="box"><div class="lbl">P(A ∩ B) compté</div><div class="num hl-am" id="inInter">—</div></div>
+      </div>
+      <span class="note">À ne JAMAIS confondre : incompatibles (ne peuvent pas arriver
+        ensemble) ≠ indépendants (n'ont pas d'influence).</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. VARIABLE ALÉATOIRE & ESPÉRANCE ============ -->
+<section id="s6">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 6</div>
+    <h2>Mettre un nombre sur le hasard</h2>
+    <p class="sub">Une <b>variable aléatoire</b> X colle un nombre à chaque résultat (le
+      gain à un jeu, le nombre de pile…). Sa <b>loi</b> liste les valeurs et leurs probas.
+      L'<b>espérance</b> E(X), c'est la moyenne qu'on obtient « à la longue ».</p>
+    <div class="card">
+      <div class="formula">
+        <span class="c">E(X)</span> = Σ xᵢ·P(X=xᵢ) &nbsp;&nbsp;&nbsp;
+        <span class="a">V(X)</span> = Σ (xᵢ−E(X))²·P(X=xᵢ) &nbsp;&nbsp;&nbsp;
+        <span class="p">σ(X)</span> = √V(X)
+      </div>
+      <p class="body">Imagine E(X) comme le <b>point d'équilibre</b> de la loi : si tu
+        poses les probabilités comme des poids sur une règle, E(X) est l'endroit où ça
+        tient en équilibre (le petit triangle ▲). L'écart-type σ mesure l'étalement :
+        petit σ = valeurs serrées, grand σ = jeu très dispersé. Bouge les poids des
+        4 secteurs de la roue.</p>
+      <canvas id="cEsp" class="viz" height="340"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Poids valeur −5 <span class="val" id="e0v">1</span></label>
+          <input id="e0" type="range" min="0" max="10" value="1"></div>
+        <div class="ctrl"><label>Poids valeur 0 <span class="val" id="e1v">4</span></label>
+          <input id="e1" type="range" min="0" max="10" value="4"></div>
+        <div class="ctrl"><label>Poids valeur 2 <span class="val" id="e2v">3</span></label>
+          <input id="e2" type="range" min="0" max="10" value="3"></div>
+        <div class="ctrl"><label>Poids valeur 10 <span class="val" id="e3v">1</span></label>
+          <input id="e3" type="range" min="0" max="10" value="1"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">Espérance E(X)</div><div class="num hl-cy" id="espE">—</div></div>
+        <div class="box"><div class="lbl">Variance V(X)</div><div class="num hl-am" id="espV">—</div></div>
+        <div class="box"><div class="lbl">Écart-type σ</div><div class="num hl-pk" id="espS">—</div></div>
+        <div class="box"><div class="lbl">Verdict du jeu</div><div class="num" id="espJ">—</div></div>
+      </div>
+      <div class="exbox am">
+        <h4>Le réflexe « jeu équitable »</h4>
+        <p>Un jeu est <b>favorable</b> si E(gain) &gt; 0, <b>équitable</b> si E = 0,
+          <b>défavorable</b> si E &lt; 0. À la roulette, au loto, dans tous les jeux
+          d'argent : E &lt; 0 pour le joueur. C'est mathématiquement garanti que la
+          maison gagne sur le long terme.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. BERNOULLI ============ -->
+<section id="s7">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 7</div>
+    <h2>L'épreuve de Bernoulli : succès ou échec</h2>
+    <p class="sub">Une <b>épreuve de Bernoulli</b> n'a que deux issues : succès (proba p)
+      ou échec (proba q = 1 − p). C'est la brique LEGO de la loi binomiale.</p>
+    <div class="card">
+      <div class="grid2">
+        <div>
+          <div class="formula" style="font-size:16px">
+            X ∈ {0, 1}<br>
+            <span class="c">P(X=1)</span> = p &nbsp;&nbsp; <span class="p">P(X=0)</span> = 1−p
+          </div>
+          <p class="body" style="margin-top:10px">Pour une seule épreuve :</p>
+          <div class="formula" style="font-size:16px">
+            <span class="c">E(X)</span> = p &nbsp;&nbsp;&nbsp;
+            <span class="a">V(X)</span> = p(1−p)
+          </div>
+        </div>
+        <div>
+          <ul class="body">
+            <li><b>Succès</b> = l'issue qu'on a <i>décidé</i> d'appeler succès (pas forcément « gagner »).</li>
+            <li>« Pile », « la pièce est défectueuse », « le client achète »… tout peut être un succès.</li>
+            <li><b>Schéma de Bernoulli</b> : on répète <b>n fois</b>, de façon <b>indépendante</b>, la <b>même</b> épreuve. C'est l'entrée vers la binomiale.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="exbox gr">
+        <h4>Les 4 conditions à citer (toujours !)</h4>
+        <p>① n épreuves <b>identiques</b> &nbsp; ② <b>deux issues</b> (succès/échec) &nbsp;
+          ③ épreuves <b>indépendantes</b> &nbsp; ④ même probabilité <b>p</b> à chaque fois.
+          Si les 4 sont réunies, alors X = « nombre de succès » suit une loi binomiale 𝓑(n, p).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. LOI BINOMIALE ============ -->
+<section id="s8">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 8 — la star</div>
+    <h2>La loi binomiale 𝓑(n, p)</h2>
+    <p class="sub">On répète n fois une épreuve de Bernoulli, et X compte les succès. La
+      proba d'avoir exactement k succès, c'est <b>combien de chemins</b> (le coefficient
+      binomial) × <b>la proba d'un chemin</b>. Règle n, p et k, et regarde le diagramme
+      respirer.</p>
+    <div class="card">
+      <div class="formula">
+        <span class="c">P(X = k)</span> =
+        <span class="v">(<sup>n</sup><sub>k</sub>)</span>
+        <span class="a">p</span><sup>k</sup>
+        <span class="p">(1−p)</span><sup>n−k</sup>
+        &nbsp;&nbsp;<span class="mut">avec</span>&nbsp;
+        <span class="v">(<sup>n</sup><sub>k</sub>)</span> =
+        <span class="frac"><span class="num">n!</span><span class="den">k!(n−k)!</span></span>
+      </div>
+      <canvas id="cBino" class="viz" height="360"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>n (nombre d'épreuves) <span class="val" id="biNv">20</span></label>
+          <input id="biN" type="range" min="1" max="40" value="20"></div>
+        <div class="ctrl"><label>p (proba de succès) <span class="val" id="biPv">0.50</span></label>
+          <input id="biP" type="range" min="0" max="100" value="50"></div>
+        <div class="ctrl"><label>k mis en évidence <span class="val" id="biKv">10</span></label>
+          <input id="biK" type="range" min="0" max="40" value="10"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">P(X = k)</div><div class="num hl-cy" id="biPk">—</div></div>
+        <div class="box"><div class="lbl">P(X ≤ k)</div><div class="num" id="biCum">—</div></div>
+        <div class="box"><div class="lbl">P(X ≥ 1) « au moins un »</div><div class="num hl-gr" id="biAtl">—</div></div>
+        <div class="box"><div class="lbl">Coefficient (ⁿₖ)</div><div class="num hl-vi" id="biCoef">—</div></div>
+      </div>
+      <p class="body"><b>Le coefficient binomial</b> <span class="hl-vi">(ⁿₖ)</span>, c'est
+        le nombre de façons de placer k succès parmi n cases — exactement le nombre de
+        chemins de l'arbre qui mènent à k succès. À la calculatrice :
+        <code>binompdf(n, p, k)</code> donne P(X = k) et <code>binomcdf(n, p, k)</code>
+        donne P(X ≤ k). Le grand classique « au moins un » se règle par le contraire :
+        <span class="hl-gr">P(X ≥ 1) = 1 − P(X = 0) = 1 − (1−p)ⁿ</span>.</p>
+    </div>
+    <div class="card">
+      <h3 style="font-size:22px;margin-bottom:8px">Espérance & écart-type — à savoir par cœur</h3>
+      <div class="formula">
+        <span class="c">E(X)</span> = <span class="a">n p</span> &nbsp;&nbsp;&nbsp;&nbsp;
+        <span class="g">V(X)</span> = n p (1−p) &nbsp;&nbsp;&nbsp;&nbsp;
+        <span class="p">σ(X)</span> = √(n p (1−p))
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">E(X) = np</div><div class="num hl-cy" id="biE">—</div></div>
+        <div class="box"><div class="lbl">V(X) = np(1−p)</div><div class="num hl-gr" id="biV">—</div></div>
+        <div class="box"><div class="lbl">σ(X)</div><div class="num hl-pk" id="biS">—</div></div>
+      </div>
+      <span class="note">La barre orange sur le diagramme, c'est E(X) = np : le nombre de
+        succès le plus attendu. Logique : p = 0,5 sur 20 lancers → environ 10 succès.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9. GALTON ============ -->
+<section id="s9">
+  <div class="wrap reveal">
+    <div class="step">Le coin jeu</div>
+    <h2>La planche de Galton : voir la binomiale naître</h2>
+    <p class="sub">Chaque bille tombe et choisit gauche ou droite (une épreuve de Bernoulli)
+      à chaque rangée de clous. Sa colonne d'arrivée = son nombre de « droite » = une loi
+      binomiale. Lâche des centaines de billes et regarde l'histogramme épouser la courbe
+      théorique.</p>
+    <div class="card">
+      <canvas id="cGalton" class="viz" height="440"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Rangées n <span class="val" id="gaNv">10</span></label>
+          <input id="gaN" type="range" min="4" max="14" value="10"></div>
+        <div class="ctrl"><label>Biais p (proba d'aller à droite) <span class="val" id="gaPv">0.50</span></label>
+          <input id="gaP" type="range" min="10" max="90" value="50"></div>
+        <div class="ctrl"><label>Débit <span class="val" id="gaRv">moyen</span></label>
+          <input id="gaR" type="range" min="1" max="20" value="6"></div>
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <button class="btn" id="gaGo">Lâcher les billes</button>
+          <button class="btn ghost" id="gaReset">Vider</button>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">Billes tombées</div><div class="num" id="gaCount">0</div></div>
+        <div class="box"><div class="lbl">Moyenne observée</div><div class="num hl-cy" id="gaMean">—</div></div>
+        <div class="box"><div class="lbl">E(X) = np théorique</div><div class="num hl-am" id="gaTheo">—</div></div>
+      </div>
+      <p class="body">Avec p = 0,5 la pile est symétrique : c'est la fameuse « courbe en
+        cloche ». Décale p et tout l'histogramme glisse vers np. C'est la même loi
+        binomiale que le chapitre 8 — sauf qu'ici, tu la fabriques bille par bille.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EXOS ============ -->
+<section id="sExos">
+  <div class="wrap reveal">
+    <div class="step">À toi de jouer</div>
+    <h2>Exercices type Bac</h2>
+    <p class="sub">Cinq exercices dans l'esprit de l'épreuve. Cherche d'abord au brouillon,
+      puis clique sur « Voir la correction » pour comparer ta démarche — c'est la rédaction
+      qui compte, pas seulement le résultat.</p>
+
+    <!-- EXO 1 -->
+    <div class="exo">
+      <div class="diff">★ ☆ ☆ — arbre & probabilités totales</div>
+      <h3>1. Les deux fournisseurs</h3>
+      <div class="enonce">
+        Une usine reçoit ses composants de deux fournisseurs : <b>A</b> (60 % des pièces)
+        et <b>B</b> (40 %). On sait que 3 % des pièces de A sont défectueuses, contre 5 %
+        de celles de B. On prélève une pièce au hasard.
+        <ol>
+          <li>Construis l'arbre pondéré de la situation.</li>
+          <li>Calcule la probabilité que la pièce soit défectueuse.</li>
+          <li>La pièce prélevée est défectueuse. Quelle est la probabilité qu'elle provienne de A ?</li>
+        </ol>
+      </div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>On note D « la pièce est défectueuse ». L'énoncé donne P(A) = 0,6 ; P(B) = 0,4 ;
+            P<sub>A</sub>(D) = 0,03 ; P<sub>B</sub>(D) = 0,05.</p>
+          <p><b>2.</b> Par la formule des probabilités totales (les deux chemins vers D) :</p>
+          <div class="calc">P(D) = P(A)·P<sub>A</sub>(D) + P(B)·P<sub>B</sub>(D)
+            = 0,6×0,03 + 0,4×0,05 = 0,018 + 0,020 = 0,038</div>
+          <div class="res">P(D) = 0,038, soit 3,8 % des pièces.</div>
+          <p><b>3.</b> On « remonte l'arbre » (Bayes) :</p>
+          <div class="calc">P<sub>D</sub>(A) = P(A ∩ D) / P(D) = 0,018 / 0,038 ≈ 0,4737</div>
+          <div class="res">P<sub>D</sub>(A) ≈ 0,474 : une pièce défectueuse vient de A dans ≈ 47,4 % des cas.</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- EXO 2 -->
+    <div class="exo">
+      <div class="diff">★ ☆ ☆ — indépendance</div>
+      <h3>2. Le dé et l'indépendance</h3>
+      <div class="enonce">
+        On lance un dé équilibré à six faces. On considère les événements
+        <b>A</b> : « le résultat est pair » et <b>B</b> : « le résultat est supérieur ou égal à 3 ».
+        <ol>
+          <li>Calcule P(A), P(B) et P(A ∩ B).</li>
+          <li>Les événements A et B sont-ils indépendants ? Justifie.</li>
+        </ol>
+      </div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p><b>1.</b> A = {2, 4, 6}, B = {3, 4, 5, 6}, et A ∩ B = {4, 6}.</p>
+          <div class="calc">P(A) = 3/6 = 1/2   P(B) = 4/6 = 2/3   P(A ∩ B) = 2/6 = 1/3</div>
+          <p><b>2.</b> On compare P(A) × P(B) à P(A ∩ B) :</p>
+          <div class="calc">P(A) × P(B) = 1/2 × 2/3 = 2/6 = 1/3 = P(A ∩ B)</div>
+          <div class="res">L'égalité P(A ∩ B) = P(A)·P(B) est vérifiée : A et B sont indépendants.</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- EXO 3 -->
+    <div class="exo">
+      <div class="diff">★ ★ ☆ — variable aléatoire & espérance</div>
+      <h3>3. Le jeu de cartes est-il rentable ?</h3>
+      <div class="enonce">
+        Pour jouer, on mise 2 €, puis on tire une carte au hasard dans un jeu de 32 cartes.
+        Si c'est un as, on gagne 10 € ; si c'est un roi, on gagne 5 € ; sinon, on ne gagne rien.
+        On note <b>X</b> le gain algébrique du joueur (gain reçu moins la mise).
+        <ol>
+          <li>Donne la loi de probabilité de X.</li>
+          <li>Calcule l'espérance E(X). Le jeu est-il favorable au joueur ?</li>
+        </ol>
+      </div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>Le jeu contient 4 as et 4 rois sur 32 cartes.</p>
+          <div class="calc">P(as) = 4/32 = 1/8   P(roi) = 4/32 = 1/8   P(autre) = 24/32 = 3/4</div>
+          <p><b>1.</b> On retire la mise de 2 € à chaque gain brut :</p>
+          <div class="calc">as : 10 − 2 = 8     roi : 5 − 2 = 3     autre : 0 − 2 = −2
+xᵢ        8       3       −2
+P(X=xᵢ)  1/8     1/8      3/4</div>
+          <p><b>2.</b> Espérance :</p>
+          <div class="calc">E(X) = 8×(1/8) + 3×(1/8) + (−2)×(3/4)
+     = 1 + 0,375 − 1,5 = −0,125</div>
+          <div class="res">E(X) = −0,125 € : en moyenne le joueur perd 12,5 centimes par partie.
+            Le jeu est <b>défavorable</b> au joueur.</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- EXO 4 -->
+    <div class="exo">
+      <div class="diff">★ ★ ☆ — loi binomiale</div>
+      <h3>4. Le QCM répondu au hasard</h3>
+      <div class="enonce">
+        Un QCM comporte 10 questions, chacune avec 4 réponses possibles dont une seule
+        correcte. Un candidat répond entièrement au hasard. On note <b>X</b> le nombre de
+        bonnes réponses.
+        <ol>
+          <li>Justifie que X suit une loi binomiale, et précise ses paramètres.</li>
+          <li>Calcule P(X = 3) (arrondi à 10⁻³).</li>
+          <li>Calcule la probabilité d'avoir au moins une bonne réponse.</li>
+          <li>Combien de bonnes réponses peut-il espérer en moyenne ?</li>
+        </ol>
+      </div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p><b>1.</b> On répète 10 fois la même épreuve à deux issues (bonne / mauvaise
+            réponse), de façon indépendante, avec la même probabilité de succès
+            p = 1/4 = 0,25. Donc :</p>
+          <div class="res">X suit la loi binomiale 𝓑(10 ; 0,25).</div>
+          <p><b>2.</b> Avec la formule (ou <code>binompdf(10, 0.25, 3)</code>) :</p>
+          <div class="calc">P(X=3) = (¹⁰₃) × 0,25³ × 0,75⁷ = 120 × 0,015625 × 0,13348 ≈ 0,250</div>
+          <div class="res">P(X = 3) ≈ 0,250.</div>
+          <p><b>3.</b> « Au moins une » : on passe par le contraire « aucune bonne réponse ».</p>
+          <div class="calc">P(X ≥ 1) = 1 − P(X = 0) = 1 − 0,75¹⁰ = 1 − 0,0563 ≈ 0,944</div>
+          <div class="res">P(X ≥ 1) ≈ 0,944.</div>
+          <p><b>4.</b> Espérance d'une binomiale : E(X) = n p.</p>
+          <div class="res">E(X) = 10 × 0,25 = 2,5 bonnes réponses en moyenne.</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- EXO 5 -->
+    <div class="exo">
+      <div class="diff">★ ★ ★ — binomiale, contrôle qualité</div>
+      <h3>5. Le contrôle qualité</h3>
+      <div class="enonce">
+        Une machine produit des pièces dont 2 % sont défectueuses. On prélève au hasard
+        un échantillon de 50 pièces ; la production est assez grande pour assimiler ce
+        prélèvement à 50 tirages indépendants. On note <b>X</b> le nombre de pièces
+        défectueuses de l'échantillon.
+        <ol>
+          <li>Quelle est la loi de X ?</li>
+          <li>Calcule la probabilité qu'aucune pièce ne soit défectueuse (arrondi à 10⁻³).</li>
+          <li>Calcule la probabilité qu'au moins une pièce soit défectueuse.</li>
+          <li>Donne l'espérance et l'écart-type de X.</li>
+        </ol>
+      </div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p><b>1.</b> 50 prélèvements indépendants, deux issues (défectueuse / correcte),
+            même probabilité p = 0,02 :</p>
+          <div class="res">X suit la loi binomiale 𝓑(50 ; 0,02).</div>
+          <p><b>2.</b> Aucune défectueuse, c'est X = 0 :</p>
+          <div class="calc">P(X = 0) = (1 − 0,02)⁵⁰ = 0,98⁵⁰ ≈ 0,364</div>
+          <div class="res">P(X = 0) ≈ 0,364.</div>
+          <p><b>3.</b> Par le contraire :</p>
+          <div class="calc">P(X ≥ 1) = 1 − P(X = 0) ≈ 1 − 0,364 = 0,636</div>
+          <div class="res">P(X ≥ 1) ≈ 0,636 : plus d'une chance sur deux d'avoir au moins un défaut.</div>
+          <p><b>4.</b> E(X) = n p et σ(X) = √(n p (1 − p)) :</p>
+          <div class="calc">E(X) = 50 × 0,02 = 1
+V(X) = 50 × 0,02 × 0,98 = 0,98   →   σ(X) = √0,98 ≈ 0,99</div>
+          <div class="res">E(X) = 1 pièce défectueuse en moyenne, σ(X) ≈ 0,99.</div>
+        </div>
+      </details>
+    </div>
+
+    <span class="note">Conseil de rédaction : à chaque réponse, écris la formule en lettres
+      avant de remplacer par les nombres. Les points vont surtout à la justification.</span>
+  </div>
+</section>
+
+<!-- ============ 10. RECAP ============ -->
+<section id="s10">
+  <div class="wrap reveal">
+    <div class="step">Avant de fermer le cahier</div>
+    <h2>Les 8 réflexes à dégainer le jour J</h2>
+    <div class="card">
+      <ul class="body">
+        <li><b>① Le contraire</b> — « au moins un » ⇒ 1 − « aucun ». P(Ā) = 1 − P(A).</li>
+        <li><b>② Un arbre, toujours</b> — multiplier le long d'un chemin, additionner les chemins.</li>
+        <li><b>③ Probabilités totales</b> — P(B) = P(A)·P<sub>A</sub>(B) + P(Ā)·P<sub>Ā</sub>(B).</li>
+        <li><b>④ Conditionnelle</b> — P<sub>A</sub>(B) = P(A ∩ B)/P(A). Remonter l'arbre = Bayes.</li>
+        <li><b>⑤ Indépendance</b> — test : P(A ∩ B) = P(A)·P(B). Pas la même chose qu'incompatible.</li>
+        <li><b>⑥ Espérance</b> — E(X) = Σ xᵢ P(X=xᵢ). Jeu équitable ⇔ E = 0.</li>
+        <li><b>⑦ Reconnaître une binomiale</b> — n épreuves identiques, indépendantes, 2 issues, même p ⇒ 𝓑(n, p).</li>
+        <li><b>⑧ Binomiale par cœur</b> — P(X=k) = (ⁿₖ) pᵏ(1−p)ⁿ⁻ᵏ, E = np, V = np(1−p), σ = √(np(1−p)).</li>
+      </ul>
+      <div class="formula" style="margin-top:24px">
+        <span class="mut">Si tu ne devais en retenir qu'une seule :</span><br><br>
+        <span class="c">P(X = k)</span> =
+        <span class="v">(<sup>n</sup><sub>k</sub>)</span>
+        <span class="a">p</span><sup>k</sup>
+        <span class="p">(1−p)</span><sup>n−k</sup>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="big">Tout le chapitre Probabilités du Bac est dans ce cahier.</div>
+    <p class="tag">La suite, c'est l'entraînement sur des annales.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const TAU=Math.PI*2, PI=Math.PI;
+const COL={cy:'#2f9c8f',vi:'#9a6a9e',am:'#e3a02b',pk:'#e07a5f',gr:'#5a9e7a',
+  mut:'#9a8d7b',line:'#e0d4bd',ink:'#3b342c',panel:'#fffdf8',bg:'#fdf8ee'};
+
+function setupCanvas(c){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const r=c.getBoundingClientRect();
+  c.width=r.width*dpr; c.height=(+c.getAttribute('height')||300)*dpr;
+  c.style.height=(+c.getAttribute('height')||300)+'px';
+  const x=c.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0);
+  c._w=r.width; c._h=+(c.getAttribute('height')||300);
+  return x;
+}
+
+/* --- scroll reveal + progress + toc --- */
+const prog=document.getElementById('prog');
+addEventListener('scroll',()=>{const s=scrollY/(document.body.scrollHeight-innerHeight);
+  prog.style.width=(s*100)+'%';},{passive:true});
+const ioR=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>ioR.observe(el));
+
+const tocNames={s0:'Les bases',s1:'Loi grands nombres',s2:'Conditionnelles',s3:'Arbre pondéré',
+  s4:'Bayes',s5:'Indépendance',s6:'Espérance',s7:'Bernoulli',s8:'Loi binomiale',s9:'Galton',
+  sExos:'Exercices',s10:'Récap'};
+const toc=document.getElementById('toc');
+Object.keys(tocNames).forEach(id=>{const a=document.createElement('a');a.href='#'+id;
+  a.innerHTML='<span>'+tocNames[id]+'</span>';a.dataset.t=id;toc.appendChild(a);});
+const tocLinks=[...toc.querySelectorAll('a')];
+const ioToc=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){
+  tocLinks.forEach(l=>l.classList.toggle('act',l.dataset.t===e.target.id));}}),{threshold:.4});
+Object.keys(tocNames).forEach(id=>{const s=document.getElementById(id);if(s)ioToc.observe(s);});
+
+const animators=[];
+function register(canvas,drawFn){
+  const a={canvas,draw:drawFn,on:false,t:0};animators.push(a);
+  new IntersectionObserver(es=>{a.on=es[0].isIntersecting;},{threshold:.04}).observe(canvas);
+  return a;
+}
+let last=performance.now();
+(function tick(now){const dt=Math.min((now-last)/1000,.05);last=now;
+  for(const a of animators){if(a.on){a.t+=dt;a.draw(a.t,dt);}}
+  requestAnimationFrame(tick);})(performance.now());
+
+function roundRect(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);
+  x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
+function hex(c,al){const n=parseInt(c.slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+al+')';}
+function fmtPct(x){return (x*100).toFixed(1).replace('.',',')+' %';}
+
+/* ============ HERO ============ */
+(function(){
+  const c=document.getElementById('heroCanvas'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  let drops=[];
+  function spawn(W){const n=14;let k=0;for(let i=0;i<n;i++)k+=Math.random()<0.5?1:0;
+    return {x:W*0.5+(Math.random()-0.5)*40,y:-10,vy:30+Math.random()*40,
+      tx:W*(0.12+0.76*k/n),col:Math.random()<.5?COL.pk:COL.am,a:0.8};}
+  register(c,(t,dt)=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    if(Math.random()<0.4) drops.push(spawn(W));
+    x.strokeStyle=hex(COL.pk,0.16);x.lineWidth=2;x.beginPath();
+    for(let i=0;i<=W;i+=6){const u=(i/W-0.5)*6;const y=H*0.85-110*Math.exp(-u*u/2);
+      i===0?x.moveTo(i,y):x.lineTo(i,y);} x.stroke();
+    for(const d of drops){d.y+=d.vy*dt;d.vy+=60*dt;
+      d.x+=(d.tx-d.x)*Math.min(1,dt*1.5*(d.y/H+0.2));
+      const yy=Math.min(d.y,H*0.85);
+      x.fillStyle=hex(d.col,0.7);x.beginPath();x.arc(d.x,yy,3,0,TAU);x.fill();}
+    drops=drops.filter(d=>d.y<H*0.9);if(drops.length>240)drops.splice(0,drops.length-240);
+    x.strokeStyle=hex(COL.mut,0.25);x.lineWidth=1.5;x.beginPath();x.moveTo(0,H*0.85);x.lineTo(W,H*0.85);x.stroke();
+  });
+})();
+
+/* ============ 1. LOI DES GRANDS NOMBRES ============ */
+(function(){
+  const c=document.getElementById('cLGN'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const pR=document.getElementById('lgnP'),pV=document.getElementById('lgnPv');
+  const sR=document.getElementById('lgnS'),sV=document.getElementById('lgnSv');
+  const eN=document.getElementById('lgnN'),eK=document.getElementById('lgnK'),
+        eF=document.getElementById('lgnF'),eE=document.getElementById('lgnE');
+  let n=0,k=0,running=false,acc=0,hist=[];
+  function p(){return +pR.value/100;}
+  function reset(){n=0;k=0;hist=[];upd();}
+  function upd(){pV.textContent=p().toFixed(2);sV.textContent='×'+sR.value;
+    eN.textContent=n;eK.textContent=k;eF.textContent=n?(k/n).toFixed(3):'—';
+    eE.textContent=n?((k/n-p())>=0?'+':'')+(k/n-p()).toFixed(3):'—';}
+  pR.oninput=upd;sR.oninput=upd;
+  document.getElementById('lgnGo').onclick=()=>running=!running;
+  document.getElementById('lgnReset').onclick=()=>{running=false;reset();};
+  pR.addEventListener('input',()=>{if(n>0)reset();});
+  reset();
+  register(c,(t,dt)=>{
+    if(running){acc+=dt*(+sR.value);
+      while(acc>=1){acc-=1;n++;if(Math.random()<p())k++;hist.push(k/n);
+        if(hist.length>2000)hist.shift();}upd();}
+    const W=c._w,H=c._h,pad=40; x.clearRect(0,0,W,H);
+    const x0=pad,x1=W-12,y0=14,y1=H-26;
+    x.strokeStyle=COL.line;x.lineWidth=1;x.fillStyle=COL.mut;x.font="11px 'JetBrains Mono'";x.textAlign='right';
+    for(let g=0;g<=4;g++){const yy=y0+(y1-y0)*g/4;x.beginPath();x.moveTo(x0,yy);x.lineTo(x1,yy);x.stroke();
+      x.fillText((1-g/4).toFixed(2),x0-6,yy+4);}
+    const py=y1-(y1-y0)*p();
+    x.strokeStyle=hex(COL.am,0.9);x.lineWidth=2;x.setLineDash([6,5]);
+    x.beginPath();x.moveTo(x0,py);x.lineTo(x1,py);x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.am;x.textAlign='left';x.fillText('p = '+p().toFixed(2),x0+6,py-6);
+    if(hist.length>1){x.strokeStyle=COL.pk;x.lineWidth=2.4;x.beginPath();
+      for(let i=0;i<hist.length;i++){const xx=x0+(x1-x0)*i/(hist.length-1);
+        const yy=y1-(y1-y0)*hist[i];i===0?x.moveTo(xx,yy):x.lineTo(xx,yy);}x.stroke();
+      const lx=x1,ly=y1-(y1-y0)*hist[hist.length-1];
+      x.fillStyle=COL.pk;x.beginPath();x.arc(lx,ly,4,0,TAU);x.fill();
+    } else {x.fillStyle=COL.mut;x.textAlign='center';x.font="16px 'Caveat'";
+      x.fillText('Appuie sur « Lancer »',(x0+x1)/2,(y0+y1)/2);}
+  });
+})();
+
+/* ============ 2. CONDITIONNELLES ============ */
+(function(){
+  const c=document.getElementById('cCond'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const aR=document.getElementById('cdA'),aV=document.getElementById('cdAv');
+  const baR=document.getElementById('cdBa'),baV=document.getElementById('cdBav');
+  const bnR=document.getElementById('cdBn'),bnV=document.getElementById('cdBnv');
+  function upd(){aV.textContent=(+aR.value/100).toFixed(2);baV.textContent=(+baR.value/100).toFixed(2);
+    bnV.textContent=(+bnR.value/100).toFixed(2);}
+  [aR,baR,bnR].forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{
+    const W=c._w,H=c._h,pad=20; x.clearRect(0,0,W,H);
+    const pa=+aR.value/100,pba=+baR.value/100,pbn=+bnR.value/100;
+    const x0=pad+30,x1=W-pad,y0=24,y1=H-30,Wb=x1-x0,Hb=y1-y0,wA=Wb*pa;
+    x.fillStyle=hex(COL.vi,0.16);x.fillRect(x0,y0,wA,Hb);
+    x.fillStyle=hex(COL.cy,0.80);x.fillRect(x0,y1-Hb*pba,wA,Hb*pba);
+    x.fillStyle=hex(COL.mut,0.10);x.fillRect(x0+wA,y0,Wb-wA,Hb);
+    x.fillStyle=hex(COL.cy,0.42);x.fillRect(x0+wA,y1-Hb*pbn,Wb-wA,Hb*pbn);
+    x.strokeStyle=COL.line;x.lineWidth=1.5;x.strokeRect(x0,y0,wA,Hb);x.strokeRect(x0+wA,y0,Wb-wA,Hb);
+    x.fillStyle=COL.ink;x.font="13px 'Nunito'";x.textAlign='center';
+    x.fillText('A',x0+wA/2,y1+18);x.fillText('Ā',x0+wA+(Wb-wA)/2,y1+18);
+    x.fillStyle='#1c5a52';x.textAlign='left';x.font="12px 'JetBrains Mono'";
+    x.fillText('B sachant A : '+pba.toFixed(2),x0+4,y1-Hb*pba-6);
+    if(Wb-wA>70)x.fillText('B sachant Ā : '+pbn.toFixed(2),x0+wA+4,y1-Hb*pbn-6);
+    x.fillStyle=COL.mut;x.textAlign='right';x.fillText('Ω',x0-8,y0+10);
+    const pb=pa*pba+(1-pa)*pbn;
+    x.fillStyle=COL.gr;x.textAlign='center';x.font="13px 'JetBrains Mono'";
+    x.fillText('P(B) = '+pb.toFixed(3)+'  (les deux zones colorées)',(x0+x1)/2,16);
+  });
+})();
+
+/* ============ 3. ARBRE PONDÉRÉ ============ */
+(function(){
+  const c=document.getElementById('cTree'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const aR=document.getElementById('trA'),aV=document.getElementById('trAv');
+  const baR=document.getElementById('trBa'),baV=document.getElementById('trBav');
+  const bnR=document.getElementById('trBn'),bnV=document.getElementById('trBnv');
+  const pbEl=document.getElementById('trPB');
+  function upd(){aV.textContent=(+aR.value/100).toFixed(2);baV.textContent=(+baR.value/100).toFixed(2);
+    bnV.textContent=(+bnR.value/100).toFixed(2);
+    const pb=(+aR.value/100)*(+baR.value/100)+(1-+aR.value/100)*(+bnR.value/100);
+    pbEl.textContent=pb.toFixed(3);}
+  [aR,baR,bnR].forEach(r=>r.oninput=upd);upd();
+  function branch(x1,y1,x2,y2,label,prob,col){
+    x.strokeStyle=col;x.lineWidth=1.6+prob*3;x.globalAlpha=0.45+prob*0.55;
+    x.beginPath();x.moveTo(x1,y1);x.lineTo(x2,y2);x.stroke();x.globalAlpha=1;
+    x.fillStyle=col;x.font="12px 'JetBrains Mono'";x.textAlign='center';
+    x.fillText(label,(x1+x2)/2,(y1+y2)/2-6);}
+  function node(cx,cy,txt,col){x.fillStyle=COL.bg;x.strokeStyle=col;x.lineWidth=2;
+    x.beginPath();x.arc(cx,cy,17,0,TAU);x.fill();x.stroke();
+    x.fillStyle=col;x.font="14px 'Fraunces'";x.textAlign='center';x.textBaseline='middle';
+    x.fillText(txt,cx,cy+1);x.textBaseline='alphabetic';}
+  register(c,()=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const pa=+aR.value/100,pba=+baR.value/100,pbn=+bnR.value/100;
+    const ox=58,m=W*0.4,lx=W-150;
+    const yA=H*0.27,yAn=H*0.73;
+    const yAB=H*0.13,yABn=H*0.40,yAnB=H*0.60,yAnBn=H*0.87;
+    branch(ox,H/2,m,yA,'P(A)='+pa.toFixed(2),pa,COL.vi);
+    branch(ox,H/2,m,yAn,'P(Ā)='+(1-pa).toFixed(2),1-pa,COL.vi);
+    branch(m,yA,lx,yAB,pba.toFixed(2),pba,COL.cy);
+    branch(m,yA,lx,yABn,(1-pba).toFixed(2),1-pba,COL.cy);
+    branch(m,yAn,lx,yAnB,pbn.toFixed(2),pbn,COL.cy);
+    branch(m,yAn,lx,yAnBn,(1-pbn).toFixed(2),1-pbn,COL.cy);
+    node(ox,H/2,'Ω',COL.mut);node(m,yA,'A',COL.vi);node(m,yAn,'Ā',COL.vi);
+    const leaves=[[yAB,'B',pa*pba,COL.gr],[yABn,'B̄',pa*(1-pba),COL.mut],
+                  [yAnB,'B',(1-pa)*pbn,COL.gr],[yAnBn,'B̄',(1-pa)*(1-pbn),COL.mut]];
+    for(const [yy,t,pr,col] of leaves){node(lx,yy,t,col);
+      x.fillStyle=COL.ink;x.font="12px 'JetBrains Mono'";x.textAlign='left';
+      x.fillText('= '+pr.toFixed(3),lx+24,yy+4);}
+    x.fillStyle=COL.gr;x.font="13px 'Caveat'";x.textAlign='left';
+    x.fillText('chemins vers B (à additionner)',lx-34,H-6);
+  });
+})();
+
+/* ============ 4. BAYES ============ */
+(function(){
+  const c=document.getElementById('cBayes'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const pR=document.getElementById('byP'),pV=document.getElementById('byPv');
+  const seR=document.getElementById('bySe'),seV=document.getElementById('bySev');
+  const spR=document.getElementById('bySp'),spV=document.getElementById('bySpv');
+  const res=document.getElementById('byRes'),vp=document.getElementById('byVP'),
+        fp=document.getElementById('byFP'),tp=document.getElementById('byTP'),pm=document.getElementById('byPM');
+  function vals(){return {p:+pR.value/1000,se:+seR.value/100,sp:+spR.value/100};}
+  function upd(){const v=vals();pV.textContent=(v.p*100).toFixed(1).replace('.',',')+'%';
+    seV.textContent=seR.value+'%';spV.textContent=spR.value+'%';
+    const N=1000,VP=N*v.p*v.se,FP=N*(1-v.p)*(1-v.sp),totPos=VP+FP,post=totPos?VP/totPos:0;
+    res.textContent=fmtPct(post);vp.textContent=Math.round(VP);fp.textContent=Math.round(FP);
+    tp.textContent=Math.round(totPos);pm.textContent=fmtPct(post);}
+  [pR,seR,spR].forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const v=vals(),N=1000;
+    const VP=N*v.p*v.se,FN=N*v.p*(1-v.se),FP=N*(1-v.p)*(1-v.sp);
+    const cols=40,rows=25,pad=14,cw=(W-2*pad)/cols,ch=(H-2*pad)/rows,r=Math.min(cw,ch)*0.34;
+    const cVP=Math.round(VP),cFN=Math.round(FN),cFP=Math.round(FP);
+    for(let i=0;i<N;i++){const col=i%cols,row=(i/cols|0);
+      const cx=pad+cw*(col+0.5),cy=pad+ch*(row+0.5);let color;
+      if(i<cVP)color=COL.gr;else if(i<cVP+cFN)color=hex(COL.gr,0.30);
+      else if(i<cVP+cFN+cFP)color=COL.pk;else color=hex(COL.mut,0.30);
+      x.fillStyle=color;x.beginPath();x.arc(cx,cy,r,0,TAU);x.fill();}
+    x.font="13px 'Caveat'";x.textAlign='left';
+    const lg=[['● vrais positifs',COL.gr],['● faux positifs',COL.pk],['● sains',COL.mut]];
+    let lx=pad;lg.forEach(([t,cc])=>{x.fillStyle=cc;x.fillText(t,lx,H-2);lx+=x.measureText(t).width+18;});
+  });
+})();
+
+/* ============ 5. INDÉPENDANCE ============ */
+(function(){
+  const c=document.getElementById('cIndep'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const aR=document.getElementById('inA'),aV=document.getElementById('inAv');
+  const bR=document.getElementById('inB'),bV=document.getElementById('inBv');
+  const pa=document.getElementById('inPA'),pb=document.getElementById('inPB'),
+        prod=document.getElementById('inProd'),inter=document.getElementById('inInter');
+  function upd(){aV.textContent=aR.value;bV.textContent=bR.value;
+    const ka=+aR.value,kb=+bR.value;
+    pa.textContent=ka+'/6';pb.textContent=(7-kb)+'/6';
+    prod.textContent=(ka*(7-kb))+'/36';inter.textContent=(ka*(7-kb))+'/36';}
+  [aR,bR].forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const ka=+aR.value,kb=+bR.value;
+    const pad=34,size=Math.min(W-2*pad,H-2*pad),cell=size/6,ox=(W-size)/2,oy=(H-size)/2+6;
+    for(let i=0;i<6;i++)for(let j=0;j<6;j++){
+      const d1=i+1,d2=j+1,inA=d1<=ka,inB=d2>=kb;
+      const cx=ox+i*cell,cy=oy+(5-j)*cell;let fill=COL.bg;
+      if(inA&&inB)fill=hex(COL.am,0.80);else if(inA)fill=hex(COL.vi,0.28);else if(inB)fill=hex(COL.cy,0.26);
+      x.fillStyle=fill;x.fillRect(cx+1,cy+1,cell-2,cell-2);
+      x.strokeStyle=COL.line;x.strokeRect(cx+1,cy+1,cell-2,cell-2);
+      x.fillStyle=(inA&&inB)?'#6b3b18':COL.mut;x.font="11px 'JetBrains Mono'";x.textAlign='center';
+      x.fillText(d1+','+d2,cx+cell/2,cy+cell/2+4);}
+    x.fillStyle=COL.mut;x.font="13px 'Caveat'";x.textAlign='center';
+    x.fillText('dé n°1  →',ox+size/2,oy-12);
+    x.save();x.translate(ox-16,oy+size/2);x.rotate(-PI/2);x.fillText('dé n°2  →',0,0);x.restore();
+  });
+})();
+
+/* ============ 6. ESPÉRANCE ============ */
+(function(){
+  const c=document.getElementById('cEsp'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const vals=[-5,0,2,10];
+  const rs=[0,1,2,3].map(i=>document.getElementById('e'+i));
+  const vs=[0,1,2,3].map(i=>document.getElementById('e'+i+'v'));
+  const eE=document.getElementById('espE'),eV=document.getElementById('espV'),
+        eS=document.getElementById('espS'),eJ=document.getElementById('espJ');
+  function stats(){let w=rs.map(r=>+r.value),tot=w.reduce((a,b)=>a+b,0);
+    if(tot===0){w=[0,1,0,0];tot=1;}
+    const p=w.map(v=>v/tot),E=vals.reduce((a,v,i)=>a+v*p[i],0),
+      V=vals.reduce((a,v,i)=>a+(v-E)*(v-E)*p[i],0);
+    return {p,E,V,S:Math.sqrt(V)};}
+  function upd(){const s=stats();vs.forEach((el,i)=>el.textContent=rs[i].value);
+    eE.textContent=s.E.toFixed(2);eV.textContent=s.V.toFixed(2);eS.textContent=s.S.toFixed(2);
+    eJ.textContent=s.E>0.05?'favorable':(s.E<-0.05?'défavorable':'équitable');
+    eJ.className='num '+(s.E>0.05?'hl-gr':(s.E<-0.05?'hl-pk':'hl-am'));}
+  rs.forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const s=stats(),pad=46,x0=pad,x1=W-pad,axy=H-64,vmin=-6,vmax=11;
+    const sx=v=>x0+(x1-x0)*(v-vmin)/(vmax-vmin);
+    x.strokeStyle=COL.line;x.lineWidth=2;x.beginPath();x.moveTo(x0,axy);x.lineTo(x1,axy);x.stroke();
+    for(let v=-6;v<=11;v++){const xx=sx(v);x.strokeStyle=hex(COL.mut,0.4);
+      x.beginPath();x.moveTo(xx,axy-4);x.lineTo(xx,axy+4);x.stroke();}
+    const maxP=Math.max(...s.p,0.0001);
+    vals.forEach((v,i)=>{const xx=sx(v),h=(axy-40)*s.p[i]/Math.max(maxP,0.4);
+      x.fillStyle=hex(COL.cy,0.8);roundRect(x,xx-16,axy-h,32,h,6);x.fill();
+      x.fillStyle=COL.ink;x.font="13px 'Fraunces'";x.textAlign='center';x.fillText(v,xx,axy+20);
+      x.fillStyle='#1c5a52';x.font="11px 'JetBrains Mono'";x.fillText((s.p[i]*100).toFixed(0)+'%',xx,axy-h-7);});
+    const ex=sx(s.E);
+    x.fillStyle=COL.am;x.beginPath();x.moveTo(ex,axy+8);x.lineTo(ex-9,axy+26);x.lineTo(ex+9,axy+26);x.closePath();x.fill();
+    x.strokeStyle=hex(COL.am,0.6);x.lineWidth=1.5;x.setLineDash([4,4]);
+    x.beginPath();x.moveTo(ex,40);x.lineTo(ex,axy+8);x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.am;x.font="13px 'JetBrains Mono'";x.textAlign='center';
+    x.fillText('E(X) = '+s.E.toFixed(2),ex,32);
+    const s1=sx(s.E-s.S),s2=sx(s.E+s.S);
+    x.strokeStyle=hex(COL.pk,0.85);x.lineWidth=2.5;
+    x.beginPath();x.moveTo(s1,axy+40);x.lineTo(s2,axy+40);x.stroke();
+    x.beginPath();x.moveTo(s1,axy+36);x.lineTo(s1,axy+44);x.moveTo(s2,axy+36);x.lineTo(s2,axy+44);x.stroke();
+    x.fillStyle=COL.pk;x.fillText('± σ',ex,axy+57);
+  });
+})();
+
+/* ============ 8. LOI BINOMIALE ============ */
+function logFact(n){let s=0;for(let i=2;i<=n;i++)s+=Math.log(i);return s;}
+function binom(n,k){if(k<0||k>n)return 0;return Math.round(Math.exp(logFact(n)-logFact(k)-logFact(n-k)));}
+function binomP(n,k,p){if(k<0||k>n)return 0;
+  return Math.exp(logFact(n)-logFact(k)-logFact(n-k)+k*Math.log(p||1e-12)+(n-k)*Math.log(1-p||1e-12));}
+(function(){
+  const c=document.getElementById('cBino'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const nR=document.getElementById('biN'),nV=document.getElementById('biNv');
+  const pR=document.getElementById('biP'),pV=document.getElementById('biPv');
+  const kR=document.getElementById('biK'),kV=document.getElementById('biKv');
+  const elPk=document.getElementById('biPk'),elCum=document.getElementById('biCum'),
+        elAtl=document.getElementById('biAtl'),elCoef=document.getElementById('biCoef'),
+        elE=document.getElementById('biE'),elV=document.getElementById('biV'),elS=document.getElementById('biS');
+  function upd(){const n=+nR.value,p=+pR.value/100;kR.max=n;if(+kR.value>n)kR.value=n;
+    const k=+kR.value;nV.textContent=n;pV.textContent=p.toFixed(2);kV.textContent=k;
+    let cum=0;for(let i=0;i<=k;i++)cum+=binomP(n,i,p);
+    elPk.textContent=binomP(n,k,p).toFixed(4);elCum.textContent=cum.toFixed(4);
+    elAtl.textContent=(1-binomP(n,0,p)).toFixed(4);
+    elCoef.textContent=binom(n,k).toLocaleString('fr-FR');
+    elE.textContent=(n*p).toFixed(2);elV.textContent=(n*p*(1-p)).toFixed(2);
+    elS.textContent=Math.sqrt(n*p*(1-p)).toFixed(2);}
+  [nR,pR,kR].forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const n=+nR.value,p=+pR.value/100,k=+kR.value;
+    const pad=40,x0=pad,x1=W-12,y0=18,y1=H-30;
+    let maxP=0;const ps=[];for(let i=0;i<=n;i++){const pp=binomP(n,i,p);ps.push(pp);if(pp>maxP)maxP=pp;}
+    const bw=(x1-x0)/(n+1);
+    x.strokeStyle=COL.line;x.lineWidth=1.5;x.beginPath();x.moveTo(x0,y1);x.lineTo(x1,y1);x.stroke();
+    for(let i=0;i<=n;i++){const h=(y1-y0)*ps[i]/(maxP*1.08);
+      const bx=x0+bw*i+bw*0.12,bwid=bw*0.76;let col=hex(COL.vi,0.50);
+      if(i===k)col=COL.cy;else if(i<k)col=hex(COL.cy,0.30);
+      x.fillStyle=col;roundRect(x,bx,y1-h,bwid,h,3);x.fill();
+      if(n<=24||i%2===0){x.fillStyle=COL.mut;x.font="10px 'JetBrains Mono'";x.textAlign='center';
+        x.fillText(i,bx+bwid/2,y1+14);}}
+    const ex=x0+bw*(n*p)+bw*0.5;
+    x.strokeStyle=hex(COL.am,0.95);x.setLineDash([5,4]);x.lineWidth=2;
+    x.beginPath();x.moveTo(ex,y0-4);x.lineTo(ex,y1);x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.am;x.font="11px 'JetBrains Mono'";x.textAlign='center';
+    x.fillText('E=np='+(n*p).toFixed(1),ex,y0+4);
+    x.fillStyle='#1c5a52';x.textAlign='center';x.font="12px 'JetBrains Mono'";
+    x.fillText('P(X='+k+') = '+binomP(n,k,p).toFixed(3),
+      Math.min(Math.max(x0+bw*k+bw*0.5,60),W-60),
+      Math.max(y1-(y1-y0)*ps[k]/(maxP*1.08)-8,y0+14));
+  });
+})();
+
+/* ============ 9. PLANCHE DE GALTON ============ */
+(function(){
+  const c=document.getElementById('cGalton'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const nR=document.getElementById('gaN'),nV=document.getElementById('gaNv');
+  const pR=document.getElementById('gaP'),pV=document.getElementById('gaPv');
+  const rR=document.getElementById('gaR'),rV=document.getElementById('gaRv');
+  const cnt=document.getElementById('gaCount'),mean=document.getElementById('gaMean'),theo=document.getElementById('gaTheo');
+  let balls=[],bins=[],total=0,sumK=0,running=false,acc=0;
+  function n(){return +nR.value;}function p(){return +pR.value/100;}
+  function reset(){balls=[];bins=new Array(n()+1).fill(0);total=0;sumK=0;upd();}
+  function upd(){nV.textContent=n();pV.textContent=p().toFixed(2);
+    rV.textContent=(+rR.value<7?'lent':(+rR.value<14?'moyen':'rapide'));
+    cnt.textContent=total;mean.textContent=total?(sumK/total).toFixed(2):'—';theo.textContent=(n()*p()).toFixed(2);}
+  nR.oninput=()=>{reset();};pR.oninput=upd;rR.oninput=upd;
+  document.getElementById('gaGo').onclick=()=>{running=!running;};
+  document.getElementById('gaReset').onclick=()=>{running=false;reset();};
+  reset();
+  function spawn(){balls.push({row:0,col:0,t:0,done:false});}
+  register(c,(t,dt)=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const N=n(),topY=30,pegBot=H*0.62,binTop=pegBot+10,binBot=H-22;
+    const cx=W/2,spread=Math.min(W*0.8,(N+2)*26),dx=spread/(N+1);
+    x.fillStyle=hex(COL.mut,0.55);
+    for(let r=0;r<N;r++){const y=topY+(pegBot-topY)*(r+1)/(N+1);
+      for(let i=0;i<=r;i++){const px=cx+(i-r/2)*dx;x.beginPath();x.arc(px,y,2,0,TAU);x.fill();}}
+    const binW=spread/(N+1);let maxBin=Math.max(1,...bins);
+    for(let b=0;b<=N;b++){const bx=cx+(b-N/2)*binW,h=(binBot-binTop)*bins[b]/maxBin;
+      x.fillStyle=hex(COL.cy,0.55);x.fillRect(bx-binW*0.42,binBot-h,binW*0.84,h);}
+    let maxP=0;const ps=[];for(let b=0;b<=N;b++){const pp=binomP(N,b,p());ps.push(pp);if(pp>maxP)maxP=pp;}
+    x.strokeStyle=COL.am;x.lineWidth=2.5;x.beginPath();
+    for(let b=0;b<=N;b++){const bx=cx+(b-N/2)*binW,yy=binBot-(binBot-binTop)*(ps[b]/maxP);
+      b===0?x.moveTo(bx,yy):x.lineTo(bx,yy);}x.stroke();
+    x.fillStyle=COL.am;x.font="14px 'Caveat'";x.textAlign='left';
+    x.fillText('— loi binomiale 𝓑('+N+', '+p().toFixed(2)+')',12,H-6);
+    if(running){acc+=dt*(+rR.value);while(acc>=1){acc-=1;if(balls.length<140)spawn();}}
+    x.fillStyle=COL.pk;
+    for(const ball of balls){ball.t+=dt*3.4;
+      if(ball.t>=1){ball.t-=1;ball.row++;
+        if(Math.random()<p())ball.col+=0.5;else ball.col-=0.5;
+        if(ball.row>=N){const b=Math.round(ball.col+N/2);bins[b]=(bins[b]||0)+1;total++;sumK+=b;upd();ball.done=true;continue;}
+        continue;}
+      const r=ball.row,yA=topY+(pegBot-topY)*(r)/(N+1),yB=topY+(pegBot-topY)*(r+1)/(N+1);
+      const y=yA+(yB-yA)*ball.t,px=cx+ball.col*dx;
+      x.beginPath();x.arc(px,y,3.4,0,TAU);x.fill();}
+    balls=balls.filter(b=>!b.done);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,3086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le nouveau de Broglie !? — Quantum Computing, beginner-first</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070a14;--bg2:#0c1122;--panel:#111831;--panel2:#161f3d;
+    --ink:#e8ecf8;--muted:#8b96b8;--line:#243056;
+    --cyan:#34e1d8;--violet:#9b7bff;--amber:#ffc24b;--pink:#ff6b9d;--green:#4be3a0;
+    --glow:0 0 40px -8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;
+    line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(800px 500px at 80% -5%,rgba(155,123,255,.18),transparent 60%),
+      radial-gradient(700px 600px at 0% 30%,rgba(52,225,216,.10),transparent 55%),
+      linear-gradient(180deg,#070a14,#070a14);}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;line-height:1.15;letter-spacing:-.02em}
+  code,.mono{font-family:'JetBrains Mono',monospace}
+  #prog{position:fixed;top:0;left:0;height:3px;width:0;
+    background:linear-gradient(90deg,var(--cyan),var(--violet));z-index:50;
+    box-shadow:var(--glow) var(--violet)}
+  header.hero{min-height:100vh;display:flex;flex-direction:column;
+    justify-content:center;position:relative;padding:80px 0}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.35em;
+    text-transform:uppercase;color:var(--cyan);margin-bottom:22px}
+  header.hero h1{font-size:clamp(40px,7vw,82px);font-weight:700}
+  header.hero h1 .grad{background:linear-gradient(120deg,var(--cyan),var(--violet) 60%,var(--pink));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  header.hero p.lead{font-size:clamp(17px,2vw,21px);color:var(--muted);max-width:680px;margin-top:24px}
+  #heroCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;opacity:.55}
+  .scrolldown{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
+    color:var(--muted);font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+    display:flex;flex-direction:column;align-items:center;gap:10px}
+  .scrolldown span{width:1px;height:46px;background:linear-gradient(var(--cyan),transparent);
+    animation:drop 1.8s infinite}
+  @keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}
+    55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  section{padding:88px 0;position:relative}
+  .step{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--violet);
+    letter-spacing:.25em;text-transform:uppercase;margin-bottom:14px}
+  section h2{font-size:clamp(26px,4vw,42px);font-weight:700;margin-bottom:8px}
+  section .sub{color:var(--muted);font-size:17px;max-width:720px;margin-bottom:34px}
+  p.body{color:#c4ccea;max-width:760px;margin:18px 0;font-size:16.5px}
+  p.body b{color:var(--ink)}
+  .hl-cy{color:var(--cyan)}.hl-vi{color:var(--violet)}.hl-am{color:var(--amber)}
+  .hl-pk{color:var(--pink)}.hl-gr{color:var(--green)}
+  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));
+    border:1px solid var(--line);border-radius:18px;padding:24px;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
+  canvas.viz{display:block;width:100%;border-radius:12px;background:#070b18;border:1px solid var(--line)}
+  .controls{display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:18px;align-items:center}
+  .ctrl{display:flex;flex-direction:column;gap:6px;min-width:170px;flex:1}
+  .ctrl label{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;
+    letter-spacing:.08em;display:flex;justify-content:space-between}
+  .ctrl label .val{color:var(--cyan)}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:5px;border-radius:5px;
+    background:#22305c;outline:none;width:100%}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;
+    border-radius:50%;background:var(--cyan);cursor:pointer;box-shadow:0 0 0 4px rgba(52,225,216,.18)}
+  input[type=range]::-moz-range-thumb{width:17px;height:17px;border:0;border-radius:50%;background:var(--cyan);cursor:pointer}
+  button.btn{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:13px;
+    color:#06121f;background:linear-gradient(120deg,var(--cyan),#76f0e6);
+    border:0;padding:9px 14px;border-radius:8px;cursor:pointer;transition:.12s;
+    box-shadow:0 6px 18px -10px var(--cyan)}
+  button.btn:hover{transform:translateY(-2px)}
+  button.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+  button.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+  .gateRow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .reveal{opacity:0;transform:translateY(36px);transition:.9s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+  pre.code{background:#060a16;border:1px solid var(--line);border-radius:14px;
+    padding:18px 22px;overflow-x:auto;font-family:'JetBrains Mono',monospace;
+    font-size:13.5px;line-height:1.65;color:#c8d2f0;margin:18px 0}
+  pre.code .k{color:var(--violet)}pre.code .s{color:var(--green)}
+  pre.code .n{color:var(--amber)}pre.code .c{color:var(--muted)}pre.code .f{color:var(--cyan)}
+  .legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:12px;margin-top:18px}
+  .legend div{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--cyan);
+    padding:11px 14px;border-radius:8px;font-size:13.5px;color:var(--muted)}
+  .legend div b{color:var(--ink);font-family:'JetBrains Mono',monospace}
+  .formula{background:#060a16;border:1px solid var(--line);border-radius:14px;
+    padding:20px 22px;text-align:center;margin:18px 0;overflow-x:auto;
+    font-family:'JetBrains Mono',monospace;font-size:clamp(14px,2.2vw,20px)}
+  .formula .v{color:var(--violet)}.formula .c{color:var(--cyan)}
+  .formula .a{color:var(--amber)}.formula .p{color:var(--pink)}
+  .exbox{margin-top:18px;padding:14px 16px;border-radius:12px;
+    background:rgba(155,123,255,.07);border:1px dashed var(--violet)}
+  .exbox h4{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--violet);margin-bottom:6px}
+  .exbox p{color:#c4ccea;font-size:14.5px;margin:4px 0}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--panel2);
+    border:1px solid var(--line);padding:6px 12px;border-radius:999px;font-size:13px;
+    font-family:'JetBrains Mono',monospace;color:var(--muted);margin:6px 6px 0 0}
+  footer{padding:60px 0 90px;text-align:center;color:var(--muted);font-size:14px;
+    border-top:1px solid var(--line);margin-top:36px}
+  footer .big{font-family:'Space Grotesk',sans-serif;font-size:22px;color:var(--ink);margin-bottom:10px}
+  .tag{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--cyan)}
+  ::selection{background:rgba(155,123,255,.35)}
+
+  /* ===================== Playground fullscreen ===================== */
+  body.has-fs-play{overflow:hidden}
+  #sPlay .card.is-fs{
+    position:fixed; inset:0; z-index:9999; margin:0;
+    border-radius:0; border:0; padding:14px 18px 12px;
+    background:linear-gradient(180deg,#0a0f22,var(--bg));
+    width:100vw; height:100vh; height:100dvh;
+    max-width:100vw; max-height:100dvh;
+    display:grid;
+    grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);
+    grid-template-rows:auto auto auto minmax(180px,1fr) minmax(180px,1fr) auto;
+    grid-template-areas:
+      "header   header"
+      "polar    cart"
+      "prob     prob"
+      "sphere   plane"
+      "sphere   repl"
+      "controls controls";
+    gap:10px 16px; overflow:hidden;
+  }
+  #sPlay .card.is-fs > .play-bar{grid-area:header;margin:0}
+  #sPlay .card.is-fs > #psiPolar{grid-area:polar;margin:0;font-size:13.5px;padding:9px 14px}
+  #sPlay .card.is-fs > #psiCart{grid-area:cart;margin:0;font-size:13.5px;padding:9px 14px}
+  #sPlay .card.is-fs > #psiProb{grid-area:prob;margin:0;padding:10px 14px;font-size:12.5px}
+  #sPlay .card.is-fs > #cPlayBloch{grid-area:sphere;margin:0!important;height:100%!important;min-height:0;max-height:none}
+  #sPlay .card.is-fs > #cPlay{grid-area:plane;margin:0!important;height:100%!important;min-height:0;max-height:none}
+  #sPlay .card.is-fs > .repl p.body{display:none}
+  #sPlay .card.is-fs > .repl{grid-area:repl;margin:0!important;padding:0!important;
+    border-top:0!important;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+  #sPlay .card.is-fs > .repl #rplCode{flex:1 1 auto;min-height:80px!important;height:auto!important;resize:none!important}
+  #sPlay .card.is-fs > .repl #rplOut{flex:0 0 auto;max-height:120px!important;min-height:50px;margin-top:8px!important}
+  #sPlay .card.is-fs > .repl > div:first-child{margin-bottom:8px!important}
+  #sPlay .card.is-fs > .controls{grid-area:controls;margin:0;padding-top:4px}
+  #sPlay .card.is-fs > p.body,
+  #sPlay .card.is-fs > .exbox{display:none}
+  #btnPlayFs.in-fs::before{content:"⊠ "}
+  @media (max-width:920px){
+    #sPlay .card.is-fs{
+      grid-template-columns:1fr;
+      grid-template-rows:auto auto auto auto minmax(260px,1.1fr) minmax(180px,.7fr) minmax(180px,1fr) auto;
+      grid-template-areas:
+        "header"
+        "polar"
+        "cart"
+        "prob"
+        "sphere"
+        "plane"
+        "repl"
+        "controls";
+      overflow:auto;
+    }
+  }
+
+  /* ===================== Playground II fullscreen ===================== */
+  body.has-fs-play2{overflow:hidden}
+  #sPlay2 .card.is-fs{
+    position:fixed; inset:0; z-index:9999; margin:0;
+    border-radius:0; border:0; padding:14px 18px 12px;
+    background:linear-gradient(180deg,#0a0f22,var(--bg));
+    width:100vw; height:100vh; height:100dvh;
+    max-width:100vw; max-height:100dvh;
+    display:grid;
+    grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);
+    grid-template-rows:auto auto auto auto minmax(220px,1.6fr) minmax(150px,.7fr);
+    grid-template-areas:
+      "header  header"
+      "polar   repl"
+      "cart    repl"
+      "prob    repl"
+      "bars    repl"
+      "blochs  repl";
+    gap:10px 16px; overflow:hidden;
+  }
+  #sPlay2 .card.is-fs > .play-bar{grid-area:header;margin:0}
+  #sPlay2 .card.is-fs > #psi2Polar{grid-area:polar;margin:0;font-size:13px;padding:7px 12px;line-height:1.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #sPlay2 .card.is-fs > #psi2Cart{grid-area:cart;margin:0;font-size:11.5px;padding:7px 12px}
+  #sPlay2 .card.is-fs > #psi2Prob{grid-area:prob;margin:0;font-size:12px;padding:8px 12px}
+  #sPlay2 .card.is-fs > #cPlay2Bars{grid-area:bars;margin:0!important;height:100%!important;min-height:0;max-height:none}
+  #sPlay2 .card.is-fs > #play2BlochRow{grid-area:blochs;margin:0!important;min-height:0;height:100%}
+  #sPlay2 .card.is-fs > #play2BlochRow > canvas{height:100%!important;min-height:0;max-height:none}
+  #sPlay2 .card.is-fs > .repl{grid-area:repl;margin:0!important;padding:0!important;
+    border-top:0!important;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+  #sPlay2 .card.is-fs > .repl p.body{display:none}
+  #sPlay2 .card.is-fs > .repl #rpl2Code{flex:1 1 auto;min-height:100px!important;height:auto!important;resize:none!important}
+  #sPlay2 .card.is-fs > .repl #rpl2Out{flex:0 0 auto;max-height:140px!important;min-height:60px;margin-top:8px!important}
+  #sPlay2 .card.is-fs > .repl > div:first-child{margin-bottom:8px!important}
+  #sPlay2 .card.is-fs > .exbox{display:none}
+  #btnPlay2Fs.in-fs::before{content:"⊠ "}
+  @media (max-width:920px){
+    #sPlay2 .card.is-fs{
+      grid-template-columns:1fr;
+      grid-template-rows:auto auto auto auto minmax(260px,1.2fr) minmax(150px,.7fr) minmax(220px,1fr);
+      grid-template-areas:
+        "header"
+        "polar"
+        "cart"
+        "prob"
+        "bars"
+        "blochs"
+        "repl";
+      overflow:auto;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="wrap">
+    <div class="kicker">404CTF · Quantique · Beginner Masterclass</div>
+    <h1><span class="grad">Le nouveau de Broglie !?</span><br>quantum computing<br>from absolute zero</h1>
+    <p class="lead">Ten short chapters, each with a thing you can rotate, click, measure. No
+      prerequisites beyond knowing what a sine is. By the end you'll read both challenge
+      notebooks without flinching — single-qubit state prep <i>and</i> the 2-qubit
+      gate-budget puzzle — and have all the building blocks you need to write your own
+      circuits.</p>
+  </div>
+  <div class="scrolldown"><span></span>scroll</div>
+</header>
+
+<!-- ============ 1. BIT VS QUBIT ============ -->
+<section id="s1">
+  <div class="wrap reveal">
+    <div class="step">Chapter 01 — Bit vs Qubit</div>
+    <h2>A qubit is an arrow on a sphere</h2>
+    <p class="sub">A classical bit is 0 or 1. A qubit can be a smooth <i>blend</i> of both,
+      called a superposition. Mathematically it's a 2-D unit vector with complex coefficients;
+      visually it's a point on a unit sphere, the <b>Bloch sphere</b>.</p>
+    <div class="card">
+      <div class="formula">|ψ⟩ = <span class="a">α</span>|0⟩ + <span class="c">β</span>|1⟩
+        &nbsp;&nbsp;,&nbsp;&nbsp; |<span class="a">α</span>|² + |<span class="c">β</span>|² = 1</div>
+      <canvas id="cBloch" class="viz" height="380"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>θ  (polar, 0…π) <span class="val" id="bTh">π/2</span></label>
+          <input id="bThR" type="range" min="0" max="180" value="90"></div>
+        <div class="ctrl"><label>φ  (azimuth, 0…2π) <span class="val" id="bPh">0</span></label>
+          <input id="bPhR" type="range" min="0" max="360" value="0"></div>
+      </div>
+      <p class="body"><b>α</b> and <b>β</b> are complex numbers. The squared magnitudes
+        |α|² and |β|² are the <i>probabilities</i> you'd get 0 or 1 if you measured —
+        which is why they must sum to 1. The north pole is |0⟩, the south pole is |1⟩,
+        the equator is "50/50 with a phase". Drag θ and φ to glide between states. Note
+        the live amplitudes: with θ=π/2, φ=0 you sit at |+⟩ = (|0⟩+|1⟩)/√2 — perfectly
+        balanced and the phase visible on the equator.</p>
+      <span class="pill">|0⟩ = [1, 0]ᵀ</span>
+      <span class="pill">|1⟩ = [0, 1]ᵀ</span>
+      <span class="pill">|+⟩ = (|0⟩+|1⟩)/√2</span>
+      <span class="pill">|−⟩ = (|0⟩−|1⟩)/√2</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. SINGLE-QUBIT GATES ============ -->
+<section id="s2">
+  <div class="wrap reveal">
+    <div class="step">Chapter 02 — Single-qubit gates as rotations</div>
+    <h2>Every gate moves the arrow</h2>
+    <p class="sub">A gate is a 2×2 unitary matrix. Multiply it onto your state vector and the
+      arrow on the Bloch sphere rotates. That's the whole picture. Click a gate and watch.</p>
+    <div class="card">
+      <canvas id="cGates" class="viz" height="380"></canvas>
+      <div class="gateRow">
+        <button class="btn" data-g="X">X</button>
+        <button class="btn" data-g="Y">Y</button>
+        <button class="btn" data-g="Z">Z</button>
+        <button class="btn" data-g="H">H</button>
+        <button class="btn" data-g="S">S</button>
+        <button class="btn" data-g="T">T</button>
+        <button class="btn ghost" data-g="RX">RX(θ)</button>
+        <button class="btn ghost" data-g="RY">RY(θ)</button>
+        <button class="btn ghost" data-g="RZ">RZ(θ)</button>
+        <button class="btn ghost" id="gReset">↺ reset to |0⟩</button>
+      </div>
+      <div class="controls">
+        <div class="ctrl"><label>θ for RX / RY / RZ <span class="val" id="gThL">π/2</span></label>
+          <input id="gThR" type="range" min="0" max="720" value="180"></div>
+      </div>
+      <p class="body"><b>X</b> flips |0⟩↔|1⟩ (classical NOT). <b>H</b> turns |0⟩ into |+⟩ —
+        it's how you <i>create</i> superposition. <b>Z</b> flips the sign of |1⟩, invisible
+        if you only ever measure but crucial in interference. <b>RY(θ)</b> tilts the arrow
+        by θ around the Y axis — that is the workhorse for "I want P(1)=p"
+        (see Chapter 8). <b>T</b> = phase by π/4 (the gate names in the challenge are
+        exactly these).</p>
+      <div class="formula">X = <span class="c">[[0,1],[1,0]]</span>&nbsp;&nbsp;
+        H = <span class="c">(1/√2)·[[1,1],[1,−1]]</span>&nbsp;&nbsp;
+        RY(<span class="a">θ</span>) = <span class="c">[[cos(θ/2), −sin(θ/2)], [sin(θ/2), cos(θ/2)]]</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. MULTI-QUBIT ============ -->
+<section id="s3">
+  <div class="wrap reveal">
+    <div class="step">Chapter 03 — More than one qubit</div>
+    <h2>Tensor product : two qubits make a 4-vector</h2>
+    <p class="sub">With <b>n</b> qubits the state lives in 2ⁿ dimensions. Two qubits → four
+      basis states |00⟩, |01⟩, |10⟩, |11⟩, four complex amplitudes, |α|²+...+|δ|²=1.</p>
+    <div class="card">
+      <canvas id="cMulti" class="viz" height="320"></canvas>
+      <div class="controls">
+        <button class="btn ghost" id="mInit">|00⟩</button>
+        <button class="btn ghost" id="mH0">H on qubit 0</button>
+        <button class="btn ghost" id="mH1">H on qubit 1</button>
+        <button class="btn ghost" id="mX0">X on qubit 0</button>
+        <button class="btn ghost" id="mX1">X on qubit 1</button>
+      </div>
+      <p class="body">Each bar is the squared amplitude of one basis state — what you'd see
+        measuring. Start from |00⟩ (only the first bar is full). Hadamard qubit 0:
+        |0⟩→|+⟩ on q0, the full state is now |+⟩⊗|0⟩ = (|00⟩+|10⟩)/√2 — two equal bars.
+        Apply H to q1 too: four equal bars, the "uniform superposition". This is the
+        <span class="hl-cy">parallel-universe</span> trick — every basis state is "alive"
+        at once.</p>
+      <div class="formula">|ψ⟩ ⊗ |φ⟩  reads "the joint state of two independent qubits"&nbsp;&nbsp;
+        →&nbsp;&nbsp;|00⟩, |01⟩, |10⟩, |11⟩ basis</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. ENTANGLEMENT / CNOT ============ -->
+<section id="s4">
+  <div class="wrap reveal">
+    <div class="step">Chapter 04 — CNOT &amp; entanglement</div>
+    <h2>Two qubits with one fate</h2>
+    <p class="sub">A CNOT (controlled-NOT) flips qubit B only if qubit A is |1⟩. Combined with
+      a Hadamard, it makes the two qubits inseparable — measure one, the other's outcome is
+      sealed. That's <b>entanglement</b>.</p>
+    <div class="card">
+      <canvas id="cBell" class="viz" height="320"></canvas>
+      <div class="controls">
+        <button class="btn" id="bellH">① H on q0</button>
+        <button class="btn" id="bellCX">② CNOT  q0 → q1</button>
+        <button class="btn ghost" id="bellReset">↺ reset</button>
+      </div>
+      <p class="body">Start in |00⟩. Step 1, Hadamard qubit 0: the state is (|00⟩+|10⟩)/√2 —
+        q0 is superposed, q1 still 0, independent. Step 2, CNOT: the |10⟩ branch flips q1 →
+        the state becomes <b>(|00⟩ + |11⟩)/√2</b>, the <span class="hl-am">Bell state</span>.
+        Now there are NO |01⟩ or |10⟩ bars. If you measure q0 and get 0, q1 is guaranteed 0;
+        if q0 is 1, q1 is guaranteed 1 — even if they're light-years apart. The two qubits
+        share a coin flip you can no longer separate.</p>
+      <div class="formula">CNOT = <span class="c">|0⟩⟨0| ⊗ I  +  |1⟩⟨1| ⊗ X</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. MEASUREMENT ============ -->
+<section id="s5">
+  <div class="wrap reveal">
+    <div class="step">Chapter 05 — Measurement &amp; the Born rule</div>
+    <h2>Reading collapses. Repeat to learn.</h2>
+    <p class="sub">Measuring picks one basis outcome with probability |amplitude|² and
+      <i>collapses</i> the state to it. The trick: prepare the circuit many times (shots),
+      measure each, build a histogram — the histogram approximates the probabilities.</p>
+    <div class="card">
+      <canvas id="cMeasure" class="viz" height="320"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Target P(1) <span class="val" id="meP">0.66</span></label>
+          <input id="mePR" type="range" min="0" max="100" value="66"></div>
+        <div class="ctrl"><label># shots <span class="val" id="meN">100</span></label>
+          <input id="meNR" type="range" min="10" max="4000" value="100"></div>
+        <button class="btn" id="meRun">▶ Run shots</button>
+      </div>
+      <p class="body">Set the target probability of getting 1, choose how many shots to
+        run, hit ▶. Each shot is one universe; the bar empirically rises toward |β|² =
+        P(1). With 100 shots you get noisy noise; with 4000, the histogram lines up almost
+        exactly with the true probability. <b>"Shots = N, normalise = True"</b> in the
+        challenge's <code>get_measure()</code> is doing exactly this.</p>
+      <div class="formula">P(outcome k) = |⟨k|ψ⟩|²&nbsp;&nbsp;&nbsp;
+        — the Born rule, the only weird postulate of QM</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. THE U GATE ============ -->
+<section id="s6">
+  <div class="wrap reveal">
+    <div class="step">Chapter 06 — The universal U gate</div>
+    <h2>One gate to make any single-qubit state</h2>
+    <p class="sub">Qiskit's <code>u(θ, φ, λ)</code> is the most general single-qubit gate.
+      Applied to |0⟩, it gives you <i>any</i> point on the Bloch sphere. Memorise just one
+      formula and you can produce any α, β you like.</p>
+    <div class="card">
+      <div class="formula">u(<span class="a">θ</span>, <span class="v">φ</span>, <span class="c">λ</span>) · |0⟩
+        = cos(<span class="a">θ</span>/2)·|0⟩ + e^{i<span class="v">φ</span>}·sin(<span class="a">θ</span>/2)·|1⟩
+        <br>&nbsp;<br>
+        <span class="c">(λ adds a phase on the |0⟩ branch — only relevant when you
+        compose this gate with others)</span></div>
+      <canvas id="cU" class="viz" height="340"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>θ  <span class="val" id="uTh">π/2</span></label>
+          <input id="uThR" type="range" min="0" max="360" value="90"></div>
+        <div class="ctrl"><label>φ  <span class="val" id="uPh">0</span></label>
+          <input id="uPhR" type="range" min="0" max="360" value="0"></div>
+        <div class="ctrl"><label>λ  <span class="val" id="uLa">0</span></label>
+          <input id="uLaR" type="range" min="0" max="360" value="0"></div>
+      </div>
+      <p class="body">The display shows the resulting amplitudes as
+        <span class="hl-am">|0⟩-bar</span> and <span class="hl-cy">|1⟩-bar</span>, with the
+        |1⟩ amplitude split into real &amp; imaginary parts so you literally see the phase
+        e^{iφ}. Slide θ to control how much of the state is |1⟩; slide φ to spin its phase.
+        Once you can dial a target [α, β] live, you'll know how to build any 1-qubit state
+        the challenge asks for.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. CIRCUITS IN QISKIT ============ -->
+<section id="s7">
+  <div class="wrap reveal">
+    <div class="step">Chapter 07 — How circuits look in Qiskit</div>
+    <h2>Three-line idioms you'll keep reusing</h2>
+    <p class="sub">The notebook gives you a <code>Circuit</code> class (a subclass of
+      <code>QuantumCircuit</code>). Here are the only patterns you actually need.</p>
+    <div class="card">
+      <pre class="code"><span class="c"># a single qubit, starts in |0⟩</span>
+qc = Circuit(<span class="n">1</span>)
+
+<span class="c"># apply gates — order matters, left-to-right in time</span>
+qc.h(<span class="n">0</span>)                  <span class="c"># Hadamard on qubit 0</span>
+qc.x(<span class="n">0</span>)                  <span class="c"># X / NOT</span>
+qc.ry(<span class="n">theta</span>, <span class="n">0</span>)         <span class="c"># RY by angle theta — your friend for P(1)</span>
+qc.u(<span class="n">theta</span>, <span class="n">phi</span>, <span class="n">lam</span>, <span class="n">0</span>) <span class="c"># universal — any single-qubit state from |0⟩</span>
+
+<span class="c"># two-qubit gates</span>
+qc = Circuit(<span class="n">2</span>)
+qc.h(<span class="n">0</span>); qc.cx(<span class="n">0</span>,<span class="n">1</span>)        <span class="c"># Bell state (|00⟩ + |11⟩)/√2</span>
+
+<span class="c"># peek at what the circuit produces — useful for sanity checks</span>
+<span class="k">from</span> qiskit.quantum_info <span class="k">import</span> Statevector
+print(Statevector.from_instruction(qc).data)
+
+<span class="c"># empirical histogram — what a real device would give you</span>
+print(qc.get_measure(shots=<span class="n">10000</span>, normalise=<span class="k">True</span>))</pre>
+      <div class="legend">
+        <div><b>qc.ry(θ, q)</b> the workhorse — controls how often you get 1</div>
+        <div><b>qc.u(θ, φ, λ, q)</b> any single-qubit state including phase</div>
+        <div><b>qc.cx(c, t)</b> CNOT (entanglement)</div>
+        <div><b>Statevector(qc).data</b> exact [α, β, ...] — debug your circuit BEFORE measuring</div>
+        <div><b>qc.get_measure(shots=N)</b> Born-rule histogram, the answer-checker</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. THE CHALLENGE STRATEGY ============ -->
+<section id="s8">
+  <div class="wrap reveal">
+    <div class="step">Chapter 08 — How to think about 6.1 and 6.2</div>
+    <h2>The mental moves, not the answers</h2>
+    <p class="sub">Strategy only. The numbers are yours — write them down, check with
+      <code>Statevector</code>, submit when matching.</p>
+    <div class="card">
+      <h3 style="margin-bottom:10px">6.1 — make P(1) equal a chosen value <i>p</i></h3>
+      <p class="body">Start from |0⟩. You want
+        <code>|ψ⟩ = α|0⟩ + β|1⟩</code> with <code>|β|² = p</code>. The simplest gate that
+        gives you a real β depending on a single knob is <b>RY(θ)</b>. From the matrix in
+        Chapter 02:</p>
+      <div class="formula">RY(<span class="a">θ</span>)·|0⟩ = cos(<span class="a">θ</span>/2)|0⟩ + sin(<span class="a">θ</span>/2)|1⟩</div>
+      <p class="body">So β = sin(θ/2). Set sin²(θ/2) = <i>p</i>, solve for θ, plug it in,
+        run <code>get_measure(shots=10000)</code> — your histogram of 1 should land near
+        <i>p</i>. <i>Don't be alarmed if it bounces by ±0.01% — that's the Born rule with a
+        finite shot count.</i></p>
+      <div class="exbox"><h4>Mini-exercise (do it on paper first)</h4>
+        <p>Solve sin²(θ/2) = 1/2 for θ. (You should recognise this state.) Then
+        sin²(θ/2) = 1. Then sin²(θ/2) = 0. Pattern check: at p=0, θ=0 — the gate is identity
+        and you stay in |0⟩, exactly right.</p></div>
+
+      <h3 style="margin:24px 0 10px">6.2 — produce a state with a specific phase</h3>
+      <p class="body">Target: <code>|ψ⟩ = (1/2)|0⟩ + (√3/2)·e^{iπ/3}|1⟩</code>.
+        Compare with Chapter 06's identity:</p>
+      <div class="formula">u(<span class="a">θ</span>,<span class="v">φ</span>,<span class="c">λ</span>)·|0⟩
+        = cos(<span class="a">θ</span>/2)·|0⟩ + e^{i<span class="v">φ</span>}·sin(<span class="a">θ</span>/2)·|1⟩</div>
+      <p class="body">Two unknowns (<span class="hl-am">θ</span>,
+        <span class="hl-vi">φ</span>), two equations (real part of α, complex part of β).
+        Read off θ from <code>cos(θ/2) = 1/2</code>, then φ is sitting in the exponent of
+        the |1⟩ amplitude. <span class="hl-cy">λ</span> can be anything because you start
+        from |0⟩ — it disappears (try it in the U-gate slider). After you build the
+        circuit, check with:</p>
+      <pre class="code"><span class="k">from</span> qiskit.quantum_info <span class="k">import</span> Statevector
+print(Statevector.from_instruction(q2_input).data)
+<span class="c"># target: [0.5+0.j, 0.4330127+0.75j]</span></pre>
+      <div class="exbox"><h4>Mini-exercise</h4>
+        <p>Without computing, predict what <code>0.4330127</code> is (it's the real part of
+        β = (√3/2)·e^{iπ/3}). Useful: cos(π/3) = 1/2 and sin(π/3) = √3/2. You don't need
+        anything beyond that.</p></div>
+
+      <h3 style="margin:24px 0 10px">Submission etiquette</h3>
+      <p class="body">The cell at the bottom of the notebook POSTs your two circuits
+        encoded as base64 QPY. Run cells in order, verify with Statevector and
+        get_measure first, then submit. If your probabilities are <i>close</i> to the
+        target but the server rejects, re-run with more shots — Born-rule noise can put
+        you on the wrong side of a threshold on a single attempt.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9. THE SOLUTIONS ============ -->
+<section id="sSol">
+  <div class="wrap reveal">
+    <div class="step">Chapter 09 — The two solutions, fully derived</div>
+    <h2>From the target state to the line of code</h2>
+    <p class="sub">Both circuits are one-liners. The work is in the algebra <i>before</i> you
+      type them. Here is every step, every substitution, and why each constant lands
+      where it does.</p>
+
+    <div class="card">
+      <h3 style="margin-bottom:10px">▸ 6.1 &nbsp;—&nbsp; P(0)=33% , P(1)=66%</h3>
+
+      <p class="body"><b>Step 1 — pick the gate.</b> We start from |0⟩ and we want
+        <i>real</i> amplitudes (no phase requirement, just a probability target).
+        The only single-knob gate that produces a real β is <span class="hl-am">RY(θ)</span>.
+        From Chapter 02:</p>
+      <div class="formula">RY(<span class="a">θ</span>)·|0⟩
+        &nbsp;=&nbsp; cos(<span class="a">θ</span>/2)·|0⟩
+        &nbsp;+&nbsp; sin(<span class="a">θ</span>/2)·|1⟩</div>
+
+      <p class="body"><b>Step 2 — match the Born rule.</b> Probability of measuring
+        |1⟩ is |β|² (Chapter 05). Here β is real, so:</p>
+      <div class="formula">P(1) = <span class="c">sin²(θ/2)</span> = <span class="p">0.66</span></div>
+
+      <p class="body"><b>Step 3 — solve for θ.</b> Take the square root, then invert sine:</p>
+      <div class="formula">sin(θ/2) = √0.66 &nbsp;&nbsp;⇒&nbsp;&nbsp;
+        θ/2 = arcsin(√0.66) &nbsp;&nbsp;⇒&nbsp;&nbsp;
+        <span class="a">θ = 2·arcsin(√0.66)</span> ≈ 1.8909 rad ≈ 108.34°</div>
+
+      <p class="body"><b>Step 4 — sanity check the state.</b> Plug θ back in:</p>
+      <div class="formula">α = cos(θ/2) = √0.34 ≈ 0.5831 &nbsp;&nbsp;,&nbsp;&nbsp;
+        β = sin(θ/2) = √0.66 ≈ 0.8124<br>
+        |α|² ≈ <span class="a">0.34</span> &nbsp; , &nbsp;
+        |β|² ≈ <span class="c">0.66</span> ✓</div>
+
+      <p class="body"><b>Step 5 — the code.</b></p>
+      <pre class="code"><span class="k">from</span> math <span class="k">import</span> asin, sqrt
+
+q1_input = Circuit(<span class="n">1</span>)
+q1_input.ry(<span class="n">2</span> * asin(sqrt(<span class="n">0.66</span>)), <span class="n">0</span>)
+<span class="c"># equivalent: q1_input.ry(2 * acos(sqrt(0.34)), 0)
+# the notebook draft uses 0.33 instead of 0.34 — same angle to 2 decimals,
+# fine because shot-noise covers ~±1% anyway</span>
+
+<span class="c"># verify before submitting</span>
+print(Statevector.from_instruction(q1_input).data)
+<span class="c"># → [0.5831+0.j, 0.8124+0.j]</span>
+print(q1_input.get_measure(shots=<span class="n">10000</span>, normalise=<span class="k">True</span>))
+<span class="c"># → {'0': ~0.34, '1': ~0.66}</span></pre>
+
+      <div class="exbox"><h4>Why RY and not RX?</h4>
+        <p>RX(θ)|0⟩ = cos(θ/2)|0⟩ − i·sin(θ/2)|1⟩ — the |1⟩ amplitude is
+        <i>imaginary</i>. Measurement probability is still sin²(θ/2), so RX would
+        actually <i>also</i> work for 6.1 (Born rule only sees |β|²). RY is the
+        textbook choice because it keeps everything real and matches the
+        intuition "tilt around the Y axis on the Bloch sphere".</p></div>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <h3 style="margin-bottom:10px">▸ 6.2 &nbsp;—&nbsp; |ψ⟩ = ½·|0⟩ + (√3/2)·e^{iπ/3}·|1⟩</h3>
+
+      <p class="body"><b>Step 1 — pick the gate.</b> Now we need both a specific
+        amplitude AND a specific phase. RY alone can't put a phase on β. The
+        universal single-qubit gate <span class="hl-am">u(θ, φ, λ)</span> does
+        exactly this in one shot (Chapter 06):</p>
+      <div class="formula">u(<span class="a">θ</span>,<span class="v">φ</span>,<span class="c">λ</span>)·|0⟩
+        &nbsp;=&nbsp; cos(<span class="a">θ</span>/2)·|0⟩
+        &nbsp;+&nbsp; e^{i<span class="v">φ</span>}·sin(<span class="a">θ</span>/2)·|1⟩</div>
+
+      <p class="body"><b>Step 2 — match the target term-by-term.</b> Line up the
+        two expressions:</p>
+      <div class="formula">cos(<span class="a">θ</span>/2)·|0⟩ + e^{i<span class="v">φ</span>}·sin(<span class="a">θ</span>/2)·|1⟩
+        &nbsp;=&nbsp; <span class="p">½</span>·|0⟩ + <span class="p">(√3/2)</span>·e^{i<span class="p">π/3</span>}·|1⟩</div>
+
+      <p class="body">Two scalar equations on the |0⟩ coefficient and the phase factor:</p>
+      <ul style="color:#c4ccea;max-width:760px;margin:18px 0 18px 22px;font-size:16.5px">
+        <li><b>(a)</b> &nbsp; cos(θ/2) = 1/2 &nbsp;⇒&nbsp; θ/2 = π/3 &nbsp;⇒&nbsp;
+          <span class="hl-am">θ = 2π/3</span></li>
+        <li><b>(b)</b> &nbsp; e^{iφ} = e^{iπ/3} &nbsp;⇒&nbsp;
+          <span class="hl-vi">φ = π/3</span></li>
+        <li><b>(c)</b> &nbsp; sin(θ/2) = sin(π/3) = √3/2 &nbsp;— <i>auto-satisfied</i>
+          once we fix θ from (a). This is the magic: the |1⟩ magnitude isn't a
+          free parameter, it's locked to θ. We don't get to choose it independently;
+          we get lucky because the target obeys |α|² + |β|² = (1/2)² + (√3/2)² = 1.</li>
+      </ul>
+
+      <p class="body"><b>Step 3 — what about λ?</b> Look at the full u-gate formula
+        (the version Qiskit actually applies):</p>
+      <div class="formula">u(θ,φ,λ) = [[cos(θ/2), −e^{i<span class="c">λ</span>}·sin(θ/2)],
+        [e^{iφ}·sin(θ/2), e^{i(φ+<span class="c">λ</span>)}·cos(θ/2)]]</div>
+      <p class="body">λ only multiplies entries in the <i>second column</i> of u.
+        When you act on |0⟩ = [1, 0]ᵀ, only the first column is read — λ vanishes.
+        So <span class="hl-cy">λ can be anything</span> (set it to 0). Try it in
+        Chapter 06's slider: with θ and φ fixed, sliding λ moves nothing.</p>
+
+      <p class="body"><b>Step 4 — verify the complex β.</b> Plug θ=2π/3, φ=π/3:</p>
+      <div class="formula">β = sin(π/3)·e^{iπ/3}
+        = (√3/2)·(cos(π/3) + i·sin(π/3))<br>
+        = (√3/2)·(1/2 + i·√3/2)
+        = <span class="a">√3/4</span> + i·<span class="c">3/4</span>
+        ≈ <span class="a">0.4330127</span> + <span class="c">0.75</span>i ✓</div>
+      <p class="body">That's the exact pair the notebook prints as the
+        expected Statevector — <code>[0.5 + 0.j, 0.4330127 + 0.75j]</code>.</p>
+
+      <p class="body"><b>Step 5 — the code.</b></p>
+      <pre class="code"><span class="k">from</span> math <span class="k">import</span> pi
+<span class="k">from</span> qiskit.quantum_info <span class="k">import</span> Statevector
+
+q2_input = Circuit(<span class="n">1</span>)
+q2_input.u(<span class="n">2</span>*pi/<span class="n">3</span>, pi/<span class="n">3</span>, <span class="n">0</span>, <span class="n">0</span>)
+<span class="c">#         θ=2π/3  φ=π/3  λ=0  qubit=0</span>
+
+print(Statevector.from_instruction(q2_input).data)
+<span class="c"># → [0.5+0.j , 0.4330127+0.75j]   ← exactly the target</span></pre>
+
+      <div class="exbox"><h4>Alternative — RY then a phase gate</h4>
+        <p>If the U gate feels too magical, decompose it: first set the magnitudes
+        with RY, then stamp the phase with P (or RZ + global-phase bookkeeping):</p>
+        <pre class="code">q2_input = Circuit(<span class="n">1</span>)
+q2_input.ry(<span class="n">2</span>*pi/<span class="n">3</span>, <span class="n">0</span>)   <span class="c"># → (1/2)|0⟩ + (√3/2)|1⟩  (no phase yet)</span>
+q2_input.p(pi/<span class="n">3</span>, <span class="n">0</span>)      <span class="c"># multiplies the |1⟩ branch by e^{iπ/3}</span>
+<span class="c"># identical statevector, three columns to read instead of one</span></pre>
+        <p>Two valid mental models, same physics — pick whichever you'd be able
+        to re-derive on a blank sheet of paper.</p></div>
+
+      <div class="exbox"><h4>Why cos(θ/2) and not cos(θ)?</h4>
+        <p>The factor of ½ in the angle comes from the Bloch sphere. A qubit on
+        the Bloch sphere lives in projective 3-space; rotating the <i>arrow</i>
+        by 2π brings it back to itself, but the underlying 2-D complex state
+        vector picks up a sign flip and only returns after a 4π rotation. To
+        compensate, every single-qubit rotation gate uses half the geometric
+        angle. That's why θ=2π/3 puts the arrow at the equator-ish latitude
+        where cos(π/3)=½ — the Bloch-sphere angle is twice the matrix angle.</p></div>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <h3 style="margin-bottom:10px">▸ Final checklist before POSTing</h3>
+      <ul style="color:#c4ccea;max-width:760px;margin:6px 0 6px 22px;font-size:16.5px">
+        <li><b>q1_input</b> — <code>Statevector</code> should give amplitudes
+          ≈ [0.583, 0.812] (both real); <code>get_measure(shots=10000)</code>
+          should land near {'0':0.34, '1':0.66}.</li>
+        <li><b>q2_input</b> — <code>Statevector</code> must give exactly
+          [0.5+0j, 0.4330127+0.75j]. If you see a different phase, you have φ
+          wrong (sign or fraction of π).</li>
+        <li>Run the verification cells <i>before</i> the POST cell. The Born-rule
+          noise can swing 6.1's histogram by ±1% on 10k shots — that's normal.
+          6.2 has zero noise on Statevector because it's computed exactly.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10. CHALLENGE 2 — THE 2-QUBIT GATE-BUDGET PUZZLE ============ -->
+<section id="sCh2">
+  <div class="wrap reveal">
+    <div class="step">Chapter 10 — Challenge 2 · the gate-budget puzzle</div>
+    <h2>Hit a 2-qubit target with a half-used circuit</h2>
+    <p class="sub">The second notebook (<code>J'optimise le porte à portes</code>) gives you a
+      circuit that <i>already</i> has <code>H</code> on both qubits, a strict budget of
+      <b>5 gates</b> with per-gate caps, and a 2-qubit target. The score is the
+      <b>fidelity</b> between your output and the target — you must clear 95 %.</p>
+
+    <div class="card">
+      <h3 style="margin-bottom:10px">▸ What you're handed, what you owe</h3>
+      <pre class="code">initial_circuit = Circuit(<span class="n">2</span>)
+initial_circuit.h(<span class="n">0</span>)            <span class="c"># pre-applied H ⊗ H</span>
+initial_circuit.h(<span class="n">1</span>)            <span class="c"># state after these two: |++⟩</span>
+
+target = Statevector([<span class="n">0.5</span>, <span class="n">0</span>, <span class="n">0</span>, sqrt(<span class="n">3</span>)/<span class="n">2</span>])
+<span class="c">#                       |00⟩    |01⟩  |10⟩    |11⟩</span></pre>
+
+      <div class="formula">|ψ<sub>cible</sub>⟩ &nbsp;=&nbsp; <span class="p">½</span>·|00⟩
+        &nbsp;+&nbsp; <span class="p">√3/2</span>·|11⟩ &nbsp;&nbsp;
+        <span class="c">(a <i>biased</i> Bell state — only |00⟩ and |11⟩ are populated, but unevenly)</span></div>
+      <p class="body">Same axis as the Bell pair from Chapter 04, just with unequal weights.
+        Born-rule outcomes: <code>P(00)=¼, P(11)=¾, P(01)=P(10)=0</code> — q0 and q1
+        are still perfectly correlated, only the bias is non-Bell.</p>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <h3 style="margin-bottom:10px">▸ Fidelity — the score the grader uses</h3>
+      <div class="formula">F &nbsp;=&nbsp; |⟨ψ<sub>cible</sub>|ψ<sub>final</sub>⟩|²
+        &nbsp;&nbsp;∈ [0, 1]</div>
+      <p class="body">Take your output state, inner-product it against the target, square the
+        magnitude. <b>F = 1</b> means identical states (up to an invisible global phase).
+        <b>F = 0</b> means orthogonal. The baseline H⊗H circuit hits F ≈ 0.4665 — let's
+        see why before we beat it:</p>
+      <div class="formula">⟨ψ<sub>cible</sub>|++⟩ = ½·½ + 0·½ + 0·½ + √3/2·½ = (1+√3)/4 ≈ 0.683
+        &nbsp;&nbsp;⇒&nbsp;&nbsp; F = (0.683)² ≈ <span class="p">0.4665</span> ✓</div>
+      <p class="body">For pure states F is also the probability that, if the grader prepared
+        |ψ<sub>cible</sub>⟩ and measured it in <i>your</i> output's basis, the outcome would
+        say "same state". F ≥ 0.95 means the two states agree on more than 95 % of every
+        possible measurement.</p>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <h3 style="margin-bottom:10px">▸ Read the budget like a sudoku grid</h3>
+      <div class="legend">
+        <div><b>RY</b> ≤ 2 &nbsp;— the only knob for splitting amplitudes (your friend)</div>
+        <div><b>RZ</b> ≤ 1 &nbsp;— phase rotation (we won't need it; target is real)</div>
+        <div><b>X</b> &nbsp;&nbsp;≤ 2 &nbsp;— classical NOT, swaps |0⟩↔|1⟩</div>
+        <div><b>CNOT</b> ≤ 1 &nbsp;— your ONE chance at entanglement</div>
+        <div><b>total</b> ≤ 5 &nbsp;— several slots stay empty if we're clever</div>
+      </div>
+      <p class="body">No <code>h</code>, no <code>u</code>, no <code>p</code> in the menu —
+        every Hadamard or phase tweak has to be <i>synthesised</i> from those four gates.
+        The single CNOT is non-negotiable: the target is entangled (q0 and q1 are
+        correlated), so without exactly one CNOT you can never leave product-state
+        territory.</p>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <h3 style="margin-bottom:10px">▸ Strategy — work backward from |00⟩</h3>
+      <p class="body"><b>Phase 1.</b> Pretend, for a moment, that you started from a clean
+        |00⟩. How would you build the target with the gates available?</p>
+      <ol style="color:#c4ccea;max-width:760px;margin:6px 0 14px 22px;font-size:16.5px">
+        <li><span class="hl-am">RY(2π/3)</span> on q0 sends |0⟩ → cos(π/3)|0⟩ + sin(π/3)|1⟩
+          = ½|0⟩ + √3/2|1⟩. State becomes (½|0⟩ + √3/2|1⟩) ⊗ |0⟩ = ½|00⟩ +
+          <span class="hl-pk">√3/2|10⟩</span>.</li>
+        <li><span class="hl-cy">CNOT(q0→q1)</span> flips |10⟩ → |11⟩, leaves |00⟩ alone.
+          Final: ½|00⟩ + √3/2|11⟩ ✓ exact target. Two gates, done.</li>
+      </ol>
+      <p class="body"><b>Phase 2.</b> But we don't start from |00⟩ — we start from
+        <code>H⊗H · |00⟩ = |++⟩</code>. We have to <i>undo</i> the pre-applied Hadamards
+        first. Since H isn't in the budget, we synthesise it from RY:</p>
+      <div class="formula">RY(−π/2)·|+⟩ &nbsp;=&nbsp; |0⟩ &nbsp;&nbsp;,&nbsp;&nbsp;
+        RY(+π/2)·|+⟩ &nbsp;=&nbsp; |1⟩</div>
+      <p class="body"><i>Check:</i> RY(θ) = [[cos(θ/2), −sin(θ/2)], [sin(θ/2), cos(θ/2)]].
+        Apply to |+⟩ = (1/√2)(|0⟩+|1⟩) at θ = −π/2: the new coefficients are
+        ((cos(−π/4) − sin(−π/4))/√2, (sin(−π/4) + cos(−π/4))/√2)
+        = ((1/√2 + 1/√2)/√2, (−1/√2 + 1/√2)/√2) = (1, 0) = |0⟩ ✓.</p>
+      <p class="body">Naïvely that costs 2 RYs (one per qubit) just to un-do the H gates,
+        on top of Phase 1's 2 gates = 4 gates total. Within budget — but we can squeeze
+        better.</p>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <h3 style="margin-bottom:10px">▸ The merge trick — same axis, add the angles</h3>
+      <p class="body">On q0 we plan two consecutive RY gates:
+        <span class="hl-am">RY(−π/2)</span> (undo H) then <span class="hl-am">RY(2π/3)</span>
+        (set the magnitude). Rotations around the same axis compose by simple angle
+        addition:</p>
+      <div class="formula">RY(α) · RY(β) &nbsp;=&nbsp; RY(α + β)</div>
+      <div class="formula">RY(2π/3) · RY(−π/2)
+        &nbsp;=&nbsp; RY(2π/3 − π/2)
+        &nbsp;=&nbsp; RY(<span class="hl-am">π/6</span>)</div>
+      <p class="body"><i>Check on |+⟩:</i> RY(π/6)|+⟩ with c=cos(π/12)≈0.9659,
+        s=sin(π/12)≈0.2588 gives amplitudes ((c−s)/√2, (c+s)/√2)
+        ≈ (0.5, 0.866) = (½, √3/2) ✓ — the exact magnitude split, in a
+        <i>single</i> rotation. Two RYs collapsed into one.</p>
+      <p class="body">On q1 there's nothing to compose with — it just needs to land on
+        |0⟩ before the CNOT, so a lone <span class="hl-am">RY(−π/2)</span> finishes it.</p>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <h3 style="margin-bottom:10px">▸ The 3-gate circuit, end to end</h3>
+      <pre class="code"><span class="k">from</span> math <span class="k">import</span> pi, sqrt
+<span class="k">from</span> qiskit.quantum_info <span class="k">import</span> Statevector, state_fidelity
+
+optimized_circuit = Circuit(<span class="n">2</span>)
+optimized_circuit.ry( pi/<span class="n">6</span>,  <span class="n">0</span>)   <span class="c"># q0:  |+⟩ → ½|0⟩ + √3/2|1⟩</span>
+optimized_circuit.ry(-pi/<span class="n">2</span>,  <span class="n">1</span>)   <span class="c"># q1:  |+⟩ → |0⟩</span>
+optimized_circuit.cx( <span class="n">0</span>,    <span class="n">1</span>)   <span class="c"># entangle      → ½|00⟩ + √3/2|11⟩</span>
+
+<span class="c"># the notebook composes initial_circuit (H⊗H) BEFORE your gates,
+# so the full forward pass is:
+#     H ⊗ H   →   RY(π/6) on q0   →   RY(-π/2) on q1   →   CNOT(0,1)</span>
+final_circuit = optimized_circuit.compose(initial_circuit, front=<span class="k">True</span>)
+print(Statevector.from_instruction(final_circuit).data)
+<span class="c"># → [0.5+0.j, 0.+0.j, 0.+0.j, 0.8660254+0.j]   ← target, exactly</span>
+
+target = Statevector([<span class="n">0.5</span>, <span class="n">0</span>, <span class="n">0</span>, sqrt(<span class="n">3</span>)/<span class="n">2</span>])
+print(state_fidelity(Statevector.from_instruction(final_circuit), target))
+<span class="c"># → 1.0   (perfect — the grader only needs 0.95)</span></pre>
+      <div class="legend">
+        <div><b>3 gates used</b> &nbsp;— 2 of the 5-gate budget, hits the 2-RY cap</div>
+        <div><b>1 CNOT used</b> &nbsp;— the whole entanglement budget, but needed</div>
+        <div><b>0 RZ, 0 X</b> &nbsp;— target is real, no NOTs required</div>
+        <div><b>F = 1.0</b> &nbsp;— well above 0.95, plenty of headroom</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <h3 style="margin-bottom:10px">▸ Sanity checks before POSTing</h3>
+      <ul style="color:#c4ccea;max-width:760px;margin:6px 0 6px 22px;font-size:16.5px">
+        <li><code>len(optimized_circuit.data) == 3</code> — over the per-gate caps and the
+          grader will reject.</li>
+        <li><code>Statevector.from_instruction(final_circuit).data</code> should print
+          <code>[0.5+0j, 0+0j, 0+0j, 0.8660254+0j]</code>. The two middle zeros are the
+          signature of a biased Bell state — any non-zero |01⟩ or |10⟩ amplitude means q0
+          and q1 drifted out of correlation.</li>
+        <li><code>state_fidelity(final, target) ≥ 0.95</code> — with the circuit above it's
+          exactly 1.0, so even a small angle slip leaves headroom.</li>
+      </ul>
+      <div class="exbox"><h4>Why not slip an X in somewhere?</h4>
+        <p>Tempting idea: keep q1 in |+⟩, then use X · CNOT to flip the populated branch…
+        but X on |+⟩ is still |+⟩ &nbsp;(X·(|0⟩+|1⟩)/√2 = (|1⟩+|0⟩)/√2 = |+⟩), so the
+        gate is wasted. X only does useful work on basis states; on the equator of the
+        Bloch sphere it's a permutation that often leaves the state invariant.</p></div>
+      <div class="exbox"><h4>Could RZ help?</h4>
+        <p>The target has real amplitudes — no phase to install. RZ would multiply |1⟩ by
+        e^{iφ}, and fidelity (which squares the inner product, killing global phases)
+        would still agree, but you'd burn one of your 5 gates for nothing. Skip it.</p></div>
+      <div class="exbox"><h4>Alternative path — same answer, different route</h4>
+        <p>If you forgot the merge trick, here's the unmerged version:</p>
+        <pre class="code">optimized_circuit.ry(-pi/<span class="n">2</span>,  <span class="n">0</span>)   <span class="c"># undo H on q0  → |+⟩ becomes |0⟩</span>
+optimized_circuit.ry(-pi/<span class="n">2</span>,  <span class="n">1</span>)   <span class="c"># undo H on q1  → |+⟩ becomes |0⟩</span>
+optimized_circuit.ry( <span class="n">2</span>*pi/<span class="n">3</span>, <span class="n">0</span>)   <span class="c"># set magnitude on q0</span>
+optimized_circuit.cx( <span class="n">0</span>,    <span class="n">1</span>)   <span class="c"># entangle</span>
+<span class="c"># 4 gates total — but 3 of them are RY, and the spec caps RY at 2.
+# The grader will reject this even though F = 1.0.</span></pre>
+        <p>The merge trick isn't an optimisation — it's what makes the solution
+          <i>legal</i>. Read each cap as its own inequality: total ≤ 5 AND RY ≤ 2 AND
+          CNOT ≤ 1, all simultaneously.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PLAYGROUND — AMPLITUDE & PHASE ============ -->
+<section id="sPlay">
+  <div class="wrap reveal">
+    <div class="step">Playground — basis vs amplitude</div>
+    <h2>Dial α and β yourself</h2>
+    <p class="sub">|0⟩ and |1⟩ are the fixed basis vectors — you don't get to change those. What
+      you <i>do</i> shape are the complex coefficients <span class="hl-am">α</span> and
+      <span class="hl-cy">β</span> that sit in front. Each one carries a magnitude
+      <i>and</i> a phase. Slide θ (which controls the magnitude split while keeping
+      |α|² + |β|² = 1) and the two phases — the equation, the complex planes, and the Born
+      probabilities all update live.</p>
+    <div class="card" id="playCard">
+      <div class="play-bar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--cyan);letter-spacing:.20em;text-transform:uppercase">
+          Interactive |ψ⟩ playground
+        </div>
+        <button class="btn ghost" id="btnPlayFs" title="Toggle fullscreen (Esc to exit)">⛶ Fullscreen</button>
+      </div>
+      <div id="psiPolar" class="formula" style="text-align:left"></div>
+      <div id="psiCart"  class="formula" style="text-align:left"></div>
+      <div id="psiProb"  class="formula" style="text-align:left;padding:12px 16px;font-size:13px">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <span class="c" style="min-width:118px">probabilities</span>
+          <span style="color:#8b96b8;font-size:11.5px">(Born rule:  P = |amplitude|²)</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="color:var(--amber);min-width:170px;font-size:12.5px">
+              P(0) = |α|² = <b id="probVal0">—</b>
+            </span>
+            <div style="flex:1;height:11px;background:#11183a;border:1px solid var(--line);border-radius:4px;overflow:hidden;min-width:120px">
+              <div id="probBar0" style="height:100%;background:linear-gradient(90deg,rgba(255,194,75,.85),var(--amber));width:0%;transition:width .12s ease-out"></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="color:var(--pink);min-width:170px;font-size:12.5px">
+              P(1) = |β|² = <b id="probVal1">—</b>
+            </span>
+            <div style="flex:1;height:11px;background:#11183a;border:1px solid var(--line);border-radius:4px;overflow:hidden;min-width:120px">
+              <div id="probBar1" style="height:100%;background:linear-gradient(90deg,rgba(255,107,157,.85),var(--pink));width:0%;transition:width .12s ease-out"></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:8px;font-size:11.5px;color:#8b96b8;flex-wrap:wrap">
+          <span>amplitudes seen above:</span>
+          <span style="color:var(--amber)">α = <span id="probAmpA">—</span></span>
+          <span style="color:var(--pink)">β = <span id="probAmpB">—</span></span>
+          <span style="margin-left:auto"><b id="probNorm" style="color:var(--green)">|α|² + |β|² = 1.0000</b></span>
+        </div>
+      </div>
+
+      <canvas id="cPlay" class="viz" height="400"></canvas>
+
+      <canvas id="cPlayBloch" class="viz" height="380"
+              style="margin-top:14px;cursor:grab;user-select:none"></canvas>
+
+      <div class="repl" style="margin-top:18px;padding-top:16px;border-top:1px dashed var(--line)">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--violet);letter-spacing:.20em;text-transform:uppercase">
+            REPL — Qiskit-style code drives the sphere
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn ghost" id="rplPlus">load |+⟩</button>
+            <button class="btn ghost" id="rplBloch">load Bloch demo</button>
+            <button class="btn ghost" id="rplPhase">load phase tweak</button>
+            <button class="btn ghost" id="rplClr">clear</button>
+            <button class="btn" id="rplRun">▶ Run</button>
+          </div>
+        </div>
+        <textarea id="rplCode" spellcheck="false" autocomplete="off"
+          style="width:100%;min-height:170px;background:#060a16;color:#c8d2f0;border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;resize:vertical;outline:none"
+        ># Single-qubit Qiskit-like REPL.  After Run, the sphere + sliders re-sync.
+# Supported gates: h x y z s sdg t tdg rx ry rz p u
+# Constants: pi e        Funcs: sin cos tan asin acos atan sqrt exp log abs
+# Variable assignments and `from math import ...` are fine.
+
+from math import pi
+
+qc = Circuit(1)
+qc.h(0)</textarea>
+        <pre id="rplOut" class="code" style="margin-top:10px;min-height:80px;max-height:220px;overflow:auto;white-space:pre-wrap;font-size:12.5px">▶ Run to execute. Output and the live statevector will appear here.</pre>
+        <p class="body" style="font-size:14px;margin-top:14px;color:var(--muted)">
+          The REPL is a tiny in-browser, single-qubit simulator. Hit Run; the sphere arrow
+          snaps to the resulting |ψ⟩, the α/β planes refresh, and the bottom panel prints
+          the same <code>Statevector(qc).data</code> array Qiskit would produce on a real
+          backend. Two-qubit gates (<code>cx</code>, <code>cz</code>, <code>swap</code>)
+          are intentionally rejected — this view is single-qubit only.
+        </p>
+      </div>
+
+      <div class="controls">
+        <div class="ctrl"><label>θ — magnitude split (0…π) <span class="val" id="pTh">π/3</span></label>
+          <input id="pThR" type="range" min="0" max="180" value="60"></div>
+        <div class="ctrl"><label>φ_α — phase of α (0…2π) <span class="val" id="pPa">0</span></label>
+          <input id="pPaR" type="range" min="0" max="360" value="0"></div>
+        <div class="ctrl"><label>φ_β — phase of β (0…2π) <span class="val" id="pPb">π/3</span></label>
+          <input id="pPbR" type="range" min="0" max="360" value="60"></div>
+      </div>
+
+      <p class="body"><b>How to read the two rows.</b> The
+        <span class="hl-vi">polar</span> form (top) makes the phase obvious — each
+        amplitude as <code>magnitude · e^{iφ}</code>. The
+        <span class="hl-vi">cartesian</span> form (bottom) is what
+        <code>Statevector(qc).data</code> hands you in Qiskit: real + imaginary parts in a
+        plain array. They describe the same two complex numbers; pick whichever lens helps
+        you see the answer faster.</p>
+
+      <div class="exbox"><h4>Try these — every one is a state you've already met</h4>
+        <p>• <b>θ=0</b> &nbsp;⇒&nbsp; pure |0⟩. β vanishes; slide φ_β all you want, it
+          multiplies zero.<br>
+        • <b>θ=π</b> &nbsp;⇒&nbsp; pure |1⟩. Now φ_α multiplies zero. Only φ_β matters.<br>
+        • <b>θ=π/2, φ_α=0, φ_β=0</b> &nbsp;⇒&nbsp; <code>|+⟩ = (|0⟩+|1⟩)/√2</code>.<br>
+        • <b>θ=π/2, φ_α=0, φ_β=π</b> &nbsp;⇒&nbsp; <code>|−⟩ = (|0⟩−|1⟩)/√2</code>. Same
+          magnitudes, opposite sign on β — phase π is what flips the sign.<br>
+        • <b>θ=π/2, φ_α=0, φ_β=π/2</b> &nbsp;⇒&nbsp; <code>|+i⟩ = (|0⟩+i·|1⟩)/√2</code> —
+          equal magnitudes but β picks up a pure imaginary phase.</p></div>
+
+      <div class="exbox"><h4>The lesson, in one line</h4>
+        <p><b>|0⟩ and |1⟩ never change.</b> All quantum-circuit work — every gate, every
+        algorithm — is just moving the <i>α</i> and <i>β</i> arrows around their respective
+        complex planes while preserving |α|² + |β|² = 1.</p></div>
+
+      <div class="exbox"><h4>About the 3D sphere above</h4>
+        <p>The Bloch sphere is the geometric picture of <i>the same state</i> the two
+        complex planes show analytically. The polar angle <b>θ</b> (latitude from the
+        |0⟩ north pole) is exactly your magnitude slider. The azimuth <b>Δφ = φ_β − φ_α</b>
+        (longitude around the equator) is the only phase that's physically observable —
+        global phase shifts |ψ⟩ by an unobservable e^{iγ}, so the sphere only ever moves
+        when the <i>relative</i> phase moves. Drag the canvas to orbit the camera; release
+        to resume auto-rotation.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PLAYGROUND II — MULTI-QUBIT ============ -->
+<section id="sPlay2">
+  <div class="wrap reveal">
+    <div class="step">Playground II — multi-qubit circuits</div>
+    <h2>Write the gates, watch the joint state</h2>
+    <p class="sub">A second REPL with full two-qubit gate support (and three-qubit if you
+      want it). Hit Run — the bar chart shows the 2ⁿ basis-state probabilities, the small
+      phasor circles above each bar show that amplitude's complex phase, and the two mini
+      spheres below show the <i>partial-trace</i> state of each qubit on its own. Entangle
+      the two and watch those arrows shrink toward the center.</p>
+
+    <div class="card" id="play2Card">
+      <div class="play-bar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--violet);letter-spacing:.20em;text-transform:uppercase">
+            Multi-qubit |ψ⟩ playground &nbsp;·&nbsp; n ∈ {1, 2, 3}
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">
+            Ctrl/⌘-Enter to run · resize-safe · auto-renders the default circuit on load
+          </div>
+        </div>
+        <button class="btn ghost" id="btnPlay2Fs" title="Toggle fullscreen (Esc to exit)">⛶ Fullscreen</button>
+      </div>
+
+      <div id="psi2Polar" class="formula" style="text-align:left;font-size:13.5px;line-height:1.9"></div>
+      <div id="psi2Cart"  class="formula" style="text-align:left;font-size:12.5px;font-family:'JetBrains Mono',monospace;overflow-x:auto;white-space:nowrap"></div>
+
+      <div id="psi2Prob"  class="formula" style="text-align:left;padding:12px 16px;font-size:13px">
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:baseline">
+          <span class="c" style="min-width:118px">probabilities</span>
+          <span style="color:#8b96b8;font-size:11.5px">(Born rule:  P = |amplitude|²)</span>
+        </div>
+        <div id="probBars2" style="display:flex;flex-direction:column;gap:5px;margin-top:8px"></div>
+        <div style="display:flex;gap:18px;margin-top:10px;font-size:12px;flex-wrap:wrap;color:#8b96b8;align-items:center">
+          <span><b style="color:var(--violet)">Σ|amp|² = <span id="norm2Val">—</span></b></span>
+          <span>F vs ½|00⟩+√3/2|11⟩  =  <b id="fid2Val" style="color:var(--muted)">—</b></span>
+          <span id="ent2Label" style="color:var(--muted)">—</span>
+        </div>
+      </div>
+
+      <canvas id="cPlay2Bars" class="viz" height="320"></canvas>
+
+      <div id="play2BlochRow" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+        <canvas id="cPlay2Bloch0" class="viz" height="240"></canvas>
+        <canvas id="cPlay2Bloch1" class="viz" height="240"></canvas>
+      </div>
+
+      <div class="repl" style="margin-top:18px;padding-top:16px;border-top:1px dashed var(--line)">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--violet);letter-spacing:.20em;text-transform:uppercase">
+            REPL — multi-qubit Qiskit subset
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn ghost" id="rpl2Bell">load Bell</button>
+            <button class="btn ghost" id="rpl2Biased">load biased Bell (Ch. 10)</button>
+            <button class="btn ghost" id="rpl2PP">load |++⟩</button>
+            <button class="btn ghost" id="rpl2GHZ">load GHZ (3q)</button>
+            <button class="btn ghost" id="rpl2Clr">clear</button>
+            <button class="btn" id="rpl2Run">▶ Run</button>
+          </div>
+        </div>
+        <textarea id="rpl2Code" spellcheck="false" autocomplete="off"
+          style="width:100%;min-height:200px;background:#060a16;color:#c8d2f0;border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;resize:vertical;outline:none"
+        ># Multi-qubit Qiskit-like REPL.  After Run, the bar chart and mini-spheres re-sync.
+# Single-qubit:  h x y z s sdg t tdg rx(θ) ry(θ) rz(θ) p(φ) u(θ,φ,λ)   — last arg = qubit
+# Two-qubit:     cx(c,t)   cz(c,t)   swap(a,b)
+# Three-qubit:   Circuit(3) — try the GHZ preset
+# Constants:     pi e        Funcs: sin cos tan asin acos atan sqrt exp log abs
+
+from math import pi
+
+# Chapter 10's biased-Bell solution, with the pre-applied H⊗H included
+# so you can see the FULL forward pass (not just the optimised half).
+qc = Circuit(2)
+qc.h(0)              # initial_circuit (given)
+qc.h(1)              # initial_circuit (given)
+qc.ry( pi/6,  0)     # your gate 1 — merged: undo H + magnitude split
+qc.ry(-pi/2,  1)     # your gate 2 — undo H on q1
+qc.cx( 0,    1)      # your gate 3 — entangle  →  F = 1.0</textarea>
+        <pre id="rpl2Out" class="code" style="margin-top:10px;min-height:80px;max-height:260px;overflow:auto;white-space:pre-wrap;font-size:12.5px">▶ Run to execute. Statevector dump and per-line trace appear here.</pre>
+        <p class="body" style="font-size:14px;margin-top:14px;color:var(--muted)">
+          Same syntax as the real notebook: <code>Circuit(N)</code> with N ∈ {1, 2, 3},
+          single-qubit gates pass the qubit index last (<code>qc.h(0)</code>,
+          <code>qc.ry(theta, 0)</code>), two-qubit gates pass <i>control, target</i>
+          (<code>qc.cx(0, 1)</code>). The default code reproduces Chapter 10's solution
+          end-to-end including the pre-applied H ⊗ H — hit Run and watch F jump to 1.0.
+        </p>
+      </div>
+
+      <div class="exbox"><h4>How to read the mini-spheres</h4>
+        <p>Each small sphere is the <b>partial trace</b> of one qubit — the state you'd see
+        if you forgot the other one existed. For a separable state (e.g. |+⟩⊗|0⟩) both
+        arrows sit on the surface, full length. For a Bell state both arrows collapse to
+        the centre: each qubit alone is maximally mixed (50/50 with no usable phase), even
+        though the <i>joint</i> state is perfectly known. The shorter the arrow, the more
+        entangled the two qubits are. <i>Entanglement is information stored in correlations,
+        not in either qubit alone.</i></p></div>
+
+      <div class="exbox"><h4>What biased Bell looks like</h4>
+        <p>Run the default preset. You'll see two tall bars on |00⟩ (25 %) and |11⟩
+        (75 %), |01⟩ and |10⟩ empty, both partial-trace arrows sitting at z = −½ inside
+        the spheres (the marginal P(1)=¾ pulls each arrow off the |0⟩ pole, the
+        entanglement pulls it inward off the surface). The fidelity meter reads 1.0
+        because the bar pattern matches the Chapter 10 target exactly. Try replacing
+        <code>pi/6</code> with <code>pi/3</code> and watch F drop — the bias is wrong.</p></div>
+
+      <div class="exbox"><h4>Two-qubit gates worth exploring</h4>
+        <p>• <code>qc.cz(0, 1)</code> — controlled-Z: same as CNOT but stamps a sign on
+        |11⟩ instead of flipping the target. Symmetric in the two qubits — control and
+        target are interchangeable.<br>
+        • <code>qc.swap(0, 1)</code> — exchange the two qubits. On |01⟩ → |10⟩, but on
+        the Bell state |Φ+⟩ it does <i>nothing</i> (Bell is symmetric).<br>
+        • <code>qc.cx(1, 0)</code> — flip the roles. Same gate, different wiring; useful
+        when q1 holds the "command bit" and q0 is what gets toggled.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TAKEAWAYS ============ -->
+<section id="s9">
+  <div class="wrap reveal">
+    <div class="step">Recap</div>
+    <h2>The six sentences to memorise</h2>
+    <div class="legend">
+      <div><b>01</b> A qubit is α|0⟩ + β|1⟩ with |α|² + |β|² = 1 — an arrow on a sphere.</div>
+      <div><b>02</b> Gates are unitary matrices; visually, rotations of that arrow.</div>
+      <div><b>03</b> n qubits live in 2ⁿ dimensions via the tensor product; CNOT entangles them.</div>
+      <div><b>04</b> Measurement gives outcome k with probability |⟨k|ψ⟩|², and collapses.</div>
+      <div><b>05</b> RY controls amplitude, U(θ,φ,λ) controls amplitude AND phase.</div>
+      <div><b>06</b> Same-axis rotations add their angles — RY(α)·RY(β)=RY(α+β) — which is
+        how a 4-gate plan becomes a 3-gate one that passes per-gate caps. Score with
+        fidelity F = |⟨target|ψ⟩|².</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="big">Now open both <code>challenge.ipynb</code> files — you have every concept.</div>
+    <p class="tag">Le nouveau de Broglie !? &nbsp;·&nbsp; J'optimise le porte à portes &nbsp;·&nbsp; 404CTF · Quantique</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const TAU=Math.PI*2, PI=Math.PI;
+function setupCanvas(c){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const r=c.getBoundingClientRect();
+  c.width=r.width*dpr; c.height=(+c.getAttribute('height')||300)*dpr;
+  c.style.height=(+c.getAttribute('height')||300)+'px';
+  const x=c.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0);
+  c._w=r.width; c._h=+(c.getAttribute('height')||300);
+  return x;
+}
+const COL={cy:'#34e1d8',vi:'#9b7bff',am:'#ffc24b',pk:'#ff6b9d',gr:'#4be3a0',mut:'#8b96b8',line:'#243056',ink:'#e8ecf8',panel:'#11183a'};
+
+/* --- complex helpers --- */
+function C(re,im){return {r:re||0,i:im||0};}
+function cAdd(a,b){return {r:a.r+b.r,i:a.i+b.i};}
+function cMul(a,b){return {r:a.r*b.r-a.i*b.i, i:a.r*b.i+a.i*b.r};}
+function cScale(a,k){return {r:a.r*k,i:a.i*k};}
+function cAbs2(a){return a.r*a.r+a.i*a.i;}
+
+/* --- scroll reveal + progress --- */
+const prog=document.getElementById('prog');
+addEventListener('scroll',()=>{const s=scrollY/(document.body.scrollHeight-innerHeight);
+  prog.style.width=(s*100)+'%';},{passive:true});
+const ioR=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.10});
+document.querySelectorAll('.reveal').forEach(el=>ioR.observe(el));
+
+const animators=[];
+function register(canvas,drawFn){
+  const a={canvas,draw:drawFn,on:false,t:0};
+  animators.push(a);
+  new IntersectionObserver(es=>{a.on=es[0].isIntersecting;},{threshold:.05}).observe(canvas);
+  return a;
+}
+let last=performance.now();
+(function tick(now){
+  const dt=Math.min((now-last)/1000,.05); last=now;
+  for(const a of animators){if(a.on){a.t+=dt;a.draw(a.t,dt);}}
+  requestAnimationFrame(tick);
+})(performance.now());
+
+/* helper: format a fraction of pi */
+function fmtPi(rad){
+  const n=rad/PI;
+  if(Math.abs(n)<.001) return '0';
+  const cands=[[1,1],[1,2],[1,3],[1,4],[1,6],[2,3],[3,4],[3,2],[2,1]];
+  for(const [a,b] of cands){
+    if(Math.abs(Math.abs(n)-a/b)<.02){
+      return (n<0?'−':'')+(a===1?'':a)+'π'+(b===1?'':'/'+b);
+    }
+  }
+  return (n.toFixed(2))+'π';
+}
+
+/* ================= HERO ================= */
+(function(){
+  const c=document.getElementById('heroCanvas'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  register(c,(t)=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const cx=W*0.7, cy=H*0.55, R=Math.min(W,H)*0.30;
+    // orbiting Bloch vectors
+    for(let i=0;i<6;i++){
+      const a=t*(0.4+i*0.07)+i, b=t*0.3+i*0.5;
+      const th=Math.PI*0.5+0.6*Math.sin(b), ph=a;
+      const xx=Math.sin(th)*Math.cos(ph), yy=Math.cos(th), zz=Math.sin(th)*Math.sin(ph);
+      const px=cx+xx*R, py=cy-yy*R*0.85+zz*8;
+      x.strokeStyle='rgba(155,123,255,'+(0.2+0.1*Math.sin(t+i))+')'; x.lineWidth=1;
+      x.beginPath(); x.moveTo(cx,cy); x.lineTo(px,py); x.stroke();
+      x.fillStyle='rgba(52,225,216,.55)';
+      x.beginPath(); x.arc(px,py,3,0,TAU); x.fill();
+    }
+    // equator ring
+    x.strokeStyle='rgba(52,225,216,.18)'; x.lineWidth=1;
+    x.beginPath(); x.ellipse(cx,cy,R,R*0.32,0,0,TAU); x.stroke();
+    x.beginPath(); x.arc(cx,cy,R,0,TAU); x.stroke();
+  });
+})();
+
+/* ================= 1. BLOCH SPHERE ================= */
+function drawBloch(x, cx, cy, R, thRad, phRad, label){
+  // sphere outline + axes
+  x.strokeStyle=COL.line; x.lineWidth=1;
+  x.beginPath(); x.arc(cx,cy,R,0,TAU); x.stroke();
+  x.beginPath(); x.ellipse(cx,cy,R,R*0.32,0,0,TAU); x.stroke();
+  x.beginPath(); x.moveTo(cx-R-6,cy); x.lineTo(cx+R+6,cy); x.stroke();
+  x.beginPath(); x.moveTo(cx,cy-R-6); x.lineTo(cx,cy+R+6); x.stroke();
+  // labels |0>, |1>, |+>, |->
+  x.fillStyle=COL.mut; x.font="12px 'JetBrains Mono'";
+  x.textAlign='center'; x.fillText('|0⟩',cx,cy-R-12);
+  x.fillText('|1⟩',cx,cy+R+18);
+  x.textAlign='left'; x.fillText('|+⟩',cx+R+8,cy+4);
+  x.textAlign='right'; x.fillText('|−⟩',cx-R-8,cy+4);
+  // vector
+  const xx=Math.sin(thRad)*Math.cos(phRad);
+  const yy=Math.cos(thRad);
+  const zz=Math.sin(thRad)*Math.sin(phRad);
+  const px=cx+xx*R, py=cy-yy*R + zz*R*0.32;
+  x.strokeStyle=COL.cy; x.lineWidth=2.4;
+  x.beginPath(); x.moveTo(cx,cy); x.lineTo(px,py); x.stroke();
+  x.fillStyle=COL.cy; x.beginPath(); x.arc(px,py,5,0,TAU); x.fill();
+  if(label){x.fillStyle=COL.ink; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+    x.fillText(label, cx+R+18, cy-R+12);}
+}
+
+(function(){
+  const c=document.getElementById('cBloch'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const thR=document.getElementById('bThR'), phR=document.getElementById('bPhR');
+  const thL=document.getElementById('bTh'), phL=document.getElementById('bPh');
+  function update(){thL.textContent=fmtPi(+thR.value/180*PI);
+    phL.textContent=fmtPi(+phR.value/180*PI);}
+  thR.oninput=update; phR.oninput=update; update();
+  register(c,(t)=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const cx=W*0.32, cy=H*0.52, R=Math.min(W*0.27,H*0.40);
+    const th=+thR.value/180*PI, ph=+phR.value/180*PI;
+    drawBloch(x,cx,cy,R,th,ph);
+    // amplitudes
+    const alpha={r:Math.cos(th/2),i:0};
+    const beta={r:Math.sin(th/2)*Math.cos(ph), i:Math.sin(th/2)*Math.sin(ph)};
+    const rx=W*0.62, ry=H*0.16;
+    x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+    x.fillText('|ψ⟩ = α|0⟩ + β|1⟩', rx, ry);
+    x.fillStyle=COL.am; x.font="14px 'JetBrains Mono'";
+    x.fillText('α = '+alpha.r.toFixed(3), rx, ry+26);
+    x.fillStyle=COL.cy;
+    x.fillText('β = '+beta.r.toFixed(3)+(beta.i>=0?' + ':' − ')+Math.abs(beta.i).toFixed(3)+'i', rx, ry+50);
+    // probability bars
+    const by=ry+74, bw=W*0.30, bh=22;
+    function bar(yy,col,lab,val){
+      x.fillStyle='#11183a'; x.fillRect(rx,yy,bw,bh);
+      x.fillStyle=col; x.fillRect(rx,yy,bw*val,bh);
+      x.fillStyle=COL.ink; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+      x.fillText(lab+' = '+(val*100).toFixed(1)+'%', rx+6, yy+15);
+    }
+    bar(by, 'rgba(255,194,75,.7)', 'P(0)=|α|²', cAbs2(alpha));
+    bar(by+30,'rgba(52,225,216,.7)', 'P(1)=|β|²', cAbs2(beta));
+    x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'";
+    x.fillText('north = |0⟩    south = |1⟩    equator = superpositions', rx, H-14);
+  });
+})();
+
+/* ================= 2. SINGLE-QUBIT GATES ================= */
+(function(){
+  const c=document.getElementById('cGates'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  let psi=[C(1,0),C(0,0)];
+  // matrices as 2x2 of complex
+  function applyMat(M){
+    const a=cAdd(cMul(M[0][0],psi[0]),cMul(M[0][1],psi[1]));
+    const b=cAdd(cMul(M[1][0],psi[0]),cMul(M[1][1],psi[1]));
+    psi=[a,b];
+  }
+  const gates={
+    X:[[C(0,0),C(1,0)],[C(1,0),C(0,0)]],
+    Y:[[C(0,0),C(0,-1)],[C(0,1),C(0,0)]],
+    Z:[[C(1,0),C(0,0)],[C(0,0),C(-1,0)]],
+    H:[[C(1/Math.SQRT2,0),C(1/Math.SQRT2,0)],[C(1/Math.SQRT2,0),C(-1/Math.SQRT2,0)]],
+    S:[[C(1,0),C(0,0)],[C(0,0),C(0,1)]],
+    T:[[C(1,0),C(0,0)],[C(0,0),C(Math.cos(PI/4),Math.sin(PI/4))]],
+  };
+  function rX(th){const c=Math.cos(th/2),s=Math.sin(th/2);
+    return [[C(c,0),C(0,-s)],[C(0,-s),C(c,0)]];}
+  function rY(th){const c=Math.cos(th/2),s=Math.sin(th/2);
+    return [[C(c,0),C(-s,0)],[C(s,0),C(c,0)]];}
+  function rZ(th){const c=Math.cos(th/2),s=Math.sin(th/2);
+    return [[C(c,-s),C(0,0)],[C(0,0),C(c,s)]];}
+  const thR=document.getElementById('gThR'), thL=document.getElementById('gThL');
+  function showTh(){thL.textContent=fmtPi(+thR.value/180*PI);} thR.oninput=showTh; showTh();
+  document.querySelectorAll('button[data-g]').forEach(b=>b.onclick=()=>{
+    const g=b.dataset.g, th=+thR.value/180*PI;
+    if(g==='RX')applyMat(rX(th));
+    else if(g==='RY')applyMat(rY(th));
+    else if(g==='RZ')applyMat(rZ(th));
+    else applyMat(gates[g]);
+  });
+  document.getElementById('gReset').onclick=()=>{psi=[C(1,0),C(0,0)];};
+  register(c,(t)=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    // derive Bloch angles from state
+    const a=psi[0], b=psi[1];
+    // normalise
+    const N=Math.sqrt(cAbs2(a)+cAbs2(b))||1;
+    const a2=cScale(a,1/N), b2=cScale(b,1/N);
+    // global phase: align α to be real positive
+    const phA=Math.atan2(a2.i,a2.r);
+    const e={r:Math.cos(-phA),i:Math.sin(-phA)};
+    const ar=cMul(a2,e), br=cMul(b2,e);
+    const th=2*Math.acos(Math.min(1,Math.max(-1,ar.r)));
+    const ph=Math.atan2(br.i,br.r);
+    const cx=W*0.32, cy=H*0.52, R=Math.min(W*0.27,H*0.40);
+    drawBloch(x,cx,cy,R,th,ph);
+    const rx=W*0.62, ry=H*0.16;
+    x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+    x.fillText('current state', rx, ry);
+    x.fillStyle=COL.am; x.font="13px 'JetBrains Mono'";
+    x.fillText('α = '+ar.r.toFixed(3)+(ar.i>=0?'+':'')+ar.i.toFixed(3)+'i', rx, ry+22);
+    x.fillStyle=COL.cy;
+    x.fillText('β = '+br.r.toFixed(3)+(br.i>=0?'+':'')+br.i.toFixed(3)+'i', rx, ry+44);
+    // bars
+    const by=ry+72, bw=W*0.30, bh=22;
+    function bar(yy,col,lab,val){
+      x.fillStyle='#11183a'; x.fillRect(rx,yy,bw,bh);
+      x.fillStyle=col; x.fillRect(rx,yy,bw*val,bh);
+      x.fillStyle=COL.ink; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+      x.fillText(lab+' = '+(val*100).toFixed(1)+'%', rx+6, yy+15);
+    }
+    bar(by, 'rgba(255,194,75,.7)', 'P(0)', cAbs2(ar));
+    bar(by+30, 'rgba(52,225,216,.7)', 'P(1)', cAbs2(br));
+    x.fillStyle=COL.mut; x.font="10px 'JetBrains Mono'";
+    x.fillText('phase of β = '+fmtPi(ph), rx, by+78);
+  });
+})();
+
+/* ================= 3. MULTI-QUBIT ================= */
+(function(){
+  const c=document.getElementById('cMulti'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  // 2-qubit state in basis |00>,|01>,|10>,|11>; order: q1 is high bit, q0 is low
+  let psi=[C(1,0),C(0,0),C(0,0),C(0,0)];
+  function reset(){psi=[C(1,0),C(0,0),C(0,0),C(0,0)];}
+  // single-qubit gates on q0 or q1
+  function apply1(M, qubit){
+    const out=psi.map(()=>C(0,0));
+    for(let i=0;i<4;i++){
+      const bit=(qubit===0)?(i&1):((i>>1)&1);
+      const partner=(qubit===0)?(i^1):(i^2);
+      const v0= bit===0 ? psi[i] : psi[partner];
+      const v1= bit===0 ? psi[partner] : psi[i];
+      // M acts on (v0, v1) -> our output for state i with this qubit's bit
+      const lo=cAdd(cMul(M[0][0],v0),cMul(M[0][1],v1));
+      const hi=cAdd(cMul(M[1][0],v0),cMul(M[1][1],v1));
+      out[ bit===0 ? i : partner ] = lo;
+      out[ bit===0 ? partner : i ] = hi;
+    }
+    psi=out;
+  }
+  const H=[[C(1/Math.SQRT2,0),C(1/Math.SQRT2,0)],[C(1/Math.SQRT2,0),C(-1/Math.SQRT2,0)]];
+  const X=[[C(0,0),C(1,0)],[C(1,0),C(0,0)]];
+  document.getElementById('mInit').onclick=reset;
+  document.getElementById('mH0').onclick=()=>apply1(H,0);
+  document.getElementById('mH1').onclick=()=>apply1(H,1);
+  document.getElementById('mX0').onclick=()=>apply1(X,0);
+  document.getElementById('mX1').onclick=()=>apply1(X,1);
+  register(c,(t)=>{
+    const W=c._w,H_=c._h; x.clearRect(0,0,W,H_);
+    const labels=['|00⟩','|01⟩','|10⟩','|11⟩'];
+    const bw=(W-80)/4, bx0=40, by=40, bh=H_-100;
+    x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+    x.fillText('|ψ⟩ amplitudes — bar height = |amp|² = probability of measuring this basis state', bx0, 22);
+    for(let i=0;i<4;i++){
+      const p=cAbs2(psi[i]);
+      const h=p*bh;
+      x.fillStyle='#0c1226'; x.strokeStyle=COL.line;
+      x.fillRect(bx0+i*bw+10,by,bw-20,bh); x.strokeRect(bx0+i*bw+10,by,bw-20,bh);
+      const g=x.createLinearGradient(0,by+bh-h,0,by+bh);
+      g.addColorStop(0,COL.cy); g.addColorStop(1,'rgba(155,123,255,.5)');
+      x.fillStyle=g; x.fillRect(bx0+i*bw+10,by+bh-h,bw-20,h);
+      x.fillStyle=COL.ink; x.font="14px 'JetBrains Mono'"; x.textAlign='center';
+      x.fillText(labels[i], bx0+i*bw+bw/2, by+bh+22);
+      x.fillStyle=COL.cy; x.font="11px 'JetBrains Mono'";
+      x.fillText((p*100).toFixed(1)+'%', bx0+i*bw+bw/2, by+bh+38);
+      // complex amp text
+      const a=psi[i];
+      x.fillStyle=COL.mut; x.font="10px 'JetBrains Mono'";
+      x.fillText(a.r.toFixed(2)+(a.i>=0?'+':'')+a.i.toFixed(2)+'i', bx0+i*bw+bw/2, by-6);
+    }
+  });
+})();
+
+/* ================= 4. BELL STATE ================= */
+(function(){
+  const c=document.getElementById('cBell'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  let step=0; // 0=|00>, 1=after H, 2=after CNOT
+  const states=[
+    [C(1,0),C(0,0),C(0,0),C(0,0)],
+    [C(1/Math.SQRT2,0),C(0,0),C(1/Math.SQRT2,0),C(0,0)],
+    [C(1/Math.SQRT2,0),C(0,0),C(0,0),C(1/Math.SQRT2,0)],
+  ];
+  document.getElementById('bellH').onclick=()=>step=Math.max(step,1);
+  document.getElementById('bellCX').onclick=()=>step=2;
+  document.getElementById('bellReset').onclick=()=>step=0;
+  register(c,(t)=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const psi=states[step];
+    const labels=['|00⟩','|01⟩','|10⟩','|11⟩'];
+    const bw=(W*0.5-60)/4, bx0=40, by=40, bh=H-100;
+    x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+    x.fillText('step '+step+'  /  '+(step===0?'initial |00⟩':(step===1?'after H on q0':'after CNOT — entangled !')),bx0,22);
+    for(let i=0;i<4;i++){
+      const p=cAbs2(psi[i]);
+      const h=p*bh;
+      x.fillStyle='#0c1226'; x.strokeStyle=COL.line;
+      x.fillRect(bx0+i*bw+6,by,bw-12,bh); x.strokeRect(bx0+i*bw+6,by,bw-12,bh);
+      x.fillStyle=step===2 && (i===0||i===3) ? COL.am : COL.cy;
+      x.fillRect(bx0+i*bw+6,by+bh-h,bw-12,h);
+      x.fillStyle=COL.ink; x.font="13px 'JetBrains Mono'"; x.textAlign='center';
+      x.fillText(labels[i], bx0+i*bw+bw/2, by+bh+18);
+      x.fillStyle=COL.cy; x.font="10px 'JetBrains Mono'";
+      x.fillText((p*100).toFixed(0)+'%', bx0+i*bw+bw/2, by+bh+34);
+    }
+    // circuit diagram on the right
+    const cx=W*0.55, ry=70;
+    x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+    x.fillText('circuit', cx, 22);
+    x.strokeStyle=COL.line; x.lineWidth=1;
+    for(let q=0;q<2;q++){
+      const yy=ry+q*60;
+      x.beginPath(); x.moveTo(cx,yy); x.lineTo(W-30,yy); x.stroke();
+      x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'"; x.textAlign='right';
+      x.fillText('q'+q,cx-5,yy+4);
+    }
+    // H on q0
+    if(step>=1){
+      x.fillStyle='#11183a'; x.strokeStyle=COL.cy;
+      x.fillRect(cx+50,ry-15,30,30); x.strokeRect(cx+50,ry-15,30,30);
+      x.fillStyle=COL.cy; x.font="14px 'JetBrains Mono'"; x.textAlign='center';
+      x.fillText('H', cx+65, ry+5);
+    }
+    // CNOT
+    if(step>=2){
+      const xx=cx+120;
+      x.fillStyle=COL.am; x.beginPath(); x.arc(xx, ry, 6,0,TAU); x.fill();
+      x.strokeStyle=COL.am; x.lineWidth=1.5;
+      x.beginPath(); x.moveTo(xx,ry); x.lineTo(xx,ry+60); x.stroke();
+      x.beginPath(); x.arc(xx,ry+60,12,0,TAU); x.stroke();
+      x.beginPath(); x.moveTo(xx-12,ry+60); x.lineTo(xx+12,ry+60); x.stroke();
+      x.beginPath(); x.moveTo(xx,ry+48); x.lineTo(xx,ry+72); x.stroke();
+    }
+    if(step===2){
+      x.fillStyle=COL.am; x.font="13px 'JetBrains Mono'"; x.textAlign='left';
+      x.fillText('(|00⟩ + |11⟩) / √2', cx, H-14);
+      x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'";
+      x.fillText('the Bell state — measuring q0 forces q1', cx, H-32);
+    }
+  });
+})();
+
+/* ================= 5. MEASUREMENT ================= */
+(function(){
+  const c=document.getElementById('cMeasure'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const PR=document.getElementById('mePR'), PL=document.getElementById('meP');
+  const NR=document.getElementById('meNR'), NL=document.getElementById('meN');
+  let counts=[0,0], total=0, running=false, target=0.66;
+  PR.oninput=()=>{PL.textContent=(+PR.value/100).toFixed(2);target=+PR.value/100;};
+  NR.oninput=()=>{NL.textContent=NR.value;};
+  document.getElementById('meRun').onclick=()=>{
+    counts=[0,0];total=0;running=true;
+    const N=+NR.value; let i=0;
+    function batch(){
+      const per=Math.max(1,Math.min(80,N-i));
+      for(let k=0;k<per;k++){counts[Math.random()<target?1:0]++;total++;}
+      i+=per;
+      if(i<N){requestAnimationFrame(batch);} else running=false;
+    } batch();
+  };
+  register(c,(t)=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const padL=40, gw=W-80, bh=H-100, by=40;
+    const p0=total?counts[0]/total:0, p1=total?counts[1]/total:0;
+    x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+    x.fillText('histogram of '+total+' shots'+(running?' (running…)':''),padL,22);
+    function bar(idx,col,lab,p,tg){
+      const bx=padL+idx*(gw/2)+gw/4-60;
+      x.fillStyle='#0c1226';x.strokeStyle=COL.line;
+      x.fillRect(bx,by,120,bh); x.strokeRect(bx,by,120,bh);
+      x.fillStyle=col; x.fillRect(bx,by+bh*(1-p),120,bh*p);
+      // target line
+      x.strokeStyle=COL.pk; x.setLineDash([4,3]); x.lineWidth=1;
+      x.beginPath(); x.moveTo(bx-5,by+bh*(1-tg)); x.lineTo(bx+125,by+bh*(1-tg)); x.stroke();
+      x.setLineDash([]);
+      x.fillStyle=COL.ink; x.font="14px 'JetBrains Mono'"; x.textAlign='center';
+      x.fillText(lab,bx+60,by+bh+24);
+      x.fillStyle=col; x.font="13px 'JetBrains Mono'";
+      x.fillText((p*100).toFixed(1)+'%',bx+60,by+bh+44);
+    }
+    bar(0,'rgba(255,194,75,.7)','|0⟩',p0,1-target);
+    bar(1,'rgba(52,225,216,.7)','|1⟩',p1,target);
+    x.fillStyle=COL.pk; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+    x.fillText('--- target  (|α|², |β|²)',padL,H-10);
+  });
+})();
+
+/* ================= 6. U GATE ================= */
+(function(){
+  const c=document.getElementById('cU'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const ThR=document.getElementById('uThR'),PhR=document.getElementById('uPhR'),LaR=document.getElementById('uLaR');
+  const ThL=document.getElementById('uTh'),PhL=document.getElementById('uPh'),LaL=document.getElementById('uLa');
+  function lbl(){ThL.textContent=fmtPi(+ThR.value/180*PI);
+    PhL.textContent=fmtPi(+PhR.value/180*PI);
+    LaL.textContent=fmtPi(+LaR.value/180*PI);}
+  ThR.oninput=lbl; PhR.oninput=lbl; LaR.oninput=lbl; lbl();
+  register(c,(t)=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const th=+ThR.value/180*PI, ph=+PhR.value/180*PI;
+    const a={r:Math.cos(th/2),i:0};
+    const b={r:Math.sin(th/2)*Math.cos(ph),i:Math.sin(th/2)*Math.sin(ph)};
+    // bloch on left
+    const cx=W*0.27, cy=H*0.55, R=Math.min(W*0.22,H*0.36);
+    drawBloch(x,cx,cy,R,th,ph);
+    // complex plane for β on right
+    const ox=W*0.55, oy=H*0.18, ow=W*0.40, oh=H*0.72;
+    x.strokeStyle=COL.line; x.lineWidth=1;
+    x.strokeRect(ox,oy,ow,oh);
+    x.beginPath(); x.moveTo(ox,oy+oh/2); x.lineTo(ox+ow,oy+oh/2); x.stroke();
+    x.beginPath(); x.moveTo(ox+ow/2,oy); x.lineTo(ox+ow/2,oy+oh); x.stroke();
+    x.fillStyle=COL.mut; x.font="10px 'JetBrains Mono'"; x.textAlign='center';
+    x.fillText('Re(β) →',ox+ow-22,oy+oh/2-4);
+    x.save(); x.translate(ox+ow/2+10,oy+12); x.rotate(0);
+    x.fillText('↑ Im(β)',0,0); x.restore();
+    // unit circle (where β lives when α=0)
+    x.strokeStyle='rgba(155,123,255,.35)';
+    x.beginPath(); x.arc(ox+ow/2,oy+oh/2,Math.min(ow,oh)/2-10,0,TAU); x.stroke();
+    // α dot
+    const px=ox+ow/2+a.r*(Math.min(ow,oh)/2-10);
+    const py=oy+oh/2;
+    x.fillStyle=COL.am; x.beginPath(); x.arc(px,py,6,0,TAU); x.fill();
+    x.fillStyle=COL.am; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+    x.fillText('α (real)',px+8,py-4);
+    // β arrow
+    const bx=ox+ow/2+b.r*(Math.min(ow,oh)/2-10);
+    const by2=oy+oh/2-b.i*(Math.min(ow,oh)/2-10);
+    x.strokeStyle=COL.cy; x.lineWidth=2;
+    x.beginPath(); x.moveTo(ox+ow/2,oy+oh/2); x.lineTo(bx,by2); x.stroke();
+    x.fillStyle=COL.cy; x.beginPath(); x.arc(bx,by2,5,0,TAU); x.fill();
+    x.fillStyle=COL.cy; x.font="11px 'JetBrains Mono'";
+    x.fillText('β  = '+b.r.toFixed(3)+(b.i>=0?'+':'')+b.i.toFixed(3)+'i', bx+8, by2-4);
+    // amplitude readout
+    x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+    x.fillText('u(θ,φ,λ)·|0⟩  =  cos(θ/2)·|0⟩ + e^{iφ}·sin(θ/2)·|1⟩', W*0.18, H-12);
+    x.fillStyle=COL.am; x.fillText('α=cos(θ/2)='+a.r.toFixed(3),W*0.18,30);
+    x.fillStyle=COL.cy; x.fillText('|β|=sin(θ/2)='+Math.sin(th/2).toFixed(3)+'   arg(β)=φ='+fmtPi(ph),W*0.18,48);
+  });
+})();
+
+/* ================= PLAYGROUND — basis vs amplitude ================= */
+(function(){
+  const c=document.getElementById('cPlay'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const ThR=document.getElementById('pThR'),PaR=document.getElementById('pPaR'),PbR=document.getElementById('pPbR');
+  const ThL=document.getElementById('pTh'),PaL=document.getElementById('pPa'),PbL=document.getElementById('pPb');
+  const polarEl=document.getElementById('psiPolar'), cartEl=document.getElementById('psiCart');
+  // Probability-bar refs — populated by update() so the |amp|² is always
+  // visible alongside the raw amplitudes.
+  const probVal0=document.getElementById('probVal0'),
+        probVal1=document.getElementById('probVal1'),
+        probBar0=document.getElementById('probBar0'),
+        probBar1=document.getElementById('probBar1'),
+        probAmpA=document.getElementById('probAmpA'),
+        probAmpB=document.getElementById('probAmpB'),
+        probNorm=document.getElementById('probNorm');
+
+  function signed(v){const s=v.toFixed(3);return v>=0?(' + '+s):(' − '+Math.abs(v).toFixed(3));}
+
+  function update(){
+    const th=+ThR.value/180*PI, pa=+PaR.value/180*PI, pb=+PbR.value/180*PI;
+    ThL.textContent=fmtPi(th); PaL.textContent=fmtPi(pa); PbL.textContent=fmtPi(pb);
+    const mA=Math.cos(th/2), mB=Math.sin(th/2);
+    const ar=mA*Math.cos(pa), ai=mA*Math.sin(pa);
+    const br=mB*Math.cos(pb), bi=mB*Math.sin(pb);
+    polarEl.innerHTML='<span class="c">polar</span> &nbsp;|ψ⟩ = '+
+      '<span class="a">'+mA.toFixed(3)+' · e<sup>i·'+fmtPi(pa)+'</sup></span>·|0⟩'+
+      ' &nbsp;+&nbsp; '+
+      '<span class="p">'+mB.toFixed(3)+' · e<sup>i·'+fmtPi(pb)+'</sup></span>·|1⟩';
+    cartEl.innerHTML='<span class="c">cartesian</span> &nbsp;|ψ⟩ = '+
+      '<span class="a">('+ar.toFixed(3)+signed(ai)+'i)</span>·|0⟩'+
+      ' &nbsp;+&nbsp; '+
+      '<span class="p">('+br.toFixed(3)+signed(bi)+'i)</span>·|1⟩';
+
+    // Probabilities = squared magnitudes (Born rule).
+    const p0 = mA*mA, p1 = mB*mB;
+    if(probVal0){
+      probVal0.textContent = (p0*100).toFixed(1)+'%';
+      probVal1.textContent = (p1*100).toFixed(1)+'%';
+      probBar0.style.width = (p0*100).toFixed(2)+'%';
+      probBar1.style.width = (p1*100).toFixed(2)+'%';
+      probAmpA.textContent = mA.toFixed(4);
+      probAmpB.textContent = mB.toFixed(4);
+      const norm = p0 + p1;
+      probNorm.textContent = '|α|² + |β|² = '+norm.toFixed(4)+(Math.abs(norm-1)<1e-6?'  ✓':'  ✗');
+      probNorm.style.color = Math.abs(norm-1)<1e-6 ? 'var(--green)' : 'var(--pink)';
+    }
+  }
+  ThR.oninput=update; PaR.oninput=update; PbR.oninput=update; update();
+
+  function drawPlane(cx,cy,R,title,sym,mag,phase,color){
+    // frame
+    x.strokeStyle=COL.line; x.lineWidth=1;
+    x.strokeRect(cx-R-16,cy-R-16,(R+16)*2,(R+16)*2);
+    // title
+    x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+    x.fillText(title,cx-R-16,cy-R-22);
+    // axes
+    x.strokeStyle=COL.line;
+    x.beginPath(); x.moveTo(cx-R-6,cy); x.lineTo(cx+R+6,cy); x.stroke();
+    x.beginPath(); x.moveTo(cx,cy-R-6); x.lineTo(cx,cy+R+6); x.stroke();
+    // unit circle reference
+    x.strokeStyle='rgba(155,123,255,.30)'; x.setLineDash([3,3]);
+    x.beginPath(); x.arc(cx,cy,R,0,TAU); x.stroke(); x.setLineDash([]);
+    // axis ticks
+    x.fillStyle=COL.mut; x.font="10px 'JetBrains Mono'";
+    x.textAlign='right'; x.fillText('Re',cx+R+4,cy-4);
+    x.textAlign='left'; x.fillText('Im',cx+4,cy-R-2);
+    x.textAlign='center';
+    x.fillText('1',cx+R+2,cy+12); x.fillText('−1',cx-R-2,cy+12);
+    // phase arc (drawn only if the vector has length)
+    if(mag>0.02 && Math.abs(phase)>0.04){
+      x.strokeStyle=color; x.lineWidth=1; x.setLineDash([2,2]);
+      x.beginPath(); x.arc(cx,cy,R*0.32, 0, -phase, phase>0); x.stroke();
+      x.setLineDash([]);
+      const la=-phase/2;
+      x.fillStyle=color; x.font="10px 'JetBrains Mono'"; x.textAlign='left';
+      x.fillText('φ',cx+Math.cos(la)*R*0.42, cy+Math.sin(la)*R*0.42);
+    }
+    // vector
+    const px=cx+mag*Math.cos(phase)*R, py=cy-mag*Math.sin(phase)*R;
+    x.strokeStyle=color; x.lineWidth=2.4;
+    x.beginPath(); x.moveTo(cx,cy); x.lineTo(px,py); x.stroke();
+    x.fillStyle=color; x.beginPath(); x.arc(px,py,5,0,TAU); x.fill();
+    // labels below
+    x.fillStyle=color; x.font="12px 'JetBrains Mono'"; x.textAlign='center';
+    x.fillText(sym+' = '+mag.toFixed(3)+' · e^{i·'+fmtPi(phase)+'}', cx, cy+R+34);
+    x.fillStyle=COL.mut; x.font="10px 'JetBrains Mono'";
+    x.fillText('|'+sym+'|² = '+(mag*mag*100).toFixed(1)+'%   (= P measuring this basis state)', cx, cy+R+50);
+  }
+
+  register(c,(t)=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    const th=+ThR.value/180*PI, pa=+PaR.value/180*PI, pb=+PbR.value/180*PI;
+    const mA=Math.cos(th/2), mB=Math.sin(th/2);
+
+    // Responsive: only show the side panel if there's room for it.
+    const showPanel = W >= 720;
+    const R  = Math.min(showPanel ? W*0.14 : W*0.21, H*0.32);
+    const cx1 = showPanel ? W*0.20 : W*0.27;
+    const cx2 = showPanel ? W*0.52 : W*0.73;
+    const cy  = H*0.46;
+    drawPlane(cx1,cy,R,'complex plane: α  (coefficient of |0⟩)', 'α', mA, pa, COL.am);
+    drawPlane(cx2,cy,R,'complex plane: β  (coefficient of |1⟩)', 'β', mB, pb, COL.pk);
+
+    if(showPanel){
+      const ar=mA*Math.cos(pa), ai=mA*Math.sin(pa);
+      const br=mB*Math.cos(pb), bi=mB*Math.sin(pb);
+      // right panel — state vector, Born bars, normalisation, relative phase.
+      const rx=W*0.74, ry=H*0.10;
+      x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+      x.fillText('basis (immutable)', rx, ry);
+      x.fillStyle=COL.ink; x.font="13px 'JetBrains Mono'";
+      x.fillText('|0⟩ = [1, 0]ᵀ', rx, ry+22);
+      x.fillText('|1⟩ = [0, 1]ᵀ', rx, ry+44);
+
+      x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'";
+      x.fillText('state vector  |ψ⟩.data', rx, ry+80);
+      x.fillStyle=COL.am; x.font="12px 'JetBrains Mono'";
+      x.fillText('α = '+ar.toFixed(3)+(ai>=0?' + ':' − ')+Math.abs(ai).toFixed(3)+'i', rx, ry+100);
+      x.fillStyle=COL.pk;
+      x.fillText('β = '+br.toFixed(3)+(bi>=0?'+':'')+bi.toFixed(3)+'i', rx, ry+120);
+
+      x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'";
+      x.fillText('Born rule  P = |amp|²', rx, ry+156);
+      const bw=Math.min(W*0.20,220), bh=14;
+      function bar(yy,col,lab,val){
+        x.fillStyle='#11183a'; x.fillRect(rx,yy,bw,bh);
+        x.fillStyle=col; x.fillRect(rx,yy,bw*val,bh);
+        x.fillStyle=COL.ink; x.font="10px 'JetBrains Mono'"; x.textAlign='left';
+        x.fillText(lab+' = '+(val*100).toFixed(1)+'%', rx+5, yy+10);
+      }
+      bar(ry+172,'rgba(255,194,75,.7)','P(0)=|α|²',mA*mA);
+      bar(ry+192,'rgba(255,107,157,.7)','P(1)=|β|²',mB*mB);
+
+      const norm=mA*mA+mB*mB;
+      x.fillStyle=Math.abs(norm-1)<1e-6?COL.gr:COL.pk;
+      x.font="11px 'JetBrains Mono'";
+      x.fillText('|α|² + |β|² = '+norm.toFixed(4)+(Math.abs(norm-1)<1e-6?'  ✓ unit norm':'  ✗'), rx, ry+228);
+
+      x.fillStyle=COL.mut; x.font="10px 'JetBrains Mono'";
+      const dph=pb-pa;
+      x.fillText('relative phase  φ_β − φ_α  =  '+fmtPi(dph), rx, ry+252);
+      x.fillText('(only this difference is physically observable)', rx, ry+268);
+    } else {
+      // Narrow layout — single compact strip under the planes.
+      // (The polar/cartesian formula bars + Born bars already live above the canvas.)
+      const norm = mA*mA + mB*mB;
+      const dph  = pb - pa;
+      x.textAlign='center'; x.font="11px 'JetBrains Mono'";
+      x.fillStyle = Math.abs(norm-1)<1e-6 ? COL.gr : COL.pk;
+      x.fillText('|α|² + |β|² = '+norm.toFixed(4)+(Math.abs(norm-1)<1e-6?'  ✓':'  ✗')+
+                 '     Δφ = '+fmtPi(dph), W/2, H-14);
+    }
+  });
+})();
+
+/* ================= PLAYGROUND — 3D BLOCH SPHERE ================= */
+(function(){
+  const c=document.getElementById('cPlayBloch'); let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const ThR=document.getElementById('pThR'),PaR=document.getElementById('pPaR'),PbR=document.getElementById('pPbR');
+
+  // camera
+  let yaw=0.55, pitch=0.42;     // initial view: from upper-front
+  let dragging=false, lastX=0, lastY=0, manual=false;
+  c.addEventListener('mousedown', e=>{dragging=true; manual=true;
+    lastX=e.clientX; lastY=e.clientY; c.style.cursor='grabbing'; e.preventDefault();});
+  addEventListener('mouseup', ()=>{dragging=false; c.style.cursor='grab';});
+  addEventListener('mousemove', e=>{
+    if(!dragging) return;
+    yaw   += (e.clientX-lastX)*0.010;
+    pitch -= (e.clientY-lastY)*0.010;
+    pitch = Math.max(-PI/2.05, Math.min(PI/2.05, pitch));
+    lastX=e.clientX; lastY=e.clientY;
+  });
+  c.addEventListener('touchstart', e=>{const t=e.touches[0];
+    dragging=true; manual=true; lastX=t.clientX; lastY=t.clientY; e.preventDefault();},{passive:false});
+  addEventListener('touchend', ()=>{dragging=false;});
+  addEventListener('touchmove', e=>{
+    if(!dragging) return; const t=e.touches[0];
+    yaw   += (t.clientX-lastX)*0.010;
+    pitch -= (t.clientY-lastY)*0.010;
+    pitch = Math.max(-PI/2.05, Math.min(PI/2.05, pitch));
+    lastX=t.clientX; lastY=t.clientY; e.preventDefault();
+  },{passive:false});
+  c.addEventListener('dblclick', ()=>{manual=false; yaw=0.55; pitch=0.42;});
+
+  // 3D→2D projection (yaw around screen-Y, then pitch around screen-X)
+  function project(p, cx, cy, S){
+    let xr = p[0]*Math.cos(yaw) - p[2]*Math.sin(yaw);
+    let zr = p[0]*Math.sin(yaw) + p[2]*Math.cos(yaw);
+    let yr = p[1];
+    let y2 = yr*Math.cos(pitch) - zr*Math.sin(pitch);
+    let z2 = yr*Math.sin(pitch) + zr*Math.cos(pitch);
+    return {x: cx + xr*S, y: cy - y2*S, z: z2};
+  }
+
+  function drawArrow(p0, p1, color, w){
+    x.strokeStyle=color; x.lineWidth=w;
+    x.beginPath(); x.moveTo(p0.x,p0.y); x.lineTo(p1.x,p1.y); x.stroke();
+    // arrowhead
+    const dx=p1.x-p0.x, dy=p1.y-p0.y, len=Math.hypot(dx,dy)||1;
+    const ux=dx/len, uy=dy/len, hL=8, hW=4;
+    const bx=p1.x-ux*hL, by=p1.y-uy*hL;
+    x.fillStyle=color;
+    x.beginPath();
+    x.moveTo(p1.x,p1.y);
+    x.lineTo(bx-uy*hW, by+ux*hW);
+    x.lineTo(bx+uy*hW, by-ux*hW);
+    x.closePath(); x.fill();
+  }
+
+  register(c,(t,dt)=>{
+    const W=c._w,H=c._h; x.clearRect(0,0,W,H);
+    if(!manual) yaw += dt*0.18;
+
+    // Responsive: hide the side text panel when there's no room.
+    const showPanel = W >= 620;
+    const cx = showPanel ? W*0.36 : W*0.5;
+    const cy = H*0.52;
+    const R  = Math.min(W * (showPanel ? 0.22 : 0.36), H * 0.42);
+
+    // ---- assemble wireframe segments, bucketed by (kind, depth-quartile)
+    // Bucketing lets us issue one beginPath/stroke per bucket instead of
+    // per-segment — turns ~600 stroke calls into ~12 and is the main
+    // reason this is no longer laggy on big fullscreen canvases.
+    const buckets = new Array(12);  // 3 kinds × 4 depth quartiles
+    for(let i=0;i<12;i++) buckets[i]=[];
+    const bucketIdx = (kindOff, z)=>{
+      const qi = Math.max(0, Math.min(3, Math.floor((z+1)*2)));
+      return kindOff + qi;
+    };
+    // Latitudes (skip 0 — drawn separately as equator)
+    for(let lat=-PI/2+PI/6; lat<PI/2-0.01; lat+=PI/6){
+      if(Math.abs(lat)<1e-3) continue;
+      const r=Math.cos(lat), yy=Math.sin(lat);
+      let prev=null;
+      for(let lon=0; lon<=TAU+0.001; lon+=TAU/48){
+        const p=project([r*Math.cos(lon), yy, r*Math.sin(lon)], cx,cy,R);
+        if(prev){
+          const z=(prev.z+p.z)*0.5;
+          buckets[bucketIdx(0,z)].push(prev,p);
+        }
+        prev=p;
+      }
+    }
+    // Longitudes
+    for(let lon=0; lon<TAU-0.01; lon+=TAU/12){
+      let prev=null;
+      for(let lat=-PI/2; lat<=PI/2+0.001; lat+=PI/24){
+        const r=Math.cos(lat);
+        const p=project([r*Math.cos(lon), Math.sin(lat), r*Math.sin(lon)], cx,cy,R);
+        if(prev){
+          const z=(prev.z+p.z)*0.5;
+          buckets[bucketIdx(4,z)].push(prev,p);
+        }
+        prev=p;
+      }
+    }
+    // Equator
+    {
+      let prev=null;
+      for(let lon=0; lon<=TAU+0.001; lon+=TAU/72){
+        const p=project([Math.cos(lon), 0, Math.sin(lon)], cx,cy,R);
+        if(prev){
+          const z=(prev.z+p.z)*0.5;
+          buckets[bucketIdx(8,z)].push(prev,p);
+        }
+        prev=p;
+      }
+    }
+
+    // Draw back-to-front by quartile; one beginPath/stroke per bucket.
+    // Kind offset → 0..3 = latitudes, 4..7 = longitudes, 8..11 = equator.
+    const drawOrder=[0,1,2,3,4,5,6,7,8,9,10,11].sort((a,b)=>(a%4)-(b%4));
+    for(const idx of drawOrder){
+      const arr=buckets[idx]; if(arr.length===0) continue;
+      const kind = idx<4 ? 'lat' : (idx<8 ? 'lon' : 'eq');
+      const qi   = idx%4;
+      const fwd  = (qi+0.5)/4;   // 0.125 (back) .. 0.875 (front)
+      let col, lw=1;
+      if(kind==='eq'){      col='rgba(52,225,216,' +(0.10+fwd*0.55)+')'; lw=1.4; }
+      else if(kind==='lat'){col='rgba(140,160,220,'+(0.06+fwd*0.22)+')'; }
+      else {                col='rgba(140,160,220,'+(0.05+fwd*0.18)+')'; }
+      x.strokeStyle=col; x.lineWidth=lw;
+      x.beginPath();
+      for(let i=0;i<arr.length;i+=2){
+        x.moveTo(arr[i].x,arr[i].y); x.lineTo(arr[i+1].x,arr[i+1].y);
+      }
+      x.stroke();
+    }
+
+    // ---- axes (origin to slightly past surface) ----
+    const O=project([0,0,0], cx,cy,R);
+    function axis(end, col, lab){
+      const tip=project(end, cx,cy,R*1.18);
+      x.strokeStyle=col; x.lineWidth=1.2;
+      x.beginPath(); x.moveTo(O.x,O.y); x.lineTo(tip.x,tip.y); x.stroke();
+      x.fillStyle=col; x.font="11px 'JetBrains Mono'"; x.textAlign='center';
+      x.fillText(lab, tip.x, tip.y-3);
+    }
+    axis([1.05,0,0], 'rgba(255,194,75,.85)', 'x');
+    axis([0,0,1.05], 'rgba(255,107,157,.85)', 'y');
+    axis([0,1.05,0], 'rgba(75,227,160,.85)', 'z');
+
+    // pole + cardinal labels (slightly outside sphere)
+    function lbl(p3, txt, col){
+      const p=project(p3, cx,cy,R*1.24);
+      x.fillStyle=col; x.font="bold 13px 'JetBrains Mono'"; x.textAlign='center';
+      x.fillText(txt, p.x, p.y+4);
+    }
+    lbl([0, 1.05,0], '|0⟩', COL.ink);
+    lbl([0,-1.05,0], '|1⟩', COL.ink);
+    lbl([ 1.08,0,0], '|+⟩', COL.am);
+    lbl([-1.08,0,0], '|−⟩', COL.am);
+    lbl([0,0, 1.08], '|+i⟩', COL.pk);
+    lbl([0,0,-1.08], '|−i⟩', COL.pk);
+
+    // ---- the state vector |ψ⟩ ----
+    const th = +ThR.value/180*PI;
+    const pa = +PaR.value/180*PI;
+    const pb = +PbR.value/180*PI;
+    const dphi = pb - pa;
+    // Bloch coords:  x=sinθ·cos φ ,  y(Bloch)=sinθ·sin φ ,  z(Bloch up)=cosθ
+    const bx = Math.sin(th)*Math.cos(dphi);
+    const by = Math.sin(th)*Math.sin(dphi);
+    const bz = Math.cos(th);
+    const tip = project([bx, bz, by], cx,cy,R);     // [3D-x, 3D-y(up), 3D-z(depth)]
+    const foot= project([bx, 0,  by], cx,cy,R);     // projection on equator
+
+    // drop line from tip down to equator (shows latitude visually)
+    x.strokeStyle='rgba(155,123,255,.35)'; x.setLineDash([3,3]); x.lineWidth=1;
+    x.beginPath(); x.moveTo(tip.x,tip.y); x.lineTo(foot.x,foot.y); x.stroke();
+    // arc on equator from |+⟩ (positive x) to foot — visualises Δφ
+    x.strokeStyle=COL.pk; x.lineWidth=1; x.setLineDash([2,2]);
+    x.beginPath();
+    for(let s=0; s<=1; s+=0.04){
+      const a=dphi*s;
+      const p=project([Math.cos(a),0,Math.sin(a)], cx,cy,R);
+      if(s===0) x.moveTo(p.x,p.y); else x.lineTo(p.x,p.y);
+    }
+    x.stroke(); x.setLineDash([]);
+
+    // the state arrow itself
+    drawArrow(O, tip, COL.cy, 2.6);
+    x.fillStyle=COL.cy;
+    x.beginPath(); x.arc(tip.x,tip.y,6,0,TAU); x.fill();
+    x.fillStyle='rgba(7,10,20,.85)';
+    x.beginPath(); x.arc(tip.x,tip.y,2.5,0,TAU); x.fill();
+    x.fillStyle=COL.cy; x.font="11px 'JetBrains Mono'"; x.textAlign='left';
+    x.fillText('|ψ⟩', tip.x+9, tip.y-6);
+
+    // ---- right-hand readout panel — only when the canvas is wide enough.
+    // Cardinal-state detection is shared between the two layouts.
+    const near=(a,b)=>Math.abs(a-b)<0.04;
+    let name='—';
+    if(near(bz,1)) name='|0⟩  (north pole)';
+    else if(near(bz,-1)) name='|1⟩  (south pole)';
+    else if(near(bx,1)&&near(by,0)) name='|+⟩';
+    else if(near(bx,-1)&&near(by,0)) name='|−⟩';
+    else if(near(by,1)&&near(bx,0)) name='|+i⟩';
+    else if(near(by,-1)&&near(bx,0)) name='|−i⟩';
+
+    if(showPanel){
+      // Anchor panel so it never collides with the sphere or runs off the edge.
+      const sphereRight = cx + R*1.30;
+      const rx = Math.max(sphereRight + 18, Math.min(W*0.60, W - 260));
+      let ry = 26;
+      x.textAlign='left';
+      x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'";
+      x.fillText('Bloch-sphere view — drag to orbit, double-click to reset', rx, ry);
+
+      ry=64;
+      x.fillStyle=COL.ink; x.font="13px 'JetBrains Mono'";
+      x.fillText('|ψ⟩ = cos(θ/2)|0⟩ + e^{iΔφ}·sin(θ/2)|1⟩', rx, ry);
+      ry+=28;
+      x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'";
+      x.fillText('angles', rx, ry); ry+=18;
+      x.fillStyle=COL.am; x.font="12px 'JetBrains Mono'";
+      x.fillText('θ  (polar from |0⟩)   = '+fmtPi(th), rx, ry); ry+=18;
+      x.fillStyle=COL.pk;
+      x.fillText('Δφ (relative phase)   = '+fmtPi(dphi), rx, ry); ry+=24;
+
+      x.fillStyle=COL.mut; x.font="11px 'JetBrains Mono'";
+      x.fillText('Bloch coordinates  (unit sphere)', rx, ry); ry+=18;
+      x.fillStyle=COL.ink; x.font="12px 'JetBrains Mono'";
+      x.fillText('x = sin θ · cos Δφ  = '+bx.toFixed(3), rx, ry); ry+=18;
+      x.fillText('y = sin θ · sin Δφ  = '+by.toFixed(3), rx, ry); ry+=18;
+      x.fillText('z = cos θ           = '+bz.toFixed(3), rx, ry); ry+=26;
+
+      x.fillStyle=COL.gr; x.font="11px 'JetBrains Mono'";
+      x.fillText('nearest named state:  '+name, rx, ry);
+
+      // bottom hint (only with the panel — the narrow layout uses a shorter line)
+      x.fillStyle=COL.mut; x.font="10px 'JetBrains Mono'"; x.textAlign='left';
+      x.fillText('global phase = φ_α is invisible on the sphere — only Δφ = φ_β − φ_α moves the arrow',
+                 16, H-12);
+    } else {
+      // Compact narrow-mode footer — sits below the sphere, two tidy lines.
+      x.textAlign='center';
+      x.fillStyle=COL.mut; x.font="10px 'JetBrains Mono'";
+      x.fillText('drag to orbit · double-click to reset', cx, H-38);
+      x.font="11px 'JetBrains Mono'";
+      x.fillStyle=COL.am; x.fillText('θ = '+fmtPi(th)+'    ', cx-50, H-20);
+      x.fillStyle=COL.pk; x.fillText('Δφ = '+fmtPi(dphi),    cx+50, H-20);
+      x.fillStyle=COL.gr; x.fillText('≈ '+name, cx, H-4);
+    }
+  });
+})();
+
+/* ================= PLAYGROUND — Qiskit-style REPL =================
+   Self-contained single-qubit simulator. Parses a small subset of
+   Qiskit syntax: Circuit(1), qc.h/x/y/z/s/sdg/t/tdg(0),
+   qc.rx/ry/rz/p(θ,0), qc.u(θ,φ,λ,0), variable assignments, and a
+   handful of math.* funcs.
+
+   No eval of bare user JS — argument expressions are wrapped in a
+   Function() with only the math whitelist and previously-defined
+   variables in scope.
+================================================================= */
+(function(){
+  const ThR=document.getElementById('pThR'),
+        PaR=document.getElementById('pPaR'),
+        PbR=document.getElementById('pPbR');
+  const codeEl=document.getElementById('rplCode'),
+        outEl =document.getElementById('rplOut'),
+        runBtn=document.getElementById('rplRun');
+
+  const PY = {
+    pi:Math.PI, e:Math.E,
+    sin:Math.sin, cos:Math.cos, tan:Math.tan,
+    asin:Math.asin, acos:Math.acos, atan:Math.atan, atan2:Math.atan2,
+    sqrt:Math.sqrt, exp:Math.exp, log:Math.log,
+    abs:Math.abs, pow:Math.pow, floor:Math.floor, ceil:Math.ceil,
+    True:true, False:false, None:null,
+  };
+
+  function evalExpr(expr, vars){
+    const env={...PY, ...vars};
+    const names=Object.keys(env), vals=Object.values(env);
+    // strip trailing commas (e.g. tuple-style "(1, 2,)")
+    const cleaned = expr.replace(/,\s*\)/g,')');
+    return new Function(...names,'"use strict";return ('+cleaned+');')(...vals);
+  }
+
+  function splitArgs(s){
+    const out=[]; let depth=0, buf='';
+    for(const c of s){
+      if(c==='('||c==='['||c==='{') depth++;
+      else if(c===')'||c===']'||c==='}') depth--;
+      if(c===',' && depth===0){ out.push(buf); buf=''; }
+      else buf+=c;
+    }
+    if(buf.trim()!=='') out.push(buf);
+    return out;
+  }
+
+  function fmtC(z){
+    const r=z.r, i=z.i;
+    const rs=(Math.abs(r)<1e-10?0:r).toFixed(7).replace(/0+$/,'').replace(/\.$/,'.0');
+    const is=(Math.abs(i)<1e-10?0:i).toFixed(7).replace(/0+$/,'').replace(/\.$/,'.0');
+    return `${rs}${i>=0?'+':''}${is}j`;
+  }
+
+  function fmtNum(v){
+    if(typeof v!=='number') return String(v);
+    if(Math.abs(v-Math.round(v))<1e-9) return Math.round(v).toString();
+    return v.toFixed(4);
+  }
+
+  function run(code){
+    let alpha={r:1,i:0}, beta={r:0,i:0};
+    const vars={}, log=[];
+    const SH=1/Math.SQRT2;
+
+    const applyMat = (M)=>{
+      const a=cAdd(cMul(M[0][0],alpha), cMul(M[0][1],beta));
+      const b=cAdd(cMul(M[1][0],alpha), cMul(M[1][1],beta));
+      alpha=a; beta=b;
+    };
+
+    function applyGate(name, args, lineNum){
+      switch(name){
+        case 'h': applyMat([[{r:SH,i:0},{r:SH,i:0}],[{r:SH,i:0},{r:-SH,i:0}]]); break;
+        case 'x': applyMat([[{r:0,i:0},{r:1,i:0}],[{r:1,i:0},{r:0,i:0}]]); break;
+        case 'y': applyMat([[{r:0,i:0},{r:0,i:-1}],[{r:0,i:1},{r:0,i:0}]]); break;
+        case 'z': applyMat([[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:-1,i:0}]]); break;
+        case 's': applyMat([[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:0,i:1}]]); break;
+        case 'sdg': applyMat([[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:0,i:-1}]]); break;
+        case 't': applyMat([[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:Math.cos(Math.PI/4),i:Math.sin(Math.PI/4)}]]); break;
+        case 'tdg': applyMat([[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:Math.cos(-Math.PI/4),i:Math.sin(-Math.PI/4)}]]); break;
+        case 'i': case 'id': break;
+        case 'rx': { const th=args[0], c=Math.cos(th/2), s=Math.sin(th/2);
+          applyMat([[{r:c,i:0},{r:0,i:-s}],[{r:0,i:-s},{r:c,i:0}]]); break; }
+        case 'ry': { const th=args[0], c=Math.cos(th/2), s=Math.sin(th/2);
+          applyMat([[{r:c,i:0},{r:-s,i:0}],[{r:s,i:0},{r:c,i:0}]]); break; }
+        case 'rz': { const th=args[0], c=Math.cos(th/2), s=Math.sin(th/2);
+          applyMat([[{r:c,i:-s},{r:0,i:0}],[{r:0,i:0},{r:c,i:s}]]); break; }
+        case 'p': case 'u1': case 'phase': { const ph=args[0];
+          applyMat([[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:Math.cos(ph),i:Math.sin(ph)}]]); break; }
+        case 'u': case 'u3': { const th=args[0], ph=args[1], la=args[2];
+          const c=Math.cos(th/2), s=Math.sin(th/2);
+          applyMat([
+            [{r:c,i:0}, {r:-Math.cos(la)*s, i:-Math.sin(la)*s}],
+            [{r:Math.cos(ph)*s, i:Math.sin(ph)*s}, {r:Math.cos(ph+la)*c, i:Math.sin(ph+la)*c}]
+          ]); break; }
+        case 'cx': case 'cnot': case 'cz': case 'cy': case 'swap': case 'ccx':
+          throw new Error(`two-qubit gate "${name}" not supported — this REPL is single-qubit`);
+        case 'measure': case 'measure_all': case 'barrier':
+        case 'draw_circuit': case 'draw_qubits': case 'get_measure':
+        case 'circuit_to_base64': case 'compose':
+          // benign no-ops for our purposes
+          return null;
+        default: throw new Error(`unknown gate: "${name}"`);
+      }
+      return name;
+    }
+
+    const lines=code.split('\n');
+    for(let i=0; i<lines.length; i++){
+      const lineNum=i+1;
+      const stripped=lines[i].split('#')[0].trim();
+      if(!stripped) continue;
+      if(/^(from|import)\s/.test(stripped)) continue;
+      if(/^print\s*\(/.test(stripped)) continue;
+      if(/^%/.test(stripped)) continue;
+      if(/^\s*$/.test(stripped)) continue;
+
+      // Statement may contain multiple ';' parts (qc.h(0); qc.cx(0,1))
+      const parts = stripped.split(';').map(s=>s.trim()).filter(Boolean);
+      for(const line of parts){
+        // 1) Circuit(N) constructor: <var> = Circuit(N)
+        let m = line.match(/^([\w_]+)\s*=\s*Circuit\s*\(\s*(\d+)\s*(?:,\s*\d+\s*)?\)\s*$/);
+        if(m){
+          if(+m[2] !== 1){
+            log.push(`! line ${lineNum}: only Circuit(1) supported — got Circuit(${m[2]})`);
+          }
+          alpha={r:1,i:0}; beta={r:0,i:0};
+          log.push(`  ${m[1]} = Circuit(1)   |ψ⟩ ← |0⟩`);
+          continue;
+        }
+        // 2) Gate call: <var>.<gate>(<args>)
+        m = line.match(/^([\w_]+)\.([\w_]+)\s*\((.*)\)\s*$/);
+        if(m){
+          const method=m[2].toLowerCase();
+          const argsStr=m[3];
+          let args=[];
+          try {
+            args = argsStr.trim()==='' ? [] : splitArgs(argsStr).map(s=>evalExpr(s.trim(),vars));
+          } catch(e){
+            log.push(`! line ${lineNum}: failed to evaluate args of ${method}( ${argsStr} )`);
+            continue;
+          }
+          try {
+            const applied = applyGate(method, args, lineNum);
+            if(applied!==null){
+              log.push(`✓ ${m[1]}.${method}(${args.map(fmtNum).join(', ')})`);
+            }
+          } catch(e){
+            log.push(`! line ${lineNum}: ${e.message}`);
+          }
+          continue;
+        }
+        // 3) Variable assignment: <name> = <expr>
+        m = line.match(/^([\w_]+)\s*=\s*(.+)$/);
+        if(m){
+          try {
+            vars[m[1]] = evalExpr(m[2], vars);
+            log.push(`  ${m[1]} = ${fmtNum(vars[m[1]])}`);
+          } catch(e){
+            log.push(`! line ${lineNum}: cannot evaluate "${m[2].trim()}"`);
+          }
+          continue;
+        }
+        // 4) Otherwise ignore (e.g. a bare expression)
+      }
+    }
+    return {alpha, beta, log};
+  }
+
+  function setSliders(alpha, beta){
+    const magA=Math.hypot(alpha.r, alpha.i);
+    const magB=Math.hypot(beta.r,  beta.i);
+    const th  = 2*Math.atan2(magB, magA);
+    let phA = magA>1e-9 ? Math.atan2(alpha.i, alpha.r) : 0;
+    let phB = magB>1e-9 ? Math.atan2(beta.i,  beta.r) : 0;
+    if(phA<0) phA += 2*Math.PI;
+    if(phB<0) phB += 2*Math.PI;
+
+    ThR.value = Math.max(0, Math.min(180, Math.round(th * 180/Math.PI)));
+    PaR.value = Math.max(0, Math.min(360, Math.round(phA * 180/Math.PI)));
+    PbR.value = Math.max(0, Math.min(360, Math.round(phB * 180/Math.PI)));
+    // trigger the formula-bar listener registered earlier
+    ThR.dispatchEvent(new Event('input'));
+    PaR.dispatchEvent(new Event('input'));
+    PbR.dispatchEvent(new Event('input'));
+  }
+
+  runBtn.onclick = ()=>{
+    try {
+      const {alpha, beta, log} = run(codeEl.value);
+      const n2 = alpha.r*alpha.r + alpha.i*alpha.i + beta.r*beta.r + beta.i*beta.i;
+      const okNorm = Math.abs(n2-1) < 1e-6;
+      const lines = log.slice();
+      lines.push('');
+      lines.push('Statevector(qc).data:');
+      lines.push('  [' + fmtC(alpha) + ', ' + fmtC(beta) + ']');
+      lines.push('');
+      lines.push('|α|² + |β|²  =  ' + n2.toFixed(6) + (okNorm?'   ✓ unit norm':'   ✗ not normalised'));
+      const magB = Math.hypot(beta.r, beta.i);
+      const th   = 2*Math.atan2(magB, Math.hypot(alpha.r,alpha.i));
+      lines.push('P(0) = |α|² = '+(alpha.r*alpha.r+alpha.i*alpha.i).toFixed(4)+
+                 '     P(1) = |β|² = '+(beta.r*beta.r+beta.i*beta.i).toFixed(4));
+      lines.push('Bloch θ = '+th.toFixed(4)+'   Δφ = φ_β − φ_α (sphere updated)');
+      outEl.textContent = lines.join('\n');
+      setSliders(alpha, beta);
+    } catch(e){
+      outEl.textContent = '✗ ERROR: ' + e.message + '\n\n(if this looks like a syntax error in your code, recall this REPL only handles\nthe single-qubit subset shown in the buttons above.)';
+    }
+  };
+
+  // Ctrl/Cmd-Enter inside the textarea also runs
+  codeEl.addEventListener('keydown', e=>{
+    if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ e.preventDefault(); runBtn.click(); }
+  });
+
+  // Preset loaders
+  document.getElementById('rplPlus').onclick = ()=>{
+    codeEl.value =
+`# |+⟩ = (|0⟩ + |1⟩)/√2  —  Hadamard on the |0⟩ ground state
+qc = Circuit(1)
+qc.h(0)`;
+  };
+  document.getElementById('rplBloch').onclick = ()=>{
+    codeEl.value =
+`# Tour of the Bloch sphere — H then S sends |0⟩ → |+i⟩
+# (S adds a +π/2 phase on the |1⟩ branch)
+qc = Circuit(1)
+qc.h(0)
+qc.s(0)`;
+  };
+  document.getElementById('rplPhase').onclick = ()=>{
+    codeEl.value =
+`# Phase-only tweak — set magnitudes with RY, then shift β's phase with P.
+# P(φ) leaves |0⟩ alone and multiplies |1⟩ by e^{iφ}.
+from math import pi
+
+qc = Circuit(1)
+qc.ry(pi/3, 0)       # pick the magnitude split
+qc.p(pi/4, 0)        # rotate β by +π/4 — α untouched`;
+  };
+  document.getElementById('rplClr').onclick = ()=>{
+    codeEl.value = `qc = Circuit(1)\n`;
+    outEl.textContent = '';
+  };
+})();
+
+/* ================= PLAYGROUND II — Multi-qubit REPL =================
+   N-qubit simulator (N ∈ {1, 2, 3}). Reuses the global cAdd/cMul/cScale.
+   Parses a multi-qubit superset of the single-qubit REPL:
+     Circuit(N), single-qubit gates with last arg = qubit index,
+     two-qubit gates  cx/cnot/cz/swap.
+   Renders a probability bar chart with phasor indicators above each bar
+   and two partial-trace 2-D Bloch projections (one per qubit) so you can
+   watch entanglement pull the per-qubit arrows toward the centre.
+================================================================= */
+(function(){
+  const codeEl = document.getElementById('rpl2Code');
+  const outEl  = document.getElementById('rpl2Out');
+  const runBtn = document.getElementById('rpl2Run');
+  const cBars  = document.getElementById('cPlay2Bars');
+  const cB0    = document.getElementById('cPlay2Bloch0');
+  const cB1    = document.getElementById('cPlay2Bloch1');
+  if(!codeEl || !runBtn || !cBars) return;
+
+  const N_MAX = 3;
+  let curState = null;
+  let curN = 2;
+
+  const PY = {
+    pi:Math.PI, e:Math.E,
+    sin:Math.sin, cos:Math.cos, tan:Math.tan,
+    asin:Math.asin, acos:Math.acos, atan:Math.atan, atan2:Math.atan2,
+    sqrt:Math.sqrt, exp:Math.exp, log:Math.log,
+    abs:Math.abs, pow:Math.pow, floor:Math.floor, ceil:Math.ceil,
+    True:true, False:false, None:null,
+  };
+
+  function evalExpr(expr, vars){
+    const env={...PY, ...vars};
+    const names=Object.keys(env), vals=Object.values(env);
+    const cleaned = expr.replace(/,\s*\)/g,')');
+    return new Function(...names,'"use strict";return ('+cleaned+');')(...vals);
+  }
+
+  function splitArgs(s){
+    const out=[]; let depth=0, buf='';
+    for(const c of s){
+      if(c==='('||c==='['||c==='{') depth++;
+      else if(c===')'||c===']'||c==='}') depth--;
+      if(c===',' && depth===0){ out.push(buf); buf=''; }
+      else buf+=c;
+    }
+    if(buf.trim()!=='') out.push(buf);
+    return out;
+  }
+
+  function fmtC(z){
+    const r=z.r, i=z.i;
+    const rs=(Math.abs(r)<1e-10?0:r).toFixed(5).replace(/0+$/,'').replace(/\.$/,'.0');
+    const is=(Math.abs(i)<1e-10?0:i).toFixed(5).replace(/0+$/,'').replace(/\.$/,'.0');
+    return `${rs}${i>=0?'+':''}${is}j`;
+  }
+
+  function fmtNum(v){
+    if(typeof v!=='number') return String(v);
+    if(Math.abs(v-Math.round(v))<1e-9) return Math.round(v).toString();
+    return v.toFixed(4);
+  }
+
+  /* ---------- N-qubit state primitives ---------- */
+
+  function newState(n){
+    const N = 1<<n;
+    const s = new Array(N);
+    for(let i=0;i<N;i++) s[i] = {r: (i===0?1:0), i: 0};
+    return s;
+  }
+
+  function gateMatrix(name, args){
+    const SH = 1/Math.SQRT2;
+    switch(name){
+      case 'h': return [[{r:SH,i:0},{r:SH,i:0}],[{r:SH,i:0},{r:-SH,i:0}]];
+      case 'x': return [[{r:0,i:0},{r:1,i:0}],[{r:1,i:0},{r:0,i:0}]];
+      case 'y': return [[{r:0,i:0},{r:0,i:-1}],[{r:0,i:1},{r:0,i:0}]];
+      case 'z': return [[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:-1,i:0}]];
+      case 's': return [[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:0,i:1}]];
+      case 'sdg': return [[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:0,i:-1}]];
+      case 't': return [[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:Math.cos(PI/4),i:Math.sin(PI/4)}]];
+      case 'tdg': return [[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:Math.cos(-PI/4),i:Math.sin(-PI/4)}]];
+      case 'i': case 'id': return [[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:1,i:0}]];
+      case 'rx': {
+        const th=args[0], c=Math.cos(th/2), s=Math.sin(th/2);
+        return [[{r:c,i:0},{r:0,i:-s}],[{r:0,i:-s},{r:c,i:0}]];
+      }
+      case 'ry': {
+        const th=args[0], c=Math.cos(th/2), s=Math.sin(th/2);
+        return [[{r:c,i:0},{r:-s,i:0}],[{r:s,i:0},{r:c,i:0}]];
+      }
+      case 'rz': {
+        const th=args[0], c=Math.cos(th/2), s=Math.sin(th/2);
+        return [[{r:c,i:-s},{r:0,i:0}],[{r:0,i:0},{r:c,i:s}]];
+      }
+      case 'p': case 'phase': case 'u1': {
+        const ph=args[0];
+        return [[{r:1,i:0},{r:0,i:0}],[{r:0,i:0},{r:Math.cos(ph),i:Math.sin(ph)}]];
+      }
+      case 'u': case 'u3': {
+        const th=args[0], ph=args[1], la=args[2];
+        const c=Math.cos(th/2), s=Math.sin(th/2);
+        return [
+          [{r:c,i:0}, {r:-Math.cos(la)*s, i:-Math.sin(la)*s}],
+          [{r:Math.cos(ph)*s, i:Math.sin(ph)*s}, {r:Math.cos(ph+la)*c, i:Math.sin(ph+la)*c}]
+        ];
+      }
+      default: return null;
+    }
+  }
+
+  function applyG1(state, mat, qubit, n){
+    const N = 1 << n;
+    const out = new Array(N);
+    for(let i=0;i<N;i++) out[i] = {r:0,i:0};
+    const mask = 1 << qubit;
+    for(let i=0;i<N;i++){
+      if((i & mask) === 0){
+        const j = i | mask;
+        out[i] = cAdd(cMul(mat[0][0], state[i]), cMul(mat[0][1], state[j]));
+        out[j] = cAdd(cMul(mat[1][0], state[i]), cMul(mat[1][1], state[j]));
+      }
+    }
+    return out;
+  }
+
+  function applyCX(state, control, target, n){
+    if(control === target) throw new Error('CNOT control and target must differ');
+    if(control < 0 || control >= n || target < 0 || target >= n)
+      throw new Error(`qubit index out of range (n=${n})`);
+    const out = state.slice();
+    const cm = 1 << control, tm = 1 << target;
+    for(let i=0;i<(1<<n);i++){
+      if((i & cm) !== 0 && (i & tm) === 0){
+        const j = i | tm;
+        out[i] = state[j];
+        out[j] = state[i];
+      }
+    }
+    return out;
+  }
+
+  function applyCZ(state, c, t, n){
+    if(c === t) throw new Error('CZ control and target must differ');
+    if(c<0||c>=n||t<0||t>=n) throw new Error(`qubit index out of range (n=${n})`);
+    const out = state.slice();
+    for(let i=0;i<(1<<n);i++){
+      if(((i >> c) & 1) === 1 && ((i >> t) & 1) === 1){
+        out[i] = cScale(out[i], -1);
+      }
+    }
+    return out;
+  }
+
+  function applySwap(state, a, b, n){
+    if(a === b) return state;
+    if(a<0||a>=n||b<0||b>=n) throw new Error(`qubit index out of range (n=${n})`);
+    const out = state.slice();
+    const am = 1 << a, bm = 1 << b;
+    for(let i=0;i<(1<<n);i++){
+      const ba = (i & am) !== 0, bb = (i & bm) !== 0;
+      if(ba && !bb){
+        const j = (i & ~am) | bm;
+        out[i] = state[j];
+        out[j] = state[i];
+      }
+    }
+    return out;
+  }
+
+  function applyGate(state, method, rawArgs, n){
+    if(method === 'cx' || method === 'cnot') return applyCX(state, rawArgs[0], rawArgs[1], n);
+    if(method === 'cz')                       return applyCZ(state, rawArgs[0], rawArgs[1], n);
+    if(method === 'swap')                     return applySwap(state, rawArgs[0], rawArgs[1], n);
+    const noOps = ['measure','measure_all','barrier','draw_circuit','draw_qubits',
+                   'get_measure','circuit_to_base64','compose'];
+    if(noOps.includes(method)) return state;
+    // Single-qubit gate — last arg is the qubit index.
+    if(rawArgs.length === 0) throw new Error(`gate "${method}" missing qubit index`);
+    const gateArgs = rawArgs.slice(0, -1);
+    const qubit = rawArgs[rawArgs.length - 1];
+    if(typeof qubit !== 'number' || qubit < 0 || qubit >= n || !Number.isInteger(qubit)){
+      throw new Error(`qubit index ${qubit} out of range (n=${n})`);
+    }
+    const mat = gateMatrix(method, gateArgs);
+    if(!mat) throw new Error(`unknown gate "${method}"`);
+    return applyG1(state, mat, qubit, n);
+  }
+
+  /* ---------- REPL ---------- */
+
+  function run(code){
+    let n = 2;
+    let state = newState(n);
+    const vars = {};
+    const log = [];
+
+    const lines = code.split('\n');
+    for(let i=0;i<lines.length;i++){
+      const lineNum = i+1;
+      const stripped = lines[i].split('#')[0].trim();
+      if(!stripped) continue;
+      if(/^(from|import)\s/.test(stripped)) continue;
+      if(/^print\s*\(/.test(stripped)) continue;
+      if(/^%/.test(stripped)) continue;
+
+      const parts = stripped.split(';').map(s=>s.trim()).filter(Boolean);
+      for(const line of parts){
+        // Circuit(N) constructor
+        let m = line.match(/^([\w_]+)\s*=\s*Circuit\s*\(\s*(\d+)\s*\)\s*$/);
+        if(m){
+          const newN = +m[2];
+          if(newN < 1 || newN > N_MAX){
+            log.push(`! line ${lineNum}: Circuit(${newN}) — supported range is 1..${N_MAX}`);
+            continue;
+          }
+          n = newN;
+          state = newState(n);
+          log.push(`  ${m[1]} = Circuit(${n})   |ψ⟩ ← |${'0'.repeat(n)}⟩`);
+          continue;
+        }
+        // Gate call
+        m = line.match(/^([\w_]+)\.([\w_]+)\s*\((.*)\)\s*$/);
+        if(m){
+          const method = m[2].toLowerCase();
+          const argsStr = m[3];
+          let rawArgs = [];
+          try {
+            rawArgs = argsStr.trim() === '' ? [] : splitArgs(argsStr).map(s=>evalExpr(s.trim(), vars));
+          } catch(e){
+            log.push(`! line ${lineNum}: failed to evaluate args of ${method}(${argsStr})`);
+            continue;
+          }
+          try {
+            state = applyGate(state, method, rawArgs, n);
+            log.push(`✓ ${m[1]}.${method}(${rawArgs.map(fmtNum).join(', ')})`);
+          } catch(e){
+            log.push(`! line ${lineNum}: ${e.message}`);
+          }
+          continue;
+        }
+        // Variable assignment
+        m = line.match(/^([\w_]+)\s*=\s*(.+)$/);
+        if(m){
+          try { vars[m[1]] = evalExpr(m[2], vars); log.push(`  ${m[1]} = ${fmtNum(vars[m[1]])}`); }
+          catch(e){ log.push(`! line ${lineNum}: cannot evaluate "${m[2].trim()}"`); }
+          continue;
+        }
+      }
+    }
+    return { state, n, log };
+  }
+
+  /* ---------- Partial trace & analysis ---------- */
+
+  function expandBit(rest, pos, bitVal){
+    // Insert bitVal at position pos in the bit sequence `rest`.
+    const lowMask = (1 << pos) - 1;
+    const low  = rest & lowMask;
+    const high = rest & ~lowMask;
+    return (high << 1) | (bitVal << pos) | low;
+  }
+
+  function partialTrace(state, n, targetQubit){
+    // Returns the 2x2 reduced density matrix ρ for qubit `targetQubit`.
+    // All other qubits are traced out.
+    const rho = [[{r:0,i:0},{r:0,i:0}],[{r:0,i:0},{r:0,i:0}]];
+    const halfN = 1 << (n - 1);
+    for(let a=0;a<2;a++){
+      for(let b=0;b<2;b++){
+        let acc = {r:0,i:0};
+        for(let other=0; other<halfN; other++){
+          const idxA = expandBit(other, targetQubit, a);
+          const idxB = expandBit(other, targetQubit, b);
+          // ρ[a][b] += state[idxA] * conj(state[idxB])
+          const conjB = {r: state[idxB].r, i: -state[idxB].i};
+          acc = cAdd(acc, cMul(state[idxA], conjB));
+        }
+        rho[a][b] = acc;
+      }
+    }
+    return rho;
+  }
+
+  function rhoToBloch(rho){
+    return {
+      x: 2 * rho[0][1].r,
+      y: -2 * rho[0][1].i,
+      z: rho[0][0].r - rho[1][1].r
+    };
+  }
+
+  function purityFromRho(rho){
+    // Tr(ρ²) = |ρ[0][0]|² + |ρ[1][1]|² + 2|ρ[0][1]|²
+    const off = rho[0][1].r*rho[0][1].r + rho[0][1].i*rho[0][1].i;
+    return rho[0][0].r*rho[0][0].r + rho[1][1].r*rho[1][1].r + 2*off;
+  }
+
+  function fidelityToBiasedBell(state, n){
+    if(n !== 2) return null;
+    const target = [{r:0.5,i:0},{r:0,i:0},{r:0,i:0},{r:Math.sqrt(3)/2,i:0}];
+    let dot = {r:0,i:0};
+    for(let i=0;i<4;i++){
+      const conj = {r: target[i].r, i: -target[i].i};
+      dot = cAdd(dot, cMul(conj, state[i]));
+    }
+    return dot.r*dot.r + dot.i*dot.i;
+  }
+
+  /* ---------- Rendering ---------- */
+
+  function drawBars(){
+    const x = setupCanvas(cBars);
+    const w = cBars._w, h = cBars._h;
+    x.clearRect(0,0,w,h);
+    if(!curState) return;
+    const N = 1 << curN;
+    const padL = 46, padR = 18, padT = 78, padB = 56;
+    const barArea = h - padT - padB;
+    const slotW = (w - padL - padR) / N;
+    const barW = Math.max(8, slotW * 0.6);
+
+    // Title strip
+    x.fillStyle = COL.ink;
+    x.font = '12px ui-monospace,"JetBrains Mono",monospace';
+    x.textAlign = 'left';
+    x.fillText('Probability  P = |amp|²   ·  phasor circle above each bar = complex amplitude in polar form', padL, 16);
+
+    // Y grid
+    x.strokeStyle = COL.line;
+    x.lineWidth = 1;
+    x.fillStyle = COL.mut;
+    x.font = '10px ui-monospace,monospace';
+    x.textAlign = 'right';
+    for(let p=0; p<=1; p+=0.25){
+      const y = h - padB - p * barArea;
+      x.fillText(p.toFixed(2), padL - 6, y + 3);
+      x.beginPath(); x.moveTo(padL, y); x.lineTo(w - padR, y); x.stroke();
+    }
+
+    // Bars + phasors
+    for(let i=0;i<N;i++){
+      const amp = curState[i];
+      const prob = amp.r*amp.r + amp.i*amp.i;
+      const mag = Math.sqrt(prob);
+      const phase = Math.atan2(amp.i, amp.r);
+      const cx = padL + i * slotW + slotW / 2;
+      const barX = cx - barW/2;
+      const barH = prob * barArea;
+      const barY = h - padB - barH;
+
+      if(barH > 0.5){
+        const grad = x.createLinearGradient(0, barY, 0, h - padB);
+        grad.addColorStop(0, COL.pk);
+        grad.addColorStop(1, COL.am);
+        x.fillStyle = grad;
+        x.fillRect(barX, barY, barW, barH);
+        x.strokeStyle = 'rgba(255,255,255,.18)';
+        x.lineWidth = 1;
+        x.strokeRect(barX + 0.5, barY + 0.5, barW - 1, Math.max(0, barH - 1));
+      }
+
+      // Phasor circle
+      const phR = Math.min(22, slotW * 0.30);
+      const phY = padT - phR - 8;
+      x.strokeStyle = COL.line;
+      x.lineWidth = 1;
+      x.beginPath(); x.arc(cx, phY, phR, 0, TAU); x.stroke();
+      x.strokeStyle = 'rgba(139,150,184,.30)';
+      x.beginPath();
+      x.moveTo(cx - phR, phY); x.lineTo(cx + phR, phY);
+      x.moveTo(cx, phY - phR); x.lineTo(cx, phY + phR);
+      x.stroke();
+
+      if(mag > 0.005){
+        const ex = cx + mag * phR * Math.cos(phase);
+        const ey = phY - mag * phR * Math.sin(phase);
+        x.strokeStyle = COL.cy;
+        x.lineWidth = 2;
+        x.beginPath(); x.moveTo(cx, phY); x.lineTo(ex, ey); x.stroke();
+        x.fillStyle = COL.cy;
+        const ah = 4;
+        const ang = Math.atan2(ey - phY, ex - cx);
+        x.beginPath();
+        x.moveTo(ex, ey);
+        x.lineTo(ex - ah*Math.cos(ang - 0.5), ey - ah*Math.sin(ang - 0.5));
+        x.lineTo(ex - ah*Math.cos(ang + 0.5), ey - ah*Math.sin(ang + 0.5));
+        x.closePath(); x.fill();
+      }
+
+      // Basis label
+      x.fillStyle = COL.ink;
+      x.font = '12px ui-monospace,monospace';
+      x.textAlign = 'center';
+      x.fillText('|' + i.toString(2).padStart(curN, '0') + '⟩', cx, h - padB + 16);
+      // Probability value
+      x.fillStyle = prob > 0.001 ? COL.am : COL.mut;
+      x.font = '11px ui-monospace,monospace';
+      x.fillText((prob*100).toFixed(1) + '%', cx, h - padB + 32);
+      // Phase value
+      x.fillStyle = mag > 0.005 ? COL.cy : COL.mut;
+      x.font = '10px ui-monospace,monospace';
+      const phLabel = mag > 0.005 ? ((phase * 180/PI).toFixed(0) + '°') : '—';
+      x.fillText(phLabel, cx, h - padB + 46);
+    }
+
+    // Axes
+    x.strokeStyle = COL.line;
+    x.lineWidth = 1.5;
+    x.beginPath();
+    x.moveTo(padL, padT);
+    x.lineTo(padL, h - padB);
+    x.lineTo(w - padR, h - padB);
+    x.stroke();
+  }
+
+  function drawMiniBloch(canvas, vec, label, n){
+    const x = setupCanvas(canvas);
+    const w = canvas._w, h = canvas._h;
+    x.clearRect(0,0,w,h);
+
+    if(n < 2){
+      // Disabled state — show a hint that the mini-sphere is meaningful for n ≥ 2.
+      x.fillStyle = COL.mut;
+      x.font = '12px ui-monospace,monospace';
+      x.textAlign = 'center';
+      x.fillText('(needs n ≥ 2)', w/2, h/2);
+      return;
+    }
+
+    const cx = w/2, cy = h/2 - 6;
+    const R = Math.min(w * 0.42, (h - 70) * 0.5);
+
+    // Sphere outline + axes
+    x.strokeStyle = COL.line;
+    x.lineWidth = 1.5;
+    x.beginPath(); x.arc(cx, cy, R, 0, TAU); x.stroke();
+    x.strokeStyle = 'rgba(139,150,184,.30)';
+    x.lineWidth = 1;
+    x.beginPath();
+    x.moveTo(cx - R, cy); x.lineTo(cx + R, cy);
+    x.moveTo(cx, cy - R); x.lineTo(cx, cy + R);
+    x.stroke();
+
+    // Polar labels
+    x.fillStyle = COL.am;
+    x.font = '11px ui-monospace,monospace';
+    x.textAlign = 'center';
+    x.fillText('|0⟩', cx, cy - R - 6);
+    x.fillStyle = COL.pk;
+    x.fillText('|1⟩', cx, cy + R + 14);
+    x.fillStyle = COL.mut;
+    x.font = '10px ui-monospace,monospace';
+    x.textAlign = 'left';
+    x.fillText('+x', cx + R + 4, cy + 3);
+    x.textAlign = 'right';
+    x.fillText('−x', cx - R - 4, cy + 3);
+
+    // Arrow: project (x, z) into the canvas plane
+    const mag = Math.hypot(vec.x, vec.y, vec.z);
+    if(mag > 0.005){
+      const ax = cx + vec.x * R;
+      const ay = cy - vec.z * R;
+      x.strokeStyle = COL.cy;
+      x.lineWidth = 2.5;
+      x.beginPath(); x.moveTo(cx, cy); x.lineTo(ax, ay); x.stroke();
+      x.fillStyle = COL.cy;
+      x.beginPath(); x.arc(ax, ay, 4, 0, TAU); x.fill();
+    } else {
+      x.fillStyle = COL.mut;
+      x.beginPath(); x.arc(cx, cy, 3, 0, TAU); x.fill();
+    }
+
+    // Title + metrics
+    x.fillStyle = COL.ink;
+    x.font = '12px "JetBrains Mono",monospace';
+    x.textAlign = 'left';
+    x.fillText(label, 12, 18);
+
+    x.fillStyle = COL.mut;
+    x.font = '10.5px "JetBrains Mono",monospace';
+    const purity = (1 + vec.x*vec.x + vec.y*vec.y + vec.z*vec.z) / 2;
+    const pure = mag > 0.99;
+    const maxMixed = mag < 0.05;
+    const lines = [
+      `r = (${vec.x.toFixed(3)}, ${vec.y.toFixed(3)}, ${vec.z.toFixed(3)})`,
+      `|r| = ${mag.toFixed(3)}   purity = ${purity.toFixed(3)}`,
+      pure ? 'pure (separable)' :
+        (maxMixed ? 'maximally mixed — fully entangled' : 'partially mixed — entangled'),
+    ];
+    let ly = h - 10 - 12 * (lines.length - 1);
+    for(const L of lines){
+      x.fillText(L, 10, ly);
+      ly += 12;
+    }
+  }
+
+  /* ---------- UI sync ---------- */
+
+  function buildPolarHTML(state, n){
+    const N = 1 << n;
+    const parts = [];
+    for(let i=0;i<N;i++){
+      const amp = state[i];
+      const mag = Math.sqrt(amp.r*amp.r + amp.i*amp.i);
+      if(mag < 1e-6) continue;
+      const ph = Math.atan2(amp.i, amp.r);
+      const label = '|' + i.toString(2).padStart(n, '0') + '⟩';
+      let phStr;
+      if(Math.abs(ph) < 1e-4) phStr = '';
+      else if(Math.abs(Math.abs(ph) - PI) < 1e-4) phStr = '<span class="hl-cy">·e<sup>iπ</sup></span>';
+      else phStr = '<span class="hl-cy">·e<sup>i(' + (ph/PI).toFixed(3) + 'π)</sup></span>';
+      parts.push(`<span class="hl-am">${mag.toFixed(4)}</span>${phStr}·${label}`);
+    }
+    if(parts.length === 0) return '<span class="c">|ψ⟩ = 0</span>';
+    return '<span class="c">|ψ⟩ =</span>  ' + parts.join('  +  ');
+  }
+
+  function buildCartHTML(state, n){
+    const N = 1 << n;
+    const arr = [];
+    for(let i=0;i<N;i++){
+      arr.push(fmtC(state[i]));
+    }
+    return '<span class="c">Statevector(qc).data</span>  =  [' + arr.join(',  ') + ']';
+  }
+
+  function updateUI(){
+    if(!curState) return;
+    const N = 1 << curN;
+
+    const polarDiv = document.getElementById('psi2Polar');
+    const cartDiv  = document.getElementById('psi2Cart');
+    const probDiv  = document.getElementById('probBars2');
+    const normEl   = document.getElementById('norm2Val');
+    const fidEl    = document.getElementById('fid2Val');
+    const entLabel = document.getElementById('ent2Label');
+
+    polarDiv.innerHTML = buildPolarHTML(curState, curN);
+    cartDiv.innerHTML  = buildCartHTML(curState, curN);
+
+    let total = 0;
+    for(let i=0;i<N;i++) total += curState[i].r*curState[i].r + curState[i].i*curState[i].i;
+
+    probDiv.innerHTML = '';
+    for(let i=0;i<N;i++){
+      const amp = curState[i];
+      const prob = amp.r*amp.r + amp.i*amp.i;
+      const label = '|' + i.toString(2).padStart(curN, '0') + '⟩';
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:10px';
+      row.innerHTML =
+        `<span style="color:var(--amber);min-width:170px;font-size:12px;font-family:'JetBrains Mono',monospace">`+
+        `P(${label}) = <b>${(prob*100).toFixed(2)}%</b></span>`+
+        `<div style="flex:1;height:10px;background:#11183a;border:1px solid var(--line);border-radius:4px;overflow:hidden;min-width:120px">`+
+        `<div style="height:100%;background:linear-gradient(90deg,rgba(255,194,75,.85),var(--amber));width:${(prob*100).toFixed(2)}%;transition:width .12s ease-out"></div>`+
+        `</div>`;
+      probDiv.appendChild(row);
+    }
+
+    const okNorm = Math.abs(total - 1) < 1e-6;
+    normEl.textContent = total.toFixed(4) + (okNorm ? ' ✓' : ' ✗');
+    normEl.style.color = okNorm ? 'var(--green)' : 'var(--pink)';
+
+    const fid = fidelityToBiasedBell(curState, curN);
+    if(fid === null){
+      fidEl.textContent = '—  (n must be 2)';
+      fidEl.style.color = 'var(--muted)';
+    } else {
+      fidEl.textContent = fid.toFixed(4) + (fid >= 0.95 ? ' ✓' : '');
+      fidEl.style.color = fid >= 0.95 ? 'var(--green)' : (fid >= 0.7 ? 'var(--amber)' : 'var(--pink)');
+    }
+
+    drawBars();
+
+    if(curN >= 2){
+      const rho0 = partialTrace(curState, curN, 0);
+      const rho1 = partialTrace(curState, curN, 1);
+      drawMiniBloch(cB0, rhoToBloch(rho0), 'qubit 0 — partial trace', curN);
+      drawMiniBloch(cB1, rhoToBloch(rho1), 'qubit 1 — partial trace', curN);
+      const p0 = purityFromRho(rho0);
+      if(p0 > 0.99){ entLabel.textContent = 'state is separable'; entLabel.style.color = 'var(--green)'; }
+      else if(p0 < 0.55){ entLabel.textContent = 'maximally entangled'; entLabel.style.color = 'var(--pink)'; }
+      else { entLabel.textContent = `partially entangled (purity=${p0.toFixed(3)})`; entLabel.style.color = 'var(--amber)'; }
+    } else {
+      drawMiniBloch(cB0, {x:0,y:0,z:0}, 'qubit 0', 1);
+      drawMiniBloch(cB1, {x:0,y:0,z:0}, 'qubit 1', 1);
+      entLabel.textContent = 'n = 1 — no entanglement possible';
+      entLabel.style.color = 'var(--muted)';
+    }
+  }
+
+  /* ---------- Wire-up ---------- */
+
+  runBtn.onclick = ()=>{
+    try {
+      const { state, n, log } = run(codeEl.value);
+      curState = state;
+      curN = n;
+      const N = 1 << n;
+      let total = 0;
+      for(let i=0;i<N;i++) total += state[i].r*state[i].r + state[i].i*state[i].i;
+      const lines = log.slice();
+      lines.push('');
+      lines.push('Statevector(qc).data:');
+      lines.push('  [' + state.map(fmtC).join(',\n   ') + ']');
+      lines.push('');
+      lines.push('Σ|amp|²  =  ' + total.toFixed(6) + (Math.abs(total - 1) < 1e-6 ? '   ✓ unit norm' : '   ✗ not normalised'));
+      const fid = fidelityToBiasedBell(state, n);
+      if(fid !== null){
+        lines.push('F vs ½|00⟩+√3/2|11⟩  =  ' + fid.toFixed(6) + (fid >= 0.95 ? '   ✓ above 0.95' : ''));
+      }
+      outEl.textContent = lines.join('\n');
+      updateUI();
+    } catch(e){
+      outEl.textContent = '✗ ERROR: ' + e.message;
+    }
+  };
+
+  codeEl.addEventListener('keydown', e=>{
+    if((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); runBtn.click(); }
+  });
+
+  // Preset loaders
+  document.getElementById('rpl2Bell').onclick = ()=>{
+    codeEl.value =
+`# Bell state |Φ+⟩ = (|00⟩ + |11⟩)/√2 — the canonical entangled pair.
+# Both partial-trace arrows will collapse to the centre.
+qc = Circuit(2)
+qc.h(0)
+qc.cx(0, 1)`;
+  };
+  document.getElementById('rpl2Biased').onclick = ()=>{
+    codeEl.value =
+`# Chapter 10 — biased Bell  ½|00⟩ + √3/2|11⟩  with the pre-applied H⊗H included.
+# The 3 gates after H⊗H are the legal solution (all caps satisfied).
+from math import pi
+
+qc = Circuit(2)
+qc.h(0); qc.h(1)        # given (initial_circuit)
+qc.ry( pi/6,  0)         # your gate 1 — merged: undo H + magnitude split
+qc.ry(-pi/2,  1)         # your gate 2 — undo H on q1
+qc.cx( 0,    1)          # your gate 3 — entangle → F = 1.0`;
+  };
+  document.getElementById('rpl2PP').onclick = ()=>{
+    codeEl.value =
+`# |++⟩ — uniform superposition, the "blank slate" of 2-qubit work.
+# Each basis state at 25 %, all phases zero, no entanglement.
+qc = Circuit(2)
+qc.h(0)
+qc.h(1)`;
+  };
+  document.getElementById('rpl2GHZ').onclick = ()=>{
+    codeEl.value =
+`# GHZ — the 3-qubit "all heads or all tails" entanglement.
+# (|000⟩ + |111⟩)/√2 — measuring ONE qubit decides ALL three.
+qc = Circuit(3)
+qc.h(0)
+qc.cx(0, 1)
+qc.cx(0, 2)`;
+  };
+  document.getElementById('rpl2Clr').onclick = ()=>{
+    codeEl.value = `qc = Circuit(2)\n`;
+    outEl.textContent = '';
+  };
+
+  // Auto-run once so the panel isn't blank when the user first scrolls down.
+  // Defer two frames so canvas layout is settled by the time setupCanvas reads it.
+  requestAnimationFrame(()=>requestAnimationFrame(()=>runBtn.click()));
+
+  // Debounced resize: re-render so the canvases stay sharp.
+  let rT2 = null;
+  addEventListener('resize', ()=>{
+    if(!curState) return;
+    clearTimeout(rT2);
+    rT2 = setTimeout(()=>updateUI(), 120);
+  }, {passive:true});
+})();
+
+/* ================= PLAYGROUND — Fullscreen toggle =================
+   Toggles a CSS-driven fullscreen layout on the playground card so the
+   3D Bloch sphere, the polar/cartesian formulas, the α/β complex planes
+   and the Python REPL all stay visible together. Also tries the native
+   Fullscreen API for a true edge-to-edge view, but the CSS layout works
+   either way (and ESC exits both).
+================================================================= */
+(function(){
+  const card  = document.getElementById('playCard');
+  const btn   = document.getElementById('btnPlayFs');
+  const cSph  = document.getElementById('cPlayBloch');
+  const cPln  = document.getElementById('cPlay');
+  if(!card || !btn || !cSph || !cPln) return;
+
+  // Save the canvases' baseline height attributes so we can restore them.
+  const baseSphH = cSph.getAttribute('height') || '380';
+  const basePlnH = cPln.getAttribute('height') || '400';
+
+  function applyFsCanvasSizes(){
+    // Force layout so getBoundingClientRect reflects the new grid.
+    void card.offsetWidth;
+    const sRect = cSph.getBoundingClientRect();
+    const pRect = cPln.getBoundingClientRect();
+    const sH = Math.max(260, Math.floor(sRect.height));
+    const pH = Math.max(200, Math.floor(pRect.height));
+    cSph.setAttribute('height', String(sH));
+    cPln.setAttribute('height', String(pH));
+    dispatchEvent(new Event('resize'));
+  }
+
+  function enter(){
+    if(card.classList.contains('is-fs')) return;
+    card.classList.add('is-fs');
+    document.body.classList.add('has-fs-play');
+    btn.classList.add('in-fs');
+    btn.textContent = '⊠ Exit fullscreen';
+    applyFsCanvasSizes();
+    // Try native Fullscreen API for true edge-to-edge (best effort).
+    if(card.requestFullscreen){
+      card.requestFullscreen().catch(()=>{});
+    } else if(card.webkitRequestFullscreen){
+      card.webkitRequestFullscreen();
+    }
+  }
+
+  function exit(){
+    if(!card.classList.contains('is-fs')) return;
+    card.classList.remove('is-fs');
+    document.body.classList.remove('has-fs-play');
+    btn.classList.remove('in-fs');
+    btn.textContent = '⛶ Fullscreen';
+    cSph.setAttribute('height', baseSphH);
+    cPln.setAttribute('height', basePlnH);
+    // Clear any inline style.height left over from setupCanvas at fs sizes.
+    cSph.style.height = baseSphH + 'px';
+    cPln.style.height = basePlnH + 'px';
+    if(document.fullscreenElement){
+      document.exitFullscreen().catch(()=>{});
+    } else if(document.webkitFullscreenElement){
+      document.webkitExitFullscreen && document.webkitExitFullscreen();
+    }
+    dispatchEvent(new Event('resize'));
+  }
+
+  btn.onclick = ()=>{
+    if(card.classList.contains('is-fs')) exit(); else enter();
+  };
+
+  // Esc exits even outside the Fullscreen API
+  addEventListener('keydown', e=>{
+    if(e.key==='Escape' && card.classList.contains('is-fs')) exit();
+  });
+
+  // If the user leaves native fullscreen via browser UI, sync our CSS state.
+  document.addEventListener('fullscreenchange', ()=>{
+    if(!document.fullscreenElement && card.classList.contains('is-fs')){
+      // Browser exited fs (e.g. ESC). Drop our overlay too.
+      exit();
+    }
+  });
+  document.addEventListener('webkitfullscreenchange', ()=>{
+    if(!document.webkitFullscreenElement && card.classList.contains('is-fs')){ exit(); }
+  });
+
+  // Keep canvases sharp on window resize while in fullscreen.
+  let rT=null;
+  addEventListener('resize', ()=>{
+    if(!card.classList.contains('is-fs')) return;
+    clearTimeout(rT);
+    rT=setTimeout(()=>{
+      // Reset the attribute (so setupCanvas reads a fresh height next dispatch),
+      // re-measure, and dispatch one more resize.
+      const sRect = cSph.getBoundingClientRect();
+      const pRect = cPln.getBoundingClientRect();
+      const sH = Math.max(260, Math.floor(sRect.height));
+      const pH = Math.max(200, Math.floor(pRect.height));
+      if(String(sH)!==cSph.getAttribute('height') || String(pH)!==cPln.getAttribute('height')){
+        cSph.setAttribute('height', String(sH));
+        cPln.setAttribute('height', String(pH));
+        dispatchEvent(new Event('resize'));
+      }
+    }, 80);
+  });
+})();
+
+/* ================= PLAYGROUND II — Fullscreen toggle =================
+   Same pattern as the single-qubit playground: a CSS-driven fullscreen
+   grid covers the viewport, the bar chart + mini Bloch canvases get
+   resolution-matched to their new cell sizes, and the multi-qubit IIFE
+   listens for the dispatched resize event to redraw at the fresh DPR.
+================================================================= */
+(function(){
+  const card   = document.getElementById('play2Card');
+  const btn    = document.getElementById('btnPlay2Fs');
+  const cBars  = document.getElementById('cPlay2Bars');
+  const cB0    = document.getElementById('cPlay2Bloch0');
+  const cB1    = document.getElementById('cPlay2Bloch1');
+  if(!card || !btn || !cBars || !cB0 || !cB1) return;
+
+  const baseBarsH = cBars.getAttribute('height') || '320';
+  const baseB0H   = cB0.getAttribute('height')   || '240';
+  const baseB1H   = cB1.getAttribute('height')   || '240';
+
+  function applyFsCanvasSizes(){
+    void card.offsetWidth;
+    const barsRect = cBars.getBoundingClientRect();
+    const b0Rect   = cB0.getBoundingClientRect();
+    const b1Rect   = cB1.getBoundingClientRect();
+    cBars.setAttribute('height', String(Math.max(200, Math.floor(barsRect.height))));
+    cB0.setAttribute('height',   String(Math.max(150, Math.floor(b0Rect.height))));
+    cB1.setAttribute('height',   String(Math.max(150, Math.floor(b1Rect.height))));
+    dispatchEvent(new Event('resize'));
+  }
+
+  function enter(){
+    if(card.classList.contains('is-fs')) return;
+    card.classList.add('is-fs');
+    document.body.classList.add('has-fs-play2');
+    btn.classList.add('in-fs');
+    btn.textContent = '⊠ Exit fullscreen';
+    applyFsCanvasSizes();
+    if(card.requestFullscreen){
+      card.requestFullscreen().catch(()=>{});
+    } else if(card.webkitRequestFullscreen){
+      card.webkitRequestFullscreen();
+    }
+  }
+
+  function exit(){
+    if(!card.classList.contains('is-fs')) return;
+    card.classList.remove('is-fs');
+    document.body.classList.remove('has-fs-play2');
+    btn.classList.remove('in-fs');
+    btn.textContent = '⛶ Fullscreen';
+    cBars.setAttribute('height', baseBarsH);
+    cB0.setAttribute('height', baseB0H);
+    cB1.setAttribute('height', baseB1H);
+    cBars.style.height = baseBarsH + 'px';
+    cB0.style.height   = baseB0H + 'px';
+    cB1.style.height   = baseB1H + 'px';
+    if(document.fullscreenElement){
+      document.exitFullscreen().catch(()=>{});
+    } else if(document.webkitFullscreenElement){
+      document.webkitExitFullscreen && document.webkitExitFullscreen();
+    }
+    dispatchEvent(new Event('resize'));
+  }
+
+  btn.onclick = ()=>{
+    if(card.classList.contains('is-fs')) exit(); else enter();
+  };
+
+  addEventListener('keydown', e=>{
+    if(e.key==='Escape' && card.classList.contains('is-fs')) exit();
+  });
+
+  document.addEventListener('fullscreenchange', ()=>{
+    if(!document.fullscreenElement && card.classList.contains('is-fs')) exit();
+  });
+  document.addEventListener('webkitfullscreenchange', ()=>{
+    if(!document.webkitFullscreenElement && card.classList.contains('is-fs')) exit();
+  });
+
+  // Debounced resize while fullscreen: refit canvases to new cell heights.
+  let rT2 = null;
+  addEventListener('resize', ()=>{
+    if(!card.classList.contains('is-fs')) return;
+    clearTimeout(rT2);
+    rT2 = setTimeout(()=>{
+      const barsRect = cBars.getBoundingClientRect();
+      const b0Rect   = cB0.getBoundingClientRect();
+      const b1Rect   = cB1.getBoundingClientRect();
+      const barsH = Math.max(200, Math.floor(barsRect.height));
+      const b0H   = Math.max(150, Math.floor(b0Rect.height));
+      const b1H   = Math.max(150, Math.floor(b1Rect.height));
+      let changed = false;
+      if(String(barsH) !== cBars.getAttribute('height')){ cBars.setAttribute('height', String(barsH)); changed = true; }
+      if(String(b0H)   !== cB0.getAttribute('height')){   cB0.setAttribute('height',   String(b0H));   changed = true; }
+      if(String(b1H)   !== cB1.getAttribute('height')){   cB1.setAttribute('height',   String(b1H));   changed = true; }
+      if(changed) dispatchEvent(new Event('resize'));
+    }, 80);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cours — accueil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#faf4e9;--card:#fffdf8;--card2:#fbf6ec;--ink:#3b342c;--ink2:#5b5045;
+    --muted:#9a8d7b;--line:#e6dac4;--coral:#e07a5f;--mustard:#e3a02b;--sage:#5a9e7a;--plum:#9a6a9e;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:'Nunito',system-ui,sans-serif;
+    line-height:1.7;-webkit-font-smoothing:antialiased;min-height:100vh}
+  body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:radial-gradient(900px 600px at 85% -8%,rgba(224,122,95,.10),transparent 60%),
+      radial-gradient(800px 700px at -5% 25%,rgba(90,158,122,.08),transparent 55%),var(--paper);}
+  body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(160,140,110,.07) 1px,transparent 1px);background-size:100% 32px;}
+  .wrap{max-width:920px;margin:0 auto;padding:70px 24px 90px}
+  .kicker{font-family:'Caveat',cursive;font-size:26px;color:var(--coral);transform:rotate(-2deg)}
+  h1{font-family:'Fraunces',serif;font-size:clamp(40px,7vw,68px);font-weight:600;
+    letter-spacing:-.01em;margin:6px 0 10px}
+  h1 .grad{color:var(--coral);position:relative}
+  h1 .grad::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:11px;
+    background:rgba(227,160,43,.40);z-index:-1;transform:rotate(-1deg);border-radius:8px}
+  .lead{color:var(--ink2);font-size:18px;max-width:620px;margin-bottom:44px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+  a.course{display:block;background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:26px;text-decoration:none;color:inherit;position:relative;
+    box-shadow:0 18px 40px -24px rgba(120,90,50,.45);transition:.18s}
+  a.course:hover{transform:translateY(-4px) rotate(-.5deg);box-shadow:0 26px 50px -22px rgba(120,90,50,.5)}
+  a.course::before{content:"";position:absolute;top:-11px;left:34px;width:80px;height:22px;
+    background:rgba(227,160,43,.28);border:1px solid rgba(227,160,43,.30);transform:rotate(-3deg);border-radius:2px}
+  a.course .tag{font-family:'Caveat',cursive;font-size:20px;color:var(--coral)}
+  a.course.q .tag{color:var(--plum)}
+  a.course h2{font-family:'Fraunces',serif;font-size:25px;font-weight:600;margin:2px 0 8px}
+  a.course p{color:var(--ink2);font-size:15px}
+  a.course .go{display:inline-block;margin-top:14px;font-weight:700;color:var(--coral)}
+  a.course.q .go{color:var(--plum)}
+  .chips{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+  .chips span{font-size:12px;font-weight:600;background:var(--card2);border:1px solid var(--line);
+    color:var(--ink2);padding:3px 10px;border-radius:999px}
+  footer{margin-top:54px;color:var(--muted);font-family:'Caveat',cursive;font-size:19px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="kicker">le coin des cours</div>
+    <h1>Apprendre, <span class="grad">en s'amusant</span></h1>
+    <p class="lead">Des cours interactifs — on règle, on lance, on observe. Choisis ton sujet.</p>
+
+    <div class="grid">
+      <a class="course" href="math/probabilites-terminale-cahier.html">
+        <div class="tag">Maths · Terminale</div>
+        <h2>Probabilités — le cahier</h2>
+        <p>Tout le chapitre du Bac : conditionnelles, arbres, indépendance, espérance, loi
+          binomiale. Version chaleureuse, avec exercices type Bac corrigés.</p>
+        <div class="chips"><span>arbres</span><span>Bayes</span><span>binomiale</span><span>exos corrigés</span></div>
+        <span class="go">Ouvrir le cours →</span>
+      </a>
+
+      <a class="course" href="math/probabilites-terminale.html">
+        <div class="tag">Maths · Terminale</div>
+        <h2>Probabilités — version sombre</h2>
+        <p>Le même chapitre, habillage « tableau de bord » sombre et néon. Mêmes animations
+          interactives, autre ambiance.</p>
+        <div class="chips"><span>thème sombre</span><span>interactif</span></div>
+        <span class="go">Ouvrir le cours →</span>
+      </a>
+
+      <a class="course q" href="quantum-masterclass.html">
+        <div class="tag">Informatique quantique</div>
+        <h2>Quantum computing — débutant</h2>
+        <p>Du qubit à l'intrication, sphère de Bloch, portes, mesure. Dix chapitres, chacun
+          avec une chose à faire tourner et mesurer.</p>
+        <div class="chips"><span>qubit</span><span>Bloch</span><span>circuits</span></div>
+        <span class="go">Ouvrir le cours →</span>
+      </a>
+    </div>
+
+    <footer>Servi par GitHub Pages.</footer>
+  </div>
+</body>
+</html>
