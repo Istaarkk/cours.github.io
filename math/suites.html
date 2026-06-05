@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suites & limites — Terminale · le cahier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&family=Caveat:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf4e9; --paper2:#f3ead8; --card:#fffdf8; --card2:#fbf6ec;
+    --ink:#3b342c; --ink2:#5b5045; --muted:#9a8d7b; --line:#e6dac4;
+    --coral:#e07a5f; --mustard:#e3a02b; --sage:#5a9e7a; --teal:#2f9c8f;
+    --plum:#9a6a9e; --blue:#6d92c4; --rose:#d96c7a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);
+    font-family:'Nunito',system-ui,sans-serif;line-height:1.75;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(900px 600px at 85% -8%,rgba(224,122,95,.10),transparent 60%),
+      radial-gradient(800px 700px at -5% 25%,rgba(90,158,122,.08),transparent 55%),
+      var(--paper);}
+  body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(160,140,110,.07) 1px,transparent 1px);
+    background-size:100% 32px;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;line-height:1.12;font-weight:600}
+  .hand{font-family:'Caveat',cursive}
+  code,.mono{font-family:'JetBrains Mono',monospace;font-size:.92em;
+    background:rgba(160,140,110,.14);padding:1px 6px;border-radius:5px;color:var(--ink2)}
+  #prog{position:fixed;top:0;left:0;height:4px;width:0;
+    background:linear-gradient(90deg,var(--coral),var(--mustard));z-index:50;border-radius:0 4px 4px 0}
+  header.hero{min-height:96vh;display:flex;flex-direction:column;
+    justify-content:center;position:relative;padding:80px 0}
+  #heroCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;opacity:.85}
+  .kicker{font-family:'Caveat',cursive;font-size:26px;color:var(--coral);
+    transform:rotate(-2deg);margin-bottom:8px}
+  header.hero h1{font-size:clamp(44px,8vw,88px);font-weight:600;color:var(--ink);letter-spacing:-.01em}
+  header.hero h1 .grad{color:var(--coral);position:relative}
+  header.hero h1 .grad::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:12px;
+    background:rgba(227,160,43,.40);z-index:-1;transform:rotate(-1deg);border-radius:8px}
+  header.hero p.lead{font-size:clamp(17px,2vw,21px);color:var(--ink2);max-width:680px;margin-top:26px}
+  .scrolldown{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+    color:var(--muted);font-family:'Caveat',cursive;font-size:20px;
+    display:flex;flex-direction:column;align-items:center;gap:6px}
+  .scrolldown span{width:2px;height:42px;border-radius:2px;
+    background:linear-gradient(var(--coral),transparent);animation:drop 1.8s infinite}
+  @keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}
+    55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  section{padding:74px 0;position:relative}
+  .step{font-family:'Caveat',cursive;font-size:24px;color:var(--coral);
+    transform:rotate(-1.5deg);display:inline-block;margin-bottom:6px}
+  section h2{font-size:clamp(28px,4.4vw,46px);margin-bottom:10px;color:var(--ink)}
+  section .sub{color:var(--ink2);font-size:17.5px;max-width:740px;margin-bottom:30px}
+  p.body{color:var(--ink2);max-width:760px;margin:16px 0;font-size:16.5px}
+  p.body b{color:var(--ink);font-weight:700}
+  ul.body{color:var(--ink2);max-width:760px;margin:14px 0 14px 6px;font-size:16.5px;list-style:none}
+  ul.body li{margin:9px 0;padding-left:24px;position:relative}
+  ul.body li::before{content:"—";position:absolute;left:0;top:0;color:var(--coral);font-weight:700}
+  ul.body b{color:var(--ink);font-weight:700}
+  .hl-cy{color:var(--teal);font-weight:700}.hl-vi{color:var(--plum);font-weight:700}
+  .hl-am{color:var(--mustard);font-weight:700}.hl-pk{color:var(--coral);font-weight:700}
+  .hl-gr{color:var(--sage);font-weight:700}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:26px;box-shadow:0 18px 40px -24px rgba(120,90,50,.45),0 2px 0 rgba(0,0,0,.02);
+    position:relative}
+  .card::before{content:"";position:absolute;top:-11px;left:38px;width:88px;height:24px;
+    background:rgba(227,160,43,.28);border:1px solid rgba(227,160,43,.30);
+    transform:rotate(-3deg);border-radius:2px}
+  .card + .card{margin-top:26px}
+  canvas.viz{display:block;width:100%;border-radius:12px;
+    background:#fdf8ee;border:1px solid var(--line)}
+  .controls{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:20px;align-items:flex-end}
+  .ctrl{display:flex;flex-direction:column;gap:7px;min-width:170px;flex:1}
+  .ctrl label{font-size:13px;color:var(--ink2);font-weight:600;
+    display:flex;justify-content:space-between;align-items:baseline}
+  .ctrl label .val{color:var(--coral);font-family:'JetBrains Mono',monospace;font-size:12px}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;
+    background:var(--paper2);outline:none;width:100%;border:1px solid var(--line)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;
+    border-radius:50%;background:var(--coral);cursor:pointer;border:3px solid var(--card);
+    box-shadow:0 2px 6px rgba(224,122,95,.5)}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border:3px solid var(--card);
+    border-radius:50%;background:var(--coral);cursor:pointer}
+  button.btn{font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;
+    color:#fff;background:var(--coral);border:0;padding:10px 18px;border-radius:999px;
+    cursor:pointer;transition:.14s;box-shadow:0 6px 14px -6px var(--coral)}
+  button.btn:hover{transform:translateY(-2px) rotate(-1deg)}
+  button.btn.ghost{background:transparent;color:var(--ink2);border:2px solid var(--line);box-shadow:none}
+  button.btn.ghost:hover{border-color:var(--coral);color:var(--coral)}
+  .reveal{opacity:0;transform:translateY(30px) rotate(-.4deg);
+    transition:.85s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+  .legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}
+  .legend div{background:var(--card2);border:1px solid var(--line);border-left:4px solid var(--sage);
+    padding:12px 15px;border-radius:10px;font-size:14.5px;color:var(--ink2)}
+  .legend div b{color:var(--ink)}
+  .formula{background:var(--card2);border:1px dashed var(--line);border-radius:14px;
+    padding:20px 22px;text-align:center;margin:18px 0;overflow-x:auto;
+    font-family:'JetBrains Mono',monospace;font-size:clamp(14px,2.1vw,19px);color:var(--ink)}
+  .formula .v{color:var(--plum)}.formula .c{color:var(--teal)}
+  .formula .a{color:var(--mustard)}.formula .p{color:var(--coral)}.formula .g{color:var(--sage)}
+  .formula .mut{color:var(--muted)}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;line-height:1.05}
+  .frac .num{border-bottom:1.5px solid var(--ink2);padding:0 6px}
+  .frac .den{padding:0 6px}
+  .exbox{margin-top:18px;padding:16px 18px;border-radius:12px;
+    background:rgba(154,106,158,.10);border:1px solid rgba(154,106,158,.25)}
+  .exbox h4{font-family:'Caveat',cursive;font-size:21px;color:var(--plum);margin-bottom:4px;transform:rotate(-1deg)}
+  .exbox p{color:var(--ink2);font-size:15px;margin:4px 0}
+  .exbox.gr{background:rgba(90,158,122,.10);border-color:rgba(90,158,122,.28)}
+  .exbox.gr h4{color:var(--sage)}
+  .exbox.am{background:rgba(227,160,43,.12);border-color:rgba(227,160,43,.30)}
+  .exbox.am h4{color:var(--mustard)}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--card2);
+    border:1px solid var(--line);padding:6px 13px;border-radius:999px;font-size:13px;
+    font-family:'JetBrains Mono',monospace;color:var(--ink2);margin:6px 6px 0 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .stat{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+  .stat .box{flex:1;min-width:120px;background:var(--card2);border:1px solid var(--line);
+    border-radius:12px;padding:13px 15px}
+  .stat .box .lbl{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--muted)}
+  .stat .box .num{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--teal);margin-top:2px}
+  .exo{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;
+    box-shadow:0 18px 40px -24px rgba(120,90,50,.4);margin-top:22px}
+  .exo .diff{font-family:'Caveat',cursive;font-size:19px;color:var(--mustard);margin-bottom:0}
+  .exo h3{font-family:'Fraunces',serif;font-size:22px;color:var(--ink);margin:2px 0 10px}
+  .exo .enonce{color:var(--ink2);font-size:16px}
+  .exo .enonce ol{margin:10px 0 0 20px}
+  .exo .enonce li{margin:6px 0}
+  details.corr{margin-top:16px;border:1px solid var(--line);border-radius:12px;
+    background:var(--card2);overflow:hidden}
+  details.corr>summary{cursor:pointer;list-style:none;padding:12px 16px;font-weight:700;
+    color:var(--coral);font-size:15px;display:flex;align-items:center;gap:9px;user-select:none}
+  details.corr>summary::-webkit-details-marker{display:none}
+  details.corr>summary::before{content:"▸";transition:.2s;color:var(--coral)}
+  details.corr[open]>summary::before{transform:rotate(90deg)}
+  details.corr .cbody{padding:6px 18px 16px;color:var(--ink2);font-size:15.5px;border-top:1px solid var(--line)}
+  details.corr .cbody p{margin:8px 0}
+  details.corr .cbody .calc{font-family:'JetBrains Mono',monospace;font-size:13.5px;
+    background:var(--paper2);border:1px solid var(--line);border-radius:8px;
+    padding:8px 12px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+  details.corr .cbody .res{background:rgba(90,158,122,.15);border-left:4px solid var(--sage);
+    padding:9px 13px;border-radius:8px;margin:10px 0;color:var(--ink);font-weight:600}
+  .note{font-family:'Caveat',cursive;font-size:21px;color:var(--coral);
+    transform:rotate(-1deg);margin:14px 0;display:block}
+  .note::before{content:"➜ ";}
+  .topnav{position:fixed;top:14px;left:16px;z-index:60;font-family:'Caveat',cursive;
+    font-size:19px;color:var(--coral);text-decoration:none;background:var(--card);
+    border:1px solid var(--line);padding:4px 14px;border-radius:999px;box-shadow:0 4px 10px -6px rgba(0,0,0,.3)}
+  footer{padding:56px 0 90px;text-align:center;color:var(--ink2);font-size:15px;
+    border-top:2px dashed var(--line);margin-top:30px}
+  footer .big{font-family:'Fraunces',serif;font-size:26px;color:var(--ink);margin-bottom:8px}
+  footer .tag{font-family:'Caveat',cursive;font-size:20px;color:var(--coral)}
+  ::selection{background:rgba(227,160,43,.35)}
+  nav.toc{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:40;
+    display:flex;flex-direction:column;gap:10px}
+  nav.toc a{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);
+    background:var(--card);transition:.2s;position:relative}
+  nav.toc a:hover,nav.toc a.act{background:var(--coral);border-color:var(--coral)}
+  nav.toc a span{position:absolute;right:22px;top:50%;transform:translateY(-50%);
+    white-space:nowrap;font-family:'Caveat',cursive;font-size:17px;color:var(--ink2);
+    opacity:0;pointer-events:none;transition:.2s;background:var(--card);padding:2px 10px;
+    border-radius:8px;border:1px solid var(--line);box-shadow:0 4px 10px -6px rgba(0,0,0,.3)}
+  nav.toc a:hover span{opacity:1}
+  @media(max-width:900px){nav.toc{display:none}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<a class="topnav" href="../index.html">← tous les cours</a>
+<nav class="toc" id="toc"></nav>
+
+<header class="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="wrap">
+    <div class="kicker">Maths · Terminale · Analyse</div>
+    <h1>Suites<br>& <span class="grad">limites</span></h1>
+    <p class="lead">Une suite, c'est une liste de nombres numérotés. Tout le chapitre :
+      variations, suites arithmétiques et géométriques, la notion de limite, le
+      raisonnement par récurrence, et le diagramme en toile d'araignée pour les suites
+      définies par récurrence. Avec des graphiques que tu peux régler et observer.</p>
+  </div>
+  <div class="scrolldown"><span></span>fais défiler</div>
+</header>
+
+<!-- 1 -->
+<section id="s1">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 1</div>
+    <h2>Une suite, c'est une liste numérotée</h2>
+    <p class="sub">À chaque entier n on associe un nombre uₙ. On peut tracer ces nombres
+      comme des points isolés (un point par rang). Choisis une suite et observe sa forme
+      et son sens de variation.</p>
+    <div class="card">
+      <canvas id="cSuite" class="viz" height="340"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Choisis la suite <span class="val" id="suChoix">1</span></label>
+          <input id="suSel" type="range" min="1" max="4" value="1"></div>
+      </div>
+      <div class="formula" id="suForm">…</div>
+      <div class="stat">
+        <div class="box"><div class="lbl">u₀</div><div class="num" id="suU0">—</div></div>
+        <div class="box"><div class="lbl">u₁</div><div class="num" id="suU1">—</div></div>
+        <div class="box"><div class="lbl">u₂</div><div class="num" id="suU2">—</div></div>
+        <div class="box"><div class="lbl">Variation</div><div class="num" id="suVar">—</div></div>
+      </div>
+      <p class="body">Une suite est <b>croissante</b> si uₙ₊₁ ≥ uₙ pour tout n,
+        <b>décroissante</b> si uₙ₊₁ ≤ uₙ. Pour le prouver, on étudie le signe de la
+        différence <span class="hl-pk">uₙ₊₁ − uₙ</span>, ou (si tous les termes sont
+        positifs) on compare le rapport uₙ₊₁ / uₙ à 1.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section id="s2">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 2</div>
+    <h2>Arithmétique ou géométrique ?</h2>
+    <p class="sub">Deux modèles à reconnaître absolument. <b>Arithmétique</b> : on
+      <b>ajoute</b> toujours la même raison r. <b>Géométrique</b> : on <b>multiplie</b>
+      toujours par la même raison q. Bascule entre les deux et règle u₀ et la raison.</p>
+    <div class="card">
+      <canvas id="cAG" class="viz" height="340"></canvas>
+      <div class="controls">
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <button class="btn" id="agMode">Mode : arithmétique</button>
+        </div>
+        <div class="ctrl"><label>u₀ <span class="val" id="agU0v">1.0</span></label>
+          <input id="agU0" type="range" min="-30" max="30" value="10"></div>
+        <div class="ctrl"><label>raison <span class="val" id="agRv">0.5</span></label>
+          <input id="agR" type="range" min="-150" max="150" value="50"></div>
+      </div>
+      <div class="formula" id="agForm">…</div>
+      <div class="grid2">
+        <div class="exbox">
+          <h4>Arithmétique</h4>
+          <p>Récurrence : uₙ₊₁ = uₙ + r &nbsp;·&nbsp; Explicite : uₙ = u₀ + n·r</p>
+          <p>Croissante si r &gt; 0, décroissante si r &lt; 0. Les points sont
+            <b>alignés</b> (croissance linéaire).</p>
+        </div>
+        <div class="exbox am">
+          <h4>Géométrique</h4>
+          <p>Récurrence : uₙ₊₁ = q·uₙ &nbsp;·&nbsp; Explicite : uₙ = u₀·qⁿ</p>
+          <p>Croissance (ou décroissance) <b>exponentielle</b>. Le comportement à l'infini
+            dépend entièrement de q (chapitre 4).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section id="s3">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 3</div>
+    <h2>La limite : se rapprocher aussi près qu'on veut</h2>
+    <p class="sub">Dire que uₙ tend vers ℓ, c'est dire : pour toute bande aussi fine
+      qu'on veut autour de ℓ, <b>tous les termes finissent par y entrer et y rester</b>.
+      Resserre la bande (ε) et regarde à partir de quel rang la suite y reste.</p>
+    <div class="card">
+      <div class="formula">uₙ = <span class="frac"><span class="num">3n + 1</span><span class="den">n + 2</span></span>
+        &nbsp;<span class="mut">→</span>&nbsp; <span class="c">ℓ = 3</span>
+        &nbsp;&nbsp;<span class="mut">car</span>&nbsp; |uₙ − 3| =
+        <span class="frac"><span class="num">5</span><span class="den">n + 2</span></span> → 0</div>
+      <canvas id="cLim" class="viz" height="340"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>largeur de la bande ε <span class="val" id="liEpsv">0.50</span></label>
+          <input id="liEps" type="range" min="5" max="120" value="50"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">limite ℓ</div><div class="num hl-cy">3</div></div>
+        <div class="box"><div class="lbl">bande [3−ε ; 3+ε]</div><div class="num" id="liBand">—</div></div>
+        <div class="box"><div class="lbl">rang N (entrée définitive)</div><div class="num hl-pk" id="liN">—</div></div>
+      </div>
+      <p class="body">Aussi petite que soit la bande, il existe toujours un rang
+        <span class="hl-pk">N</span> au-delà duquel tous les points sont dedans. C'est ça,
+        « converger vers ℓ ». Une suite qui ne se stabilise vers aucun nombre fini est dite
+        <b>divergente</b> (elle peut tendre vers ±∞, ou osciller).</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="s4">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 4</div>
+    <h2>Le théorème-clé : la limite de qⁿ</h2>
+    <p class="sub">Pour les suites géométriques, tout se joue sur la raison q. Fais glisser
+      q et regarde le comportement de qⁿ basculer.</p>
+    <div class="card">
+      <canvas id="cQn" class="viz" height="340"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>raison q <span class="val" id="qnQv">0.80</span></label>
+          <input id="qnQ" type="range" min="-150" max="200" value="80"></div>
+      </div>
+      <div class="formula" id="qnVerdict">…</div>
+      <div class="legend">
+        <div><b>−1 &lt; q &lt; 1</b> → qⁿ tend vers <b>0</b>.</div>
+        <div><b>q = 1</b> → suite constante égale à 1.</div>
+        <div><b>q &gt; 1</b> → qⁿ tend vers <b>+∞</b>.</div>
+        <div><b>q ≤ −1</b> → qⁿ <b>n'a pas de limite</b> (les signes alternent).</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section id="s5">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 5</div>
+    <h2>Le raisonnement par récurrence</h2>
+    <p class="sub">Pour prouver qu'une propriété P(n) est vraie pour <b>tout</b> n, on
+      n'a que deux choses à faire — exactement comme une rangée de dominos.</p>
+    <div class="card">
+      <canvas id="cDomino" class="viz" height="260"></canvas>
+      <div class="controls">
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <button class="btn" id="domGo">Lancer la chute</button>
+          <button class="btn ghost" id="domReset">Relever</button>
+        </div>
+      </div>
+      <div class="legend">
+        <div><b>① Initialisation</b> — on vérifie que P(0) est vraie (on pousse le 1ᵉʳ domino).</div>
+        <div><b>② Hérédité</b> — on montre que si P(n) est vraie, alors P(n+1) l'est aussi (chaque domino fait tomber le suivant).</div>
+        <div><b>③ Conclusion</b> — par récurrence, P(n) est vraie pour tout n (toute la rangée tombe).</div>
+      </div>
+      <div class="exbox gr">
+        <h4>La rédaction type</h4>
+        <p>« <b>Initialisation</b> : pour n = 0, … donc P(0) est vraie.
+          <b>Hérédité</b> : supposons P(n) vraie pour un certain n (hypothèse de
+          récurrence). Montrons P(n+1)… <b>Conclusion</b> : d'après le principe de
+          récurrence, P(n) est vraie pour tout entier n. »</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section id="s6">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 6</div>
+    <h2>Suites définies par récurrence : la toile d'araignée</h2>
+    <p class="sub">Quand uₙ₊₁ = f(uₙ), on construit les termes « en escalier » entre la
+      courbe y = f(x) et la droite y = x. Le point où elles se croisent est le
+      <b>point fixe</b> ℓ : si la suite converge, c'est vers lui. Ici f est affine :
+      f(x) = a·x + b.</p>
+    <div class="card">
+      <canvas id="cWeb" class="viz" height="380"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>a (pente) <span class="val" id="wAv">0.50</span></label>
+          <input id="wA" type="range" min="-95" max="95" value="50"></div>
+        <div class="ctrl"><label>b <span class="val" id="wBv">2.0</span></label>
+          <input id="wB" type="range" min="0" max="500" value="200"></div>
+        <div class="ctrl"><label>premier terme u₀ <span class="val" id="wU0v">0.5</span></label>
+          <input id="wU0" type="range" min="0" max="800" value="50"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">point fixe ℓ = b/(1−a)</div><div class="num hl-cy" id="wFix">—</div></div>
+        <div class="box"><div class="lbl">|a| &lt; 1 ?</div><div class="num" id="wConv">—</div></div>
+        <div class="box"><div class="lbl">u₅</div><div class="num" id="wU5">—</div></div>
+      </div>
+      <p class="body">Tant que <span class="hl-cy">|a| &lt; 1</span>, l'escalier vient se
+        coincer dans le coin : la suite converge vers ℓ. Si |a| &gt; 1, l'escalier
+        s'écarte et la suite diverge. C'est le même principe que les suites
+        arithmético-géométriques, où l'on pose vₙ = uₙ − ℓ pour se ramener à une suite
+        géométrique de raison a.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EXOS -->
+<section id="sExos">
+  <div class="wrap reveal">
+    <div class="step">À toi de jouer</div>
+    <h2>Exercices type Bac</h2>
+    <p class="sub">Cherche d'abord au brouillon, puis déplie la correction.</p>
+
+    <div class="exo">
+      <div class="diff">★ ☆ ☆ — variation</div>
+      <h3>1. Sens de variation</h3>
+      <div class="enonce">On considère la suite définie pour n ≥ 0 par uₙ = n² − 5n.
+        Étudie son sens de variation.</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>On calcule la différence uₙ₊₁ − uₙ :</p>
+          <div class="calc">uₙ₊₁ − uₙ = (n+1)² − 5(n+1) − (n² − 5n)
+          = n² + 2n + 1 − 5n − 5 − n² + 5n = 2n − 4</div>
+          <p>Le signe de 2n − 4 : négatif pour n &lt; 2, nul en n = 2, positif pour n &gt; 2.</p>
+          <div class="res">La suite est décroissante de u₀ à u₂, puis croissante à partir de n = 2.
+            Elle n'est donc ni croissante ni décroissante sur ℕ.</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="exo">
+      <div class="diff">★ ★ ☆ — récurrence</div>
+      <h3>2. Démonstration par récurrence</h3>
+      <div class="enonce">Démontre que pour tout entier n ≥ 0 :
+        0 + 1 + 2 + … + n = n(n+1)/2.</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>Soit P(n) : « 0 + 1 + … + n = n(n+1)/2 ».</p>
+          <p><b>Initialisation (n = 0)</b> : le membre de gauche vaut 0, celui de droite
+            0×1/2 = 0. Donc P(0) est vraie.</p>
+          <p><b>Hérédité</b> : supposons P(n) vraie pour un certain n. Alors :</p>
+          <div class="calc">0+1+…+n+(n+1) = n(n+1)/2 + (n+1)
+          = (n+1)·(n/2 + 1) = (n+1)(n+2)/2</div>
+          <p>C'est bien la formule au rang n+1, donc P(n+1) est vraie.</p>
+          <div class="res">Par récurrence, la propriété est vraie pour tout entier n ≥ 0.</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="exo">
+      <div class="diff">★ ★ ☆ — suite géométrique</div>
+      <h3>3. Reconnaître une géométrique</h3>
+      <div class="enonce">Soit (uₙ) définie par u₀ = 5 et uₙ₊₁ = 0,8 uₙ + 1.
+        On pose vₙ = uₙ − 5.
+        <ol>
+          <li>Montre que (vₙ) est géométrique ; précise sa raison et v₀.</li>
+          <li>Exprime uₙ en fonction de n, puis donne la limite de (uₙ).</li>
+        </ol>
+      </div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>Le point fixe vérifie ℓ = 0,8ℓ + 1, soit 0,2ℓ = 1, donc ℓ = 5 — d'où le choix vₙ = uₙ − 5.</p>
+          <p><b>1.</b> vₙ₊₁ = uₙ₊₁ − 5 = 0,8uₙ + 1 − 5 = 0,8uₙ − 4 = 0,8(uₙ − 5) = 0,8 vₙ.</p>
+          <div class="res">(vₙ) est géométrique de raison q = 0,8 et v₀ = u₀ − 5 = 0.</div>
+          <p><b>2.</b> Comme v₀ = 0, on a vₙ = 0 pour tout n, donc uₙ = 5 (suite constante).</p>
+          <div class="res">uₙ = 5 pour tout n, et lim uₙ = 5. (Si v₀ ≠ 0, on aurait uₙ = 5 + v₀·0,8ⁿ → 5, car 0 &lt; 0,8 &lt; 1.)</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="exo">
+      <div class="diff">★ ★ ★ — limite</div>
+      <h3>4. Limite par encadrement</h3>
+      <div class="enonce">Soit uₙ = (sin n)/n pour n ≥ 1. Détermine la limite de (uₙ).</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>Pour tout n, −1 ≤ sin n ≤ 1. En divisant par n &gt; 0 :</p>
+          <div class="calc">−1/n ≤ (sin n)/n ≤ 1/n</div>
+          <p>Or −1/n → 0 et 1/n → 0 quand n → +∞.</p>
+          <div class="res">Par le théorème des gendarmes (encadrement), lim uₙ = 0.</div>
+        </div>
+      </details>
+    </div>
+    <span class="note">Au Bac : pour une limite, cite toujours le théorème utilisé
+      (gendarmes, comparaison, opérations, limite de qⁿ).</span>
+  </div>
+</section>
+
+<!-- RECAP -->
+<section id="sRecap">
+  <div class="wrap reveal">
+    <div class="step">Avant de fermer le cahier</div>
+    <h2>Les réflexes à retenir</h2>
+    <div class="card">
+      <ul class="body">
+        <li><b>Variation</b> — étudie le signe de uₙ₊₁ − uₙ (ou compare uₙ₊₁/uₙ à 1 si termes &gt; 0).</li>
+        <li><b>Arithmétique</b> — uₙ = u₀ + n·r. <b>Géométrique</b> — uₙ = u₀·qⁿ.</li>
+        <li><b>Limite de qⁿ</b> — → 0 si −1 &lt; q &lt; 1 ; → +∞ si q &gt; 1 ; pas de limite si q ≤ −1.</li>
+        <li><b>Récurrence</b> — initialisation, hérédité, conclusion. Toujours les trois.</li>
+        <li><b>Théorème des gendarmes</b> — encadre uₙ entre deux suites de même limite.</li>
+        <li><b>uₙ₊₁ = a·uₙ + b</b> — pose vₙ = uₙ − ℓ (point fixe) pour obtenir une suite géométrique.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="big">Chapitre Suites & limites terminé.</div>
+    <p class="tag">La suite logique : les limites de fonctions.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const TAU=Math.PI*2, PI=Math.PI;
+const COL={cy:'#2f9c8f',vi:'#9a6a9e',am:'#e3a02b',pk:'#e07a5f',gr:'#5a9e7a',
+  mut:'#9a8d7b',line:'#e0d4bd',ink:'#3b342c',bg:'#fdf8ee'};
+function setupCanvas(c){const dpr=Math.min(window.devicePixelRatio||1,2);
+  const r=c.getBoundingClientRect();c.width=r.width*dpr;c.height=(+c.getAttribute('height')||300)*dpr;
+  c.style.height=(+c.getAttribute('height')||300)+'px';
+  const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
+  c._w=r.width;c._h=+(c.getAttribute('height')||300);return x;}
+const prog=document.getElementById('prog');
+addEventListener('scroll',()=>{const s=scrollY/(document.body.scrollHeight-innerHeight);
+  prog.style.width=(s*100)+'%';},{passive:true});
+const ioR=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>ioR.observe(el));
+const tocNames={s1:'Une suite',s2:'Arith. / géo.',s3:'Limite',s4:'Limite de qⁿ',
+  s5:'Récurrence',s6:'Toile d\'araignée',sExos:'Exercices',sRecap:'Récap'};
+const toc=document.getElementById('toc');
+Object.keys(tocNames).forEach(id=>{const a=document.createElement('a');a.href='#'+id;
+  a.innerHTML='<span>'+tocNames[id]+'</span>';a.dataset.t=id;toc.appendChild(a);});
+const tocLinks=[...toc.querySelectorAll('a')];
+const ioToc=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){
+  tocLinks.forEach(l=>l.classList.toggle('act',l.dataset.t===e.target.id));}}),{threshold:.4});
+Object.keys(tocNames).forEach(id=>{const s=document.getElementById(id);if(s)ioToc.observe(s);});
+const animators=[];
+function register(canvas,drawFn){const a={canvas,draw:drawFn,on:false,t:0};animators.push(a);
+  new IntersectionObserver(es=>{a.on=es[0].isIntersecting;},{threshold:.04}).observe(canvas);return a;}
+let last=performance.now();
+(function tick(now){const dt=Math.min((now-last)/1000,.05);last=now;
+  for(const a of animators){if(a.on){a.t+=dt;a.draw(a.t,dt);}}requestAnimationFrame(tick);})(performance.now());
+function hex(c,al){const n=parseInt(c.slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+al+')';}
+function roundRect(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);
+  x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
+
+/* generic frame with axes for n-vs-u plots */
+function frame(x,c,xmin,xmax,ymin,ymax,padL,padB){
+  const W=c._w,H=c._h,x0=padL,x1=W-14,y0=14,y1=H-padB;
+  const sx=X=>x0+(x1-x0)*(X-xmin)/(xmax-xmin);
+  const sy=Y=>y1-(y1-y0)*(Y-ymin)/(ymax-ymin);
+  x.strokeStyle=COL.line;x.lineWidth=1;
+  x.fillStyle=COL.mut;x.font="11px 'JetBrains Mono'";
+  // horizontal gridlines
+  for(let g=0;g<=4;g++){const Y=ymin+(ymax-ymin)*g/4,yy=sy(Y);
+    x.beginPath();x.moveTo(x0,yy);x.lineTo(x1,yy);x.stroke();
+    x.textAlign='right';x.fillText(Y.toFixed(1),x0-5,yy+4);}
+  // axes (x at y=0 if in range)
+  x.strokeStyle=hex(COL.mut,0.6);x.lineWidth=1.4;
+  if(ymin<=0&&ymax>=0){const yz=sy(0);x.beginPath();x.moveTo(x0,yz);x.lineTo(x1,yz);x.stroke();}
+  x.beginPath();x.moveTo(x0,y0);x.lineTo(x0,y1);x.stroke();
+  return {sx,sy,x0,x1,y0,y1};
+}
+
+/* HERO : converging sequence dots */
+(function(){const c=document.getElementById('heroCanvas');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  register(c,(t)=>{const W=c._w,H=c._h;x.clearRect(0,0,W,H);
+    const L=H*0.46,pad=40;
+    x.strokeStyle=hex(COL.coral||'#e07a5f',0.0);
+    x.strokeStyle=hex(COL.mut,0.25);x.setLineDash([6,6]);x.lineWidth=1.4;
+    x.beginPath();x.moveTo(pad,L);x.lineTo(W-pad,L);x.stroke();x.setLineDash([]);
+    const N=26;for(let i=0;i<N;i++){const px=pad+(W-2*pad)*i/(N-1);
+      const amp=70*Math.exp(-i*0.16);const ph=t*1.4 - i*0.5;
+      const py=L - amp*Math.sin(ph)*Math.exp(-i*0.02) - (i<6?0:0);
+      const fade=0.3+0.5*Math.exp(-i*0.05);
+      x.fillStyle=hex(i%2?'#e07a5f':'#e3a02b',fade);
+      x.beginPath();x.arc(px,py,3.4,0,TAU);x.fill();}
+  });})();
+
+/* 1. SUITE plot */
+(function(){const c=document.getElementById('cSuite');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const sel=document.getElementById('suSel'),ch=document.getElementById('suChoix');
+  const form=document.getElementById('suForm');
+  const u0e=document.getElementById('suU0'),u1e=document.getElementById('suU1'),
+        u2e=document.getElementById('suU2'),vare=document.getElementById('suVar');
+  const defs=[
+    {f:n=>0.6*n+1,   t:'uₙ = 0,6 n + 1', y:[0,11]},
+    {f:n=>9-0.7*n,   t:'uₙ = 9 − 0,7 n', y:[-2,10]},
+    {f:n=>2+8/(n+1), t:'uₙ = 2 + 8/(n+1)', y:[0,11]},
+    {f:n=>5+3*Math.pow(-0.7,n), t:'uₙ = 5 + 3·(−0,7)ⁿ', y:[0,9]},
+  ];
+  function cur(){return defs[(+sel.value)-1];}
+  function upd(){const d=cur();ch.textContent=sel.value;form.innerHTML=d.t;
+    const a=d.f(0),b=d.f(1),cc=d.f(2);
+    u0e.textContent=a.toFixed(2);u1e.textContent=b.toFixed(2);u2e.textContent=cc.toFixed(2);
+    let inc=true,dec=true;for(let n=0;n<14;n++){const A=d.f(n),B=d.f(n+1);
+      if(B<A-1e-9)inc=false;if(B>A+1e-9)dec=false;}
+    vare.textContent=inc?'croissante':(dec?'décroissante':'ni l\'un ni l\'autre');}
+  sel.oninput=upd;upd();
+  register(c,()=>{const d=cur();const Nshow=15;
+    const fr=frame(x,c,-0.5,Nshow-0.5,d.y[0],d.y[1],40,28);
+    x.fillStyle=COL.mut;x.font="11px 'JetBrains Mono'";x.textAlign='center';
+    for(let n=0;n<Nshow;n+=2)x.fillText(n,fr.sx(n),fr.y1+16);
+    for(let n=0;n<Nshow;n++){const X=fr.sx(n),Y=fr.sy(d.f(n));
+      x.strokeStyle=hex(COL.cy,0.4);x.lineWidth=1;x.beginPath();x.moveTo(X,fr.sy(d.y[0]));x.lineTo(X,Y);x.stroke();
+      x.fillStyle=COL.pk;x.beginPath();x.arc(X,Y,3.6,0,TAU);x.fill();}
+  });})();
+
+/* 2. ARITH / GEO */
+(function(){const c=document.getElementById('cAG');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const btn=document.getElementById('agMode');
+  const u0R=document.getElementById('agU0'),u0V=document.getElementById('agU0v');
+  const rR=document.getElementById('agR'),rV=document.getElementById('agRv');
+  const form=document.getElementById('agForm');
+  let geo=false;
+  function u0(){return +u0R.value/10;}
+  function raison(){return geo?(0.5+(+rR.value+150)/300*1.5):(+rR.value/100);} // geo:0.5..2 ; arith:-1.5..1.5
+  function term(n){return geo?u0()*Math.pow(raison(),n):u0()+n*raison();}
+  function upd(){btn.textContent='Mode : '+(geo?'géométrique':'arithmétique');
+    u0V.textContent=u0().toFixed(1);
+    rV.textContent=raison().toFixed(2);
+    form.innerHTML=geo?('uₙ = '+u0().toFixed(1)+' × '+raison().toFixed(2)+'<sup>n</sup>')
+      :('uₙ = '+u0().toFixed(1)+(raison()>=0?' + ':' − ')+Math.abs(raison()).toFixed(2)+' n');}
+  btn.onclick=()=>{geo=!geo;upd();};
+  [u0R,rR].forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{const Nshow=13;let lo=0,hi=0;
+    for(let n=0;n<Nshow;n++){const v=term(n);if(v<lo)lo=v;if(v>hi)hi=v;}
+    const pad=(hi-lo)*0.12+0.5;lo-=pad;hi+=pad;
+    const fr=frame(x,c,-0.5,Nshow-0.5,lo,hi,44,28);
+    x.fillStyle=COL.mut;x.font="11px 'JetBrains Mono'";x.textAlign='center';
+    for(let n=0;n<Nshow;n+=2)x.fillText(n,fr.sx(n),fr.y1+16);
+    const col=geo?COL.am:COL.cy;
+    x.strokeStyle=hex(col,0.45);x.lineWidth=1.6;x.beginPath();
+    for(let n=0;n<Nshow;n++){const X=fr.sx(n),Y=fr.sy(term(n));n===0?x.moveTo(X,Y):x.lineTo(X,Y);}x.stroke();
+    for(let n=0;n<Nshow;n++){const X=fr.sx(n),Y=fr.sy(term(n));
+      x.fillStyle=col;x.beginPath();x.arc(X,Y,3.8,0,TAU);x.fill();}
+  });})();
+
+/* 3. LIMITE epsilon */
+(function(){const c=document.getElementById('cLim');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const eR=document.getElementById('liEps'),eV=document.getElementById('liEpsv');
+  const bandE=document.getElementById('liBand'),nE=document.getElementById('liN');
+  const L=3;function u(n){return (3*n+1)/(n+2);}
+  function eps(){return +eR.value/100;}
+  function rankN(){const e=eps();return Math.max(0,Math.floor(5/e-2)+1);} // 5/(n+2)<e
+  function upd(){const e=eps();eV.textContent=e.toFixed(2);
+    bandE.textContent='['+(L-e).toFixed(2)+' ; '+(L+e).toFixed(2)+']';
+    nE.textContent='n ≥ '+rankN();}
+  eR.oninput=upd;upd();
+  register(c,()=>{const e=eps(),N=rankN(),Nshow=30;
+    const fr=frame(x,c,-0.5,Nshow-0.5,1.5,4.0,40,28);
+    // epsilon band
+    x.fillStyle=hex(COL.cy,0.12);
+    x.fillRect(fr.x0,fr.sy(L+e),fr.x1-fr.x0,fr.sy(L-e)-fr.sy(L+e));
+    x.strokeStyle=hex(COL.cy,0.55);x.setLineDash([5,4]);x.lineWidth=1.2;
+    x.beginPath();x.moveTo(fr.x0,fr.sy(L+e));x.lineTo(fr.x1,fr.sy(L+e));x.stroke();
+    x.beginPath();x.moveTo(fr.x0,fr.sy(L-e));x.lineTo(fr.x1,fr.sy(L-e));x.stroke();x.setLineDash([]);
+    // limit line
+    x.strokeStyle=COL.cy;x.lineWidth=1.6;x.beginPath();x.moveTo(fr.x0,fr.sy(L));x.lineTo(fr.x1,fr.sy(L));x.stroke();
+    x.fillStyle=COL.cy;x.font="12px 'JetBrains Mono'";x.textAlign='left';x.fillText('ℓ = 3',fr.x1-46,fr.sy(L)-6);
+    // rank marker
+    if(N<Nshow){const xn=fr.sx(N);x.strokeStyle=hex(COL.pk,0.7);x.setLineDash([3,3]);x.lineWidth=1.2;
+      x.beginPath();x.moveTo(xn,fr.y0);x.lineTo(xn,fr.y1);x.stroke();x.setLineDash([]);
+      x.fillStyle=COL.pk;x.font="11px 'JetBrains Mono'";x.textAlign='center';x.fillText('N='+N,xn,fr.y0+12);}
+    x.fillStyle=COL.mut;x.font="10px 'JetBrains Mono'";x.textAlign='center';
+    for(let n=0;n<Nshow;n+=4)x.fillText(n,fr.sx(n),fr.y1+15);
+    for(let n=0;n<Nshow;n++){const X=fr.sx(n),Y=fr.sy(u(n));
+      x.fillStyle=(n>=N)?COL.gr:COL.pk;x.beginPath();x.arc(X,Y,3,0,TAU);x.fill();}
+  });})();
+
+/* 4. q^n */
+(function(){const c=document.getElementById('cQn');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const qR=document.getElementById('qnQ'),qV=document.getElementById('qnQv');
+  const verd=document.getElementById('qnVerdict');
+  function q(){return +qR.value/100;}
+  function upd(){const Q=q();qV.textContent=Q.toFixed(2);
+    let v,col;
+    if(Q>1){v='qⁿ → +∞';col='p';}
+    else if(Q===1||Math.abs(Q-1)<1e-9){v='qⁿ = 1 (constante)';col='c';}
+    else if(Q>-1){v='qⁿ → 0';col='g';}
+    else v='qⁿ : pas de limite (oscille)';
+    verd.innerHTML='q = '+Q.toFixed(2)+' &nbsp;→&nbsp; <span class="'+(Q>1?'p':(Q>-1&&Q<1?'g':'a'))+'">'+v+'</span>';}
+  qR.oninput=upd;upd();
+  register(c,()=>{const Q=q(),Nshow=15;
+    const fr=frame(x,c,-0.5,Nshow-0.5,-3,4,40,28);
+    x.fillStyle=COL.mut;x.font="10px 'JetBrains Mono'";x.textAlign='center';
+    for(let n=0;n<Nshow;n+=2)x.fillText(n,fr.sx(n),fr.y1+15);
+    for(let n=0;n<Nshow;n++){let val=Math.pow(Q,n);
+      const clamp=Math.max(-3,Math.min(4,val));const X=fr.sx(n),Y=fr.sy(clamp);
+      x.strokeStyle=hex(COL.am,0.35);x.lineWidth=1;x.beginPath();x.moveTo(X,fr.sy(0));x.lineTo(X,Y);x.stroke();
+      const off=(val>4||val<-3);
+      x.fillStyle=off?COL.pk:COL.am;x.beginPath();x.arc(X,Y,3.6,0,TAU);x.fill();}
+  });})();
+
+/* 5. DOMINOS */
+(function(){const c=document.getElementById('cDomino');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const N=11;let ang=new Array(N).fill(0),wave=-1,running=false,acc=0;
+  document.getElementById('domGo').onclick=()=>{running=true;if(wave<0)wave=0;};
+  document.getElementById('domReset').onclick=()=>{running=false;wave=-1;ang=new Array(N).fill(0);};
+  register(c,(t,dt)=>{const W=c._w,H=c._h;x.clearRect(0,0,W,H);
+    if(running){acc+=dt;if(acc>0.18){acc=0;if(wave<N){wave++;}else running=false;}}
+    for(let i=0;i<N;i++){const target=(i<=wave)?1:0;ang[i]+=(target-ang[i])*Math.min(1,dt*8);}
+    const pad=46,gap=(W-2*pad)/(N-1),baseY=H-54,dw=13,dh=64;
+    x.strokeStyle=hex(COL.mut,0.5);x.lineWidth=2;x.beginPath();x.moveTo(20,baseY);x.lineTo(W-20,baseY);x.stroke();
+    for(let i=0;i<N;i++){const cx=pad+gap*i;const a=ang[i]*1.15;
+      x.save();x.translate(cx,baseY);x.rotate(a);
+      const col=(ang[i]>0.5)?COL.gr:COL.cy;
+      x.fillStyle=hex(col,0.9);roundRect(x,-dw/2,-dh,dw,dh,3);x.fill();
+      x.strokeStyle=hex(COL.ink,0.25);x.lineWidth=1;x.stroke();
+      x.restore();
+      x.fillStyle=COL.mut;x.font="11px 'JetBrains Mono'";x.textAlign='center';
+      x.fillText('P('+i+')',cx,baseY+18);}
+    if(wave<0){x.fillStyle=COL.mut;x.font="16px 'Caveat'";x.textAlign='center';
+      x.fillText('Pousse le premier domino →',W/2,30);}
+  });})();
+
+/* 6. COBWEB */
+(function(){const c=document.getElementById('cWeb');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const aR=document.getElementById('wA'),aV=document.getElementById('wAv');
+  const bR=document.getElementById('wB'),bV=document.getElementById('wBv');
+  const u0R=document.getElementById('wU0'),u0V=document.getElementById('wU0v');
+  const fixE=document.getElementById('wFix'),convE=document.getElementById('wConv'),u5E=document.getElementById('wU5');
+  function a(){return +aR.value/100;}function b(){return +bR.value/100;}function u0(){return +u0R.value/100;}
+  function f(v){return a()*v+b();}
+  function upd(){aV.textContent=a().toFixed(2);bV.textContent=b().toFixed(1);u0V.textContent=u0().toFixed(2);
+    const fix=Math.abs(1-a())<1e-6?NaN:b()/(1-a());
+    fixE.textContent=isNaN(fix)?'—':fix.toFixed(2);
+    convE.textContent=Math.abs(a())<1?'oui → converge':'non → diverge';
+    convE.className='num '+(Math.abs(a())<1?'hl-gr':'hl-pk');
+    let v=u0();for(let i=0;i<5;i++)v=f(v);u5E.textContent=v.toFixed(2);}
+  [aR,bR,u0R].forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{const W=c._w,H=c._h;x.clearRect(0,0,W,H);
+    const lo=-1,hi=8,pad=36,x0=pad,x1=W-14,y0=14,y1=H-30;
+    const sx=X=>x0+(x1-x0)*(X-lo)/(hi-lo);const sy=Y=>y1-(y1-y0)*(Y-lo)/(hi-lo);
+    // grid
+    x.strokeStyle=COL.line;x.lineWidth=1;x.fillStyle=COL.mut;x.font="10px 'JetBrains Mono'";
+    for(let g=lo;g<=hi;g++){x.beginPath();x.moveTo(sx(g),y0);x.lineTo(sx(g),y1);x.stroke();
+      x.beginPath();x.moveTo(x0,sy(g));x.lineTo(x1,sy(g));x.stroke();}
+    // y=x
+    x.strokeStyle=hex(COL.mut,0.8);x.lineWidth=1.5;x.beginPath();x.moveTo(sx(lo),sy(lo));x.lineTo(sx(hi),sy(hi));x.stroke();
+    x.fillStyle=COL.mut;x.textAlign='left';x.fillText('y = x',sx(hi)-44,sy(hi)+14);
+    // y=f(x)
+    x.strokeStyle=COL.cy;x.lineWidth=2.2;x.beginPath();
+    x.moveTo(sx(lo),sy(f(lo)));x.lineTo(sx(hi),sy(f(hi)));x.stroke();
+    x.fillStyle=COL.cy;x.fillText('y = a x + b',sx(lo)+6,sy(f(lo))-6);
+    // fixed point
+    const fix=Math.abs(1-a())<1e-6?null:b()/(1-a());
+    if(fix!==null&&fix>=lo&&fix<=hi){x.fillStyle=COL.pk;x.beginPath();x.arc(sx(fix),sy(fix),4.5,0,TAU);x.fill();}
+    // cobweb staircase
+    let v=u0();x.strokeStyle=hex(COL.am,0.95);x.lineWidth=1.8;
+    x.beginPath();x.moveTo(sx(v),sy(0));
+    for(let i=0;i<14;i++){const fv=f(v);
+      x.lineTo(sx(v),sy(fv));   // up to curve
+      x.lineTo(sx(fv),sy(fv));  // across to y=x
+      v=fv;if(v>hi+2||v<lo-2)break;}
+    x.stroke();
+    // u0 marker
+    x.fillStyle=COL.am;x.font="11px 'JetBrains Mono'";x.textAlign='center';
+    x.fillText('u₀',sx(u0()),sy(0)+14);
+  });})();
+</script>
+</body>
+</html>
