@@ -25,9 +25,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Pages
+        id: setup_pages
+        continue-on-error: true
         uses: actions/configure-pages@v5
 
+      - name: Skip deploy when Pages is not enabled
+        if: steps.setup_pages.outcome != 'success'
+        run: echo "::warning::GitHub Pages is not enabled for this repository. Skipping deployment."
+
       - name: Assemble site
+        if: steps.setup_pages.outcome == 'success'
         run: |
           mkdir -p _site/math
           cp index.html _site/
@@ -35,10 +42,12 @@ jobs:
           cp math/*.html _site/math/
 
       - name: Upload site artifact
+        if: steps.setup_pages.outcome == 'success'
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
       - name: Deploy to GitHub Pages
+        if: steps.setup_pages.outcome == 'success'
         id: deployment
         uses: actions/deploy-pages@v4
