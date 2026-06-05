@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fonction exponentielle — Terminale · le cahier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700&family=Caveat:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#faf4e9; --paper2:#f3ead8; --card:#fffdf8; --card2:#fbf6ec;
+    --ink:#3b342c; --ink2:#5b5045; --muted:#9a8d7b; --line:#e6dac4;
+    --coral:#e07a5f; --mustard:#e3a02b; --sage:#5a9e7a; --teal:#2f9c8f;
+    --plum:#9a6a9e; --blue:#6d92c4; --rose:#d96c7a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);
+    font-family:'Nunito',system-ui,sans-serif;line-height:1.75;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(900px 600px at 85% -8%,rgba(224,122,95,.10),transparent 60%),
+      radial-gradient(800px 700px at -5% 25%,rgba(90,158,122,.08),transparent 55%),
+      var(--paper);}
+  body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(160,140,110,.07) 1px,transparent 1px);
+    background-size:100% 32px;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;line-height:1.12;font-weight:600}
+  .hand{font-family:'Caveat',cursive}
+  code,.mono{font-family:'JetBrains Mono',monospace;font-size:.92em;
+    background:rgba(160,140,110,.14);padding:1px 6px;border-radius:5px;color:var(--ink2)}
+  #prog{position:fixed;top:0;left:0;height:4px;width:0;
+    background:linear-gradient(90deg,var(--coral),var(--mustard));z-index:50;border-radius:0 4px 4px 0}
+  header.hero{min-height:96vh;display:flex;flex-direction:column;
+    justify-content:center;position:relative;padding:80px 0}
+  #heroCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;opacity:.85}
+  .kicker{font-family:'Caveat',cursive;font-size:26px;color:var(--coral);
+    transform:rotate(-2deg);margin-bottom:8px}
+  header.hero h1{font-size:clamp(44px,8vw,88px);font-weight:600;color:var(--ink);letter-spacing:-.01em}
+  header.hero h1 .grad{color:var(--coral);position:relative}
+  header.hero h1 .grad::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:12px;
+    background:rgba(227,160,43,.40);z-index:-1;transform:rotate(-1deg);border-radius:8px}
+  header.hero p.lead{font-size:clamp(17px,2vw,21px);color:var(--ink2);max-width:680px;margin-top:26px}
+  .scrolldown{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+    color:var(--muted);font-family:'Caveat',cursive;font-size:20px;
+    display:flex;flex-direction:column;align-items:center;gap:6px}
+  .scrolldown span{width:2px;height:42px;border-radius:2px;
+    background:linear-gradient(var(--coral),transparent);animation:drop 1.8s infinite}
+  @keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}
+    55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  section{padding:74px 0;position:relative}
+  .step{font-family:'Caveat',cursive;font-size:24px;color:var(--coral);
+    transform:rotate(-1.5deg);display:inline-block;margin-bottom:6px}
+  section h2{font-size:clamp(28px,4.4vw,46px);margin-bottom:10px;color:var(--ink)}
+  section .sub{color:var(--ink2);font-size:17.5px;max-width:740px;margin-bottom:30px}
+  p.body{color:var(--ink2);max-width:760px;margin:16px 0;font-size:16.5px}
+  p.body b{color:var(--ink);font-weight:700}
+  ul.body{color:var(--ink2);max-width:760px;margin:14px 0 14px 6px;font-size:16.5px;list-style:none}
+  ul.body li{margin:9px 0;padding-left:24px;position:relative}
+  ul.body li::before{content:"—";position:absolute;left:0;top:0;color:var(--coral);font-weight:700}
+  ul.body b{color:var(--ink);font-weight:700}
+  .hl-cy{color:var(--teal);font-weight:700}.hl-vi{color:var(--plum);font-weight:700}
+  .hl-am{color:var(--mustard);font-weight:700}.hl-pk{color:var(--coral);font-weight:700}
+  .hl-gr{color:var(--sage);font-weight:700}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:26px;box-shadow:0 18px 40px -24px rgba(120,90,50,.45),0 2px 0 rgba(0,0,0,.02);
+    position:relative}
+  .card::before{content:"";position:absolute;top:-11px;left:38px;width:88px;height:24px;
+    background:rgba(227,160,43,.28);border:1px solid rgba(227,160,43,.30);
+    transform:rotate(-3deg);border-radius:2px}
+  .card + .card{margin-top:26px}
+  canvas.viz{display:block;width:100%;border-radius:12px;
+    background:#fdf8ee;border:1px solid var(--line)}
+  .controls{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:20px;align-items:flex-end}
+  .ctrl{display:flex;flex-direction:column;gap:7px;min-width:170px;flex:1}
+  .ctrl label{font-size:13px;color:var(--ink2);font-weight:600;
+    display:flex;justify-content:space-between;align-items:baseline}
+  .ctrl label .val{color:var(--coral);font-family:'JetBrains Mono',monospace;font-size:12px}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;
+    background:var(--paper2);outline:none;width:100%;border:1px solid var(--line)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;
+    border-radius:50%;background:var(--coral);cursor:pointer;border:3px solid var(--card);
+    box-shadow:0 2px 6px rgba(224,122,95,.5)}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border:3px solid var(--card);
+    border-radius:50%;background:var(--coral);cursor:pointer}
+  button.btn{font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;
+    color:#fff;background:var(--coral);border:0;padding:10px 18px;border-radius:999px;
+    cursor:pointer;transition:.14s;box-shadow:0 6px 14px -6px var(--coral)}
+  button.btn:hover{transform:translateY(-2px) rotate(-1deg)}
+  button.btn.ghost{background:transparent;color:var(--ink2);border:2px solid var(--line);box-shadow:none}
+  button.btn.ghost:hover{border-color:var(--coral);color:var(--coral)}
+  .reveal{opacity:0;transform:translateY(30px) rotate(-.4deg);
+    transition:.85s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+  .legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}
+  .legend div{background:var(--card2);border:1px solid var(--line);border-left:4px solid var(--sage);
+    padding:12px 15px;border-radius:10px;font-size:14.5px;color:var(--ink2)}
+  .legend div b{color:var(--ink)}
+  .formula{background:var(--card2);border:1px dashed var(--line);border-radius:14px;
+    padding:20px 22px;text-align:center;margin:18px 0;overflow-x:auto;
+    font-family:'JetBrains Mono',monospace;font-size:clamp(14px,2.1vw,19px);color:var(--ink)}
+  .formula .v{color:var(--plum)}.formula .c{color:var(--teal)}
+  .formula .a{color:var(--mustard)}.formula .p{color:var(--coral)}.formula .g{color:var(--sage)}
+  .formula .mut{color:var(--muted)}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;line-height:1.05}
+  .frac .num{border-bottom:1.5px solid var(--ink2);padding:0 6px}
+  .frac .den{padding:0 6px}
+  .exbox{margin-top:18px;padding:16px 18px;border-radius:12px;
+    background:rgba(154,106,158,.10);border:1px solid rgba(154,106,158,.25)}
+  .exbox h4{font-family:'Caveat',cursive;font-size:21px;color:var(--plum);margin-bottom:4px;transform:rotate(-1deg)}
+  .exbox p{color:var(--ink2);font-size:15px;margin:4px 0}
+  .exbox.gr{background:rgba(90,158,122,.10);border-color:rgba(90,158,122,.28)}
+  .exbox.gr h4{color:var(--sage)}
+  .exbox.am{background:rgba(227,160,43,.12);border-color:rgba(227,160,43,.30)}
+  .exbox.am h4{color:var(--mustard)}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--card2);
+    border:1px solid var(--line);padding:6px 13px;border-radius:999px;font-size:13px;
+    font-family:'JetBrains Mono',monospace;color:var(--ink2);margin:6px 6px 0 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .stat{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+  .stat .box{flex:1;min-width:120px;background:var(--card2);border:1px solid var(--line);
+    border-radius:12px;padding:13px 15px}
+  .stat .box .lbl{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--muted)}
+  .stat .box .num{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--teal);margin-top:2px}
+  .exo{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;
+    box-shadow:0 18px 40px -24px rgba(120,90,50,.4);margin-top:22px}
+  .exo .diff{font-family:'Caveat',cursive;font-size:19px;color:var(--mustard);margin-bottom:0}
+  .exo h3{font-family:'Fraunces',serif;font-size:22px;color:var(--ink);margin:2px 0 10px}
+  .exo .enonce{color:var(--ink2);font-size:16px}
+  .exo .enonce ol{margin:10px 0 0 20px}
+  .exo .enonce li{margin:6px 0}
+  details.corr{margin-top:16px;border:1px solid var(--line);border-radius:12px;
+    background:var(--card2);overflow:hidden}
+  details.corr>summary{cursor:pointer;list-style:none;padding:12px 16px;font-weight:700;
+    color:var(--coral);font-size:15px;display:flex;align-items:center;gap:9px;user-select:none}
+  details.corr>summary::-webkit-details-marker{display:none}
+  details.corr>summary::before{content:"▸";transition:.2s;color:var(--coral)}
+  details.corr[open]>summary::before{transform:rotate(90deg)}
+  details.corr .cbody{padding:6px 18px 16px;color:var(--ink2);font-size:15.5px;border-top:1px solid var(--line)}
+  details.corr .cbody p{margin:8px 0}
+  details.corr .cbody .calc{font-family:'JetBrains Mono',monospace;font-size:13.5px;
+    background:var(--paper2);border:1px solid var(--line);border-radius:8px;
+    padding:8px 12px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+  details.corr .cbody .res{background:rgba(90,158,122,.15);border-left:4px solid var(--sage);
+    padding:9px 13px;border-radius:8px;margin:10px 0;color:var(--ink);font-weight:600}
+  .note{font-family:'Caveat',cursive;font-size:21px;color:var(--coral);
+    transform:rotate(-1deg);margin:14px 0;display:block}
+  .note::before{content:"➜ ";}
+  .topnav{position:fixed;top:14px;left:16px;z-index:60;font-family:'Caveat',cursive;
+    font-size:19px;color:var(--coral);text-decoration:none;background:var(--card);
+    border:1px solid var(--line);padding:4px 14px;border-radius:999px;box-shadow:0 4px 10px -6px rgba(0,0,0,.3)}
+  footer{padding:56px 0 90px;text-align:center;color:var(--ink2);font-size:15px;
+    border-top:2px dashed var(--line);margin-top:30px}
+  footer .big{font-family:'Fraunces',serif;font-size:26px;color:var(--ink);margin-bottom:8px}
+  footer .tag{font-family:'Caveat',cursive;font-size:20px;color:var(--coral)}
+  ::selection{background:rgba(227,160,43,.35)}
+  nav.toc{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:40;
+    display:flex;flex-direction:column;gap:10px}
+  nav.toc a{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);
+    background:var(--card);transition:.2s;position:relative}
+  nav.toc a:hover,nav.toc a.act{background:var(--coral);border-color:var(--coral)}
+  nav.toc a span{position:absolute;right:22px;top:50%;transform:translateY(-50%);
+    white-space:nowrap;font-family:'Caveat',cursive;font-size:17px;color:var(--ink2);
+    opacity:0;pointer-events:none;transition:.2s;background:var(--card);padding:2px 10px;
+    border-radius:8px;border:1px solid var(--line);box-shadow:0 4px 10px -6px rgba(0,0,0,.3)}
+  nav.toc a:hover span{opacity:1}
+  @media(max-width:900px){nav.toc{display:none}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<a class="topnav" href="../index.html">← tous les cours</a>
+<nav class="toc" id="toc"></nav>
+
+<header class="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="wrap">
+    <div class="kicker">Maths · Terminale · Analyse</div>
+    <h1>La fonction<br><span class="grad">exponentielle</span></h1>
+    <p class="lead">La seule fonction qui est égale à sa propre dérivée : plus elle est
+      haute, plus elle monte vite. Définition, propriétés algébriques (somme → produit),
+      courbe et limites, dérivée des composées eᵘ, croissances comparées et résolution
+      d'équations. Tout illustré par des courbes à explorer.</p>
+  </div>
+  <div class="scrolldown"><span></span>fais défiler</div>
+</header>
+
+<!-- 1 -->
+<section id="s1">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 1</div>
+    <h2>La fonction égale à sa dérivée</h2>
+    <p class="sub">L'exponentielle est <b>définie</b> comme l'unique fonction telle que
+      f′ = f et f(0) = 1. Autrement dit, en chaque point, la <b>pente de la tangente est
+      égale à la hauteur</b> de la courbe. Déplace le point et vérifie.</p>
+    <div class="card">
+      <div class="formula">exp′ = exp &nbsp;·&nbsp; <span class="c">exp(0) = 1</span>
+        &nbsp;&nbsp;|&nbsp;&nbsp; on note exp(x) = <span class="a">eˣ</span>
+        &nbsp;<span class="mut">avec</span>&nbsp; e ≈ 2,718</div>
+      <canvas id="cSelf" class="viz" height="380"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>point a <span class="val" id="seAv">0.5</span></label>
+          <input id="seA" type="range" min="-300" max="210" value="50"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">hauteur eᵃ</div><div class="num hl-cy" id="seH">—</div></div>
+        <div class="box"><div class="lbl">pente f′(a) = eᵃ</div><div class="num hl-am" id="seS">—</div></div>
+        <div class="box"><div class="lbl">les deux sont…</div><div class="num hl-gr">égaux</div></div>
+      </div>
+      <p class="body">La barre verticale <span class="hl-cy">cyan</span> (la hauteur eᵃ) a la
+        même valeur que la pente de la tangente <span class="hl-am">orange</span>. C'est
+        cette propriété d'auto-renforcement qui explique la croissance « explosive » :
+        plus c'est haut, plus ça grimpe vite.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section id="s2">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 2</div>
+    <h2>Somme → produit : la relation fonctionnelle</h2>
+    <p class="sub">La règle-clé, exactement l'inverse du logarithme :
+      <b>e^(a+b) = eᵃ × eᵇ</b>. Ajouter dans l'exposant revient à multiplier les valeurs.
+      Règle a et b et regarde les hauteurs se multiplier.</p>
+    <div class="card">
+      <div class="formula">
+        <span class="c">e^(a+b) = eᵃ × eᵇ</span> &nbsp;·&nbsp;
+        e^(−a) = 1/eᵃ &nbsp;·&nbsp;
+        e^(a−b) = eᵃ/eᵇ &nbsp;·&nbsp;
+        (eᵃ)ⁿ = e^(na)
+      </div>
+      <canvas id="cMul" class="viz" height="280"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>a <span class="val" id="muAv">1.0</span></label>
+          <input id="muA" type="range" min="-100" max="200" value="100"></div>
+        <div class="ctrl"><label>b <span class="val" id="muBv">0.5</span></label>
+          <input id="muB" type="range" min="-100" max="200" value="50"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">eᵃ</div><div class="num hl-cy" id="muEa">—</div></div>
+        <div class="box"><div class="lbl">eᵇ</div><div class="num hl-pk" id="muEb">—</div></div>
+        <div class="box"><div class="lbl">eᵃ × eᵇ</div><div class="num" id="muProd">—</div></div>
+        <div class="box"><div class="lbl">e^(a+b) direct</div><div class="num hl-gr" id="muSum">—</div></div>
+      </div>
+      <p class="body">La hauteur <span class="hl-gr">e^(a+b)</span> (3ᵉ barre) est exactement
+        le <b>produit</b> des deux premières — pas leur somme. C'est ce qui fait de
+        l'exponentielle l'outil naturel des phénomènes à <b>croissance proportionnelle</b>
+        (population, intérêts composés, désintégration).</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section id="s3">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 3</div>
+    <h2>Courbe, variations et limites</h2>
+    <p class="sub">eˣ est définie sur ℝ, <b>strictement positive</b> (toujours au-dessus de
+      l'axe) et strictement croissante. Aux bords : elle s'écrase sur 0 vers −∞ et explose
+      vers +∞.</p>
+    <div class="card">
+      <div class="formula">
+        eˣ &gt; 0 pour tout x &nbsp;·&nbsp;
+        lim<sub>x→−∞</sub> eˣ = <span class="p">0</span>
+        &nbsp;(asymptote horizontale y = 0)&nbsp;|&nbsp;
+        lim<sub>x→+∞</sub> eˣ = <span class="g">+∞</span>
+      </div>
+      <canvas id="cCurve" class="viz" height="360"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>position x₀ <span class="val" id="cuXv">0.50</span></label>
+          <input id="cuX" type="range" min="-320" max="200" value="50"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">e^(x₀)</div><div class="num hl-cy" id="cuY">—</div></div>
+        <div class="box"><div class="lbl">toujours…</div><div class="num hl-gr">&gt; 0</div></div>
+      </div>
+      <p class="body">Repères : <b>e⁰ = 1</b> (la courbe coupe l'axe vertical en 1) et
+        <b>e¹ = e ≈ 2,72</b>. Comme eˣ est strictement croissante, elle est bijective :
+        eᵃ = eᵇ ⇔ a = b et eᵃ &lt; eᵇ ⇔ a &lt; b — d'où la résolution d'équations.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="s4">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 4</div>
+    <h2>Dérivée composée & croissances comparées</h2>
+    <p class="sub">La dérivée de eᵘ fait apparaître u′ : <b>(eᵘ)′ = u′·eᵘ</b>. Et à l'infini,
+      l'exponentielle <b>écrase toute puissance</b> de x — c'est ce qui lève les
+      indéterminations.</p>
+    <div class="card">
+      <div class="formula">
+        <span class="c">(eˣ)′ = eˣ</span> &nbsp;·&nbsp; (eᵘ)′ = u′·eᵘ
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <span class="g">lim<sub>x→+∞</sub> eˣ/x = +∞</span> &nbsp;·&nbsp;
+        lim<sub>x→−∞</sub> x·eˣ = 0
+      </div>
+      <canvas id="cComp" class="viz" height="360"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>position x₀ <span class="val" id="coXv">2.00</span></label>
+          <input id="coX" type="range" min="20" max="320" value="200"></div>
+      </div>
+      <div class="stat">
+        <div class="box"><div class="lbl">eˣ⁰</div><div class="num hl-cy" id="coExp">—</div></div>
+        <div class="box"><div class="lbl">x₀²</div><div class="num hl-am" id="coPow">—</div></div>
+        <div class="box"><div class="lbl">eˣ⁰ / x₀</div><div class="num hl-gr" id="coRatio">—</div></div>
+      </div>
+      <p class="body">La courbe <span class="hl-cy">eˣ</span> finit toujours par dépasser la
+        parabole <span class="hl-am">x²</span> (et n'importe quelle puissance). C'est ce que
+        traduit eˣ/x → +∞ : un grand classique du Bac pour lever les formes « ∞/∞ » mêlant
+        exponentielle et polynômes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section id="s5">
+  <div class="wrap reveal">
+    <div class="step">Chapitre 5</div>
+    <h2>Résoudre & le lien avec ln</h2>
+    <p class="sub">exp et ln sont réciproques : l'une défait l'autre. C'est l'aller-retour
+      qui résout la plupart des équations.</p>
+    <div class="card">
+      <div class="grid2">
+        <div class="exbox gr">
+          <h4>Les passages clés</h4>
+          <p>eᵃ = eᵇ &nbsp;⇔&nbsp; a = b</p>
+          <p>eˣ = k &nbsp;⇔&nbsp; x = ln k (avec k &gt; 0)</p>
+          <p>eᵃ &lt; eᵇ &nbsp;⇔&nbsp; a &lt; b (exp croissante)</p>
+          <p>ln(eˣ) = x &nbsp;·&nbsp; e^(ln x) = x (x &gt; 0)</p>
+        </div>
+        <div class="exbox am">
+          <h4>L'astuce du changement de variable</h4>
+          <p>Pour une équation du type e^(2x) − 3eˣ + 2 = 0, on pose <b>X = eˣ</b>
+            (avec X &gt; 0) : on obtient une équation du second degré X² − 3X + 2 = 0,
+            qu'on résout, puis on revient à x par x = ln X.</p>
+        </div>
+      </div>
+      <span class="note">eˣ est toujours &gt; 0 : une « solution » X = eˣ négative ou nulle
+        est à rejeter avant de prendre le ln.</span>
+    </div>
+  </div>
+</section>
+
+<!-- EXOS -->
+<section id="sExos">
+  <div class="wrap reveal">
+    <div class="step">À toi de jouer</div>
+    <h2>Exercices type Bac</h2>
+    <p class="sub">Cherche, puis déplie la correction.</p>
+
+    <div class="exo">
+      <div class="diff">★ ☆ ☆ — simplification</div>
+      <h3>1. Simplifier une expression</h3>
+      <div class="enonce">Simplifie A = e⁵ × e^(−3) / e².</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>On additionne et soustrait les exposants :</p>
+          <div class="calc">A = e^(5 − 3 − 2) = e⁰</div>
+          <div class="res">A = 1.</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="exo">
+      <div class="diff">★ ★ ☆ — équation</div>
+      <h3>2. Équation avec changement de variable</h3>
+      <div class="enonce">Résous dans ℝ : e^(2x) − 3eˣ + 2 = 0.</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>On pose X = eˣ (donc X &gt; 0). Comme e^(2x) = (eˣ)² = X² :</p>
+          <div class="calc">X² − 3X + 2 = 0  →  (X − 1)(X − 2) = 0
+X = 1   ou   X = 2   (toutes deux > 0, acceptées)</div>
+          <p>On revient à x : eˣ = 1 ⇒ x = 0 ; eˣ = 2 ⇒ x = ln 2.</p>
+          <div class="res">S = {0 ; ln 2}.</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="exo">
+      <div class="diff">★ ★ ☆ — inéquation</div>
+      <h3>3. Résoudre une inéquation</h3>
+      <div class="enonce">Résous : e^(2x) ≤ e^(x + 3).</div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p>exp est strictement croissante, donc on compare directement les exposants :</p>
+          <div class="calc">e^(2x) ≤ e^(x+3)  ⇔  2x ≤ x + 3  ⇔  x ≤ 3</div>
+          <div class="res">S = ] −∞ ; 3 ].</div>
+        </div>
+      </details>
+    </div>
+
+    <div class="exo">
+      <div class="diff">★ ★ ★ — étude de fonction</div>
+      <h3>4. Variations et limites de x·e⁻ˣ</h3>
+      <div class="enonce">Soit f(x) = x·e^(−x) sur ℝ.
+        <ol>
+          <li>Calcule f′(x) et étudie son signe.</li>
+          <li>Donne les limites en −∞ et +∞, et le maximum de f.</li>
+        </ol>
+      </div>
+      <details class="corr"><summary>Voir la correction</summary>
+        <div class="cbody">
+          <p><b>1.</b> Produit u·v avec u = x, v = e^(−x), v′ = −e^(−x) :</p>
+          <div class="calc">f′(x) = 1·e^(−x) + x·(−e^(−x)) = e^(−x)(1 − x)</div>
+          <p>Or e^(−x) &gt; 0, donc f′ a le signe de (1 − x) : positif si x &lt; 1, négatif si x &gt; 1.</p>
+          <div class="res">f croît sur ]−∞ ; 1], décroît sur [1 ; +∞[ ; maximum f(1) = 1·e^(−1) = 1/e ≈ 0,368.</div>
+          <p><b>2.</b> En −∞ : x → −∞ et e^(−x) → +∞, le produit → −∞.
+            En +∞ : par croissances comparées, x·e^(−x) = x/eˣ → 0.</p>
+          <div class="res">lim<sub>−∞</sub> f = −∞ ; lim<sub>+∞</sub> f = 0 (asymptote y = 0).</div>
+        </div>
+      </details>
+    </div>
+    <span class="note">Repère la forme eᵘ et n'oublie jamais le facteur u′ en dérivant.
+      Pour les équations : pose X = eˣ avec X &gt; 0.</span>
+  </div>
+</section>
+
+<!-- RECAP -->
+<section id="sRecap">
+  <div class="wrap reveal">
+    <div class="step">Avant de fermer le cahier</div>
+    <h2>Les réflexes à retenir</h2>
+    <div class="card">
+      <ul class="body">
+        <li><b>Définition</b> — exp′ = exp et exp(0) = 1 : pente = hauteur en tout point.</li>
+        <li><b>Somme → produit</b> — e^(a+b)=eᵃeᵇ ; e^(−a)=1/eᵃ ; (eᵃ)ⁿ=e^(na).</li>
+        <li><b>Signe & variations</b> — eˣ &gt; 0 toujours, strictement croissante sur ℝ.</li>
+        <li><b>Limites</b> — lim<sub>−∞</sub> eˣ = 0 (asymptote y=0) ; lim<sub>+∞</sub> eˣ = +∞.</li>
+        <li><b>Dérivée</b> — (eˣ)′ = eˣ ; (eᵘ)′ = u′·eᵘ.</li>
+        <li><b>Croissances comparées</b> — eˣ/x → +∞ ; x·eˣ → 0 (x→−∞).</li>
+        <li><b>Équations</b> — eᵃ=eᵇ ⇔ a=b ; eˣ=k ⇔ x=ln k. Changement X=eˣ &gt; 0.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="big">Chapitre Fonction exponentielle terminé.</div>
+    <p class="tag">Au programme ensuite : la trigonométrie.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const TAU=Math.PI*2, PI=Math.PI, E=Math.E;
+const COL={cy:'#2f9c8f',vi:'#9a6a9e',am:'#e3a02b',pk:'#e07a5f',gr:'#5a9e7a',
+  mut:'#9a8d7b',line:'#e0d4bd',ink:'#3b342c',bg:'#fdf8ee'};
+function setupCanvas(c){const dpr=Math.min(window.devicePixelRatio||1,2);
+  const r=c.getBoundingClientRect();c.width=r.width*dpr;c.height=(+c.getAttribute('height')||300)*dpr;
+  c.style.height=(+c.getAttribute('height')||300)+'px';
+  const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
+  c._w=r.width;c._h=+(c.getAttribute('height')||300);return x;}
+const prog=document.getElementById('prog');
+addEventListener('scroll',()=>{const s=scrollY/(document.body.scrollHeight-innerHeight);
+  prog.style.width=(s*100)+'%';},{passive:true});
+const ioR=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>ioR.observe(el));
+const tocNames={s1:'f′ = f',s2:'Somme→produit',s3:'Courbe & limites',s4:'Dérivée & comparées',
+  s5:'Équations',sExos:'Exercices',sRecap:'Récap'};
+const toc=document.getElementById('toc');
+Object.keys(tocNames).forEach(id=>{const a=document.createElement('a');a.href='#'+id;
+  a.innerHTML='<span>'+tocNames[id]+'</span>';a.dataset.t=id;toc.appendChild(a);});
+const tocLinks=[...toc.querySelectorAll('a')];
+const ioToc=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){
+  tocLinks.forEach(l=>l.classList.toggle('act',l.dataset.t===e.target.id));}}),{threshold:.4});
+Object.keys(tocNames).forEach(id=>{const s=document.getElementById(id);if(s)ioToc.observe(s);});
+const animators=[];
+function register(canvas,drawFn){const a={canvas,draw:drawFn,on:false,t:0};animators.push(a);
+  new IntersectionObserver(es=>{a.on=es[0].isIntersecting;},{threshold:.04}).observe(canvas);return a;}
+let last=performance.now();
+(function tick(now){const dt=Math.min((now-last)/1000,.05);last=now;
+  for(const a of animators){if(a.on){a.t+=dt;a.draw(a.t,dt);}}requestAnimationFrame(tick);})(performance.now());
+function hex(c,al){const n=parseInt(c.slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+al+')';}
+function cartesian(x,c,xmin,xmax,ymin,ymax){
+  const W=c._w,H=c._h,x0=36,x1=W-12,y0=12,y1=H-22;
+  const sx=X=>x0+(x1-x0)*(X-xmin)/(xmax-xmin);
+  const sy=Y=>y1-(y1-y0)*(Y-ymin)/(ymax-ymin);
+  x.strokeStyle=COL.line;x.lineWidth=1;
+  for(let g=Math.ceil(xmin);g<=xmax;g++){x.beginPath();x.moveTo(sx(g),y0);x.lineTo(sx(g),y1);x.stroke();}
+  for(let g=Math.ceil(ymin);g<=ymax;g++){x.beginPath();x.moveTo(x0,sy(g));x.lineTo(x1,sy(g));x.stroke();}
+  x.strokeStyle=hex(COL.mut,0.75);x.lineWidth=1.4;
+  if(ymin<=0&&ymax>=0){x.beginPath();x.moveTo(x0,sy(0));x.lineTo(x1,sy(0));x.stroke();}
+  if(xmin<=0&&xmax>=0){x.beginPath();x.moveTo(sx(0),y0);x.lineTo(sx(0),y1);x.stroke();}
+  return {sx,sy,x0,x1,y0,y1,xmin,xmax,ymin,ymax};
+}
+function plot(x,fr,f,col,lw){
+  x.strokeStyle=col;x.lineWidth=lw||2.4;x.beginPath();
+  const N=400;let started=false,prevY=null;
+  for(let i=0;i<=N;i++){const X=fr.xmin+(fr.xmax-fr.xmin)*i/N;let Y=f(X);
+    if(!isFinite(Y)){started=false;continue;}
+    const yc=Math.max(fr.ymin-2,Math.min(fr.ymax+2,Y));
+    if(started&&Math.abs(Y-prevY)>(fr.ymax-fr.ymin)*1.4){started=false;}
+    const px=fr.sx(X),py=fr.sy(yc);
+    if(!started){x.moveTo(px,py);started=true;}else x.lineTo(px,py);
+    prevY=Y;}
+  x.stroke();
+}
+
+/* HERO : exp curve */
+(function(){const c=document.getElementById('heroCanvas');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  register(c,(t)=>{const W=c._w,H=c._h;x.clearRect(0,0,W,H);
+    const asy=H*0.8;x.strokeStyle=hex(COL.mut,0.3);x.setLineDash([7,7]);x.lineWidth=1.4;
+    x.beginPath();x.moveTo(30,asy);x.lineTo(W-30,asy);x.stroke();x.setLineDash([]);
+    x.strokeStyle=hex(COL.pk,0.55);x.lineWidth=2.6;x.beginPath();let st=false;
+    for(let px=30;px<W-30;px+=3){const xx=(px-W*0.5)/(W*0.12);const v=Math.exp(xx);
+      const py=asy - v*H*0.05;if(py<10){st=false;continue;}st?x.lineTo(px,py):(x.moveTo(px,py),st=true);}x.stroke();
+  });})();
+
+/* 1. SELF-DERIVATIVE */
+(function(){const c=document.getElementById('cSelf');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const aR=document.getElementById('seA'),aV=document.getElementById('seAv');
+  const hE=document.getElementById('seH'),sE=document.getElementById('seS');
+  function a(){return +aR.value/100;}
+  function upd(){aV.textContent=a().toFixed(1);hE.textContent=Math.exp(a()).toFixed(3);
+    sE.textContent=Math.exp(a()).toFixed(3);}
+  aR.oninput=upd;upd();
+  register(c,()=>{x.clearRect(0,0,c._w,c._h);
+    const fr=cartesian(x,c,-3.2,2.4,-0.5,8);
+    plot(x,fr,Math.exp,COL.ink,2.8);
+    const A=a(),ea=Math.exp(A);
+    // height bar
+    x.strokeStyle=COL.cy;x.lineWidth=3;x.beginPath();x.moveTo(fr.sx(A),fr.sy(0));x.lineTo(fr.sx(A),fr.sy(Math.min(ea,fr.ymax)));x.stroke();
+    // tangent slope = ea
+    x.strokeStyle=COL.am;x.lineWidth=2;x.beginPath();
+    x.moveTo(fr.sx(fr.xmin),fr.sy(ea*(fr.xmin-A)+ea));x.lineTo(fr.sx(fr.xmax),fr.sy(ea*(fr.xmax-A)+ea));x.stroke();
+    x.fillStyle=COL.ink;x.beginPath();x.arc(fr.sx(A),fr.sy(Math.min(ea,fr.ymax)),4.5,0,TAU);x.fill();
+    x.fillStyle=COL.mut;x.font="11px 'JetBrains Mono'";x.textAlign='center';x.fillText('a',fr.sx(A),fr.sy(0)+14);
+    x.fillStyle=COL.am;x.textAlign='left';x.fillText('pente = '+ea.toFixed(2),fr.x0+6,fr.y0+14);
+  });})();
+
+/* 2. SUM -> PRODUCT bars */
+(function(){const c=document.getElementById('cMul');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const aR=document.getElementById('muA'),aV=document.getElementById('muAv');
+  const bR=document.getElementById('muB'),bV=document.getElementById('muBv');
+  const eaE=document.getElementById('muEa'),ebE=document.getElementById('muEb'),
+        prE=document.getElementById('muProd'),suE=document.getElementById('muSum');
+  function a(){return +aR.value/100;}function b(){return +bR.value/100;}
+  function upd(){aV.textContent=a().toFixed(1);bV.textContent=b().toFixed(1);
+    eaE.textContent=Math.exp(a()).toFixed(2);ebE.textContent=Math.exp(b()).toFixed(2);
+    prE.textContent=(Math.exp(a())*Math.exp(b())).toFixed(2);
+    suE.textContent=Math.exp(a()+b()).toFixed(2);}
+  [aR,bR].forEach(r=>r.oninput=upd);upd();
+  register(c,()=>{x.clearRect(0,0,c._w,c._h);const W=c._w,H=c._h;
+    const ea=Math.exp(a()),eb=Math.exp(b()),es=Math.exp(a()+b());
+    const maxH=Math.max(ea,eb,es,1.2);const baseY=H-34,top=24,hScale=(baseY-top)/maxH;
+    const cols=[['eᵃ',ea,COL.cy],['eᵇ',eb,COL.pk],['e^(a+b)',es,COL.gr]];
+    const bw=70,gap=(W-3*bw)/4;
+    cols.forEach((cc,i)=>{const bx=gap+(bw+gap)*i;const h=cc[1]*hScale;
+      x.fillStyle=hex(cc[2],0.8);x.fillRect(bx,baseY-h,bw,h);
+      x.fillStyle=COL.ink;x.font="13px 'Nunito'";x.textAlign='center';x.fillText(cc[0],bx+bw/2,baseY+18);
+      x.fillStyle=cc[2];x.font="12px 'JetBrains Mono'";x.fillText(cc[1].toFixed(2),bx+bw/2,baseY-h-7);});
+    x.fillStyle=COL.vi;x.font="13px 'Caveat'";x.textAlign='center';
+    x.fillText('la 3ᵉ barre = produit des deux premières',W/2,top-6);
+  });})();
+
+/* 3. CURVE & LIMITS */
+(function(){const c=document.getElementById('cCurve');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const xR=document.getElementById('cuX'),xV=document.getElementById('cuXv');
+  const yE=document.getElementById('cuY');
+  function x0(){return +xR.value/100;}
+  function upd(){const v=x0();xV.textContent=v.toFixed(2);yE.textContent=Math.exp(v).toFixed(3);}
+  xR.oninput=upd;upd();
+  register(c,()=>{x.clearRect(0,0,c._w,c._h);
+    const fr=cartesian(x,c,-3.5,2.2,-0.5,7);
+    // asymptote y=0 already drawn as axis; emphasize
+    x.strokeStyle=hex(COL.pk,0.55);x.setLineDash([6,5]);x.lineWidth=1.4;
+    x.beginPath();x.moveTo(fr.x0,fr.sy(0));x.lineTo(fr.x1,fr.sy(0));x.stroke();x.setLineDash([]);
+    plot(x,fr,Math.exp,COL.cy,2.8);
+    x.fillStyle=COL.mut;[[0,1,'1'],[1,E,'e']].forEach(([X,Y,t])=>{
+      x.beginPath();x.arc(fr.sx(X),fr.sy(Y),3.5,0,TAU);x.fill();
+      x.font="11px 'JetBrains Mono'";x.textAlign='left';x.fillText(t,fr.sx(X)+5,fr.sy(Y)+2);});
+    const v=x0(),ev=Math.exp(v),px=fr.sx(v),py=fr.sy(Math.min(ev,fr.ymax));
+    x.strokeStyle=hex(COL.am,0.7);x.setLineDash([3,3]);x.lineWidth=1.2;
+    x.beginPath();x.moveTo(px,fr.sy(0));x.lineTo(px,py);x.lineTo(fr.x0,py);x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.am;x.beginPath();x.arc(px,py,4.5,0,TAU);x.fill();
+  });})();
+
+/* 4. COMPARED GROWTH exp vs x^2 */
+(function(){const c=document.getElementById('cComp');let x=setupCanvas(c);
+  addEventListener('resize',()=>{x=setupCanvas(c);});
+  const xR=document.getElementById('coX'),xV=document.getElementById('coXv');
+  const eE=document.getElementById('coExp'),pE=document.getElementById('coPow'),rE=document.getElementById('coRatio');
+  function x0(){return +xR.value/100;}
+  function upd(){const v=x0();xV.textContent=v.toFixed(2);eE.textContent=Math.exp(v).toFixed(2);
+    pE.textContent=(v*v).toFixed(2);rE.textContent=(Math.exp(v)/v).toFixed(2);}
+  xR.oninput=upd;upd();
+  register(c,()=>{x.clearRect(0,0,c._w,c._h);
+    const fr=cartesian(x,c,-1,3.4,-1,20);
+    plot(x,fr,v=>v*v,COL.am,2.4);
+    plot(x,fr,Math.exp,COL.cy,2.8);
+    x.fillStyle=COL.am;x.font="11px 'JetBrains Mono'";x.textAlign='left';x.fillText('x²',fr.sx(3.0),fr.sy(9)+2);
+    x.fillStyle=COL.cy;x.fillText('eˣ',fr.sx(2.6),fr.sy(Math.min(Math.exp(2.6),fr.ymax))+10);
+    const v=x0();[['',Math.exp(v),COL.cy],['',v*v,COL.am]].forEach(([,Y,col])=>{
+      const py=fr.sy(Math.min(Y,fr.ymax));x.fillStyle=col;x.beginPath();x.arc(fr.sx(v),py,4,0,TAU);x.fill();});
+    x.strokeStyle=hex(COL.mut,0.6);x.setLineDash([3,3]);x.lineWidth=1;
+    x.beginPath();x.moveTo(fr.sx(v),fr.y0);x.lineTo(fr.sx(v),fr.y1);x.stroke();x.setLineDash([]);
+    x.fillStyle=COL.mut;x.font="11px 'JetBrains Mono'";x.textAlign='center';x.fillText('x₀',fr.sx(v),fr.sy(0)+14);
+  });})();
+</script>
+</body>
+</html>
